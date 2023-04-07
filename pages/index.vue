@@ -1,6 +1,16 @@
-<script setup>
-const app = useAppConfig()
-const { pending, data } = await useLazyAsyncData('hello-world', async () => $fetch('/api/hello-world'))
+<script>
+export default {
+  data () {
+    return {
+      data: '',
+      pending: true,
+    }
+  },
+
+  async mounted () {
+    this.data = await $fetch('/api/hello-world')
+  },
+}
 </script>
 
 <template>
