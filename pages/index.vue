@@ -5,7 +5,7 @@ const { pending, data } = await useLazyAsyncData('hello-world', async () => $fet
 
 <template>
   <article>
-    <p v-if="data?.content">{{ data.content }}</p>
+    <p v-if="data?.data && data.result">{{ data.data }}</p>
     <p v-else-if="pending">loaded..</p>
     <p v-else>Not loading</p>
   </article>
