@@ -1,14 +1,17 @@
 <script>
+import fetch from '~/utils/fetch'
+
 export default {
   data () {
     return {
-      data: '',
+      data: null,
       pending: true,
     }
   },
 
   async mounted () {
-    this.data = await $fetch('/api/hello-world')
+    this.data = await fetch('/api/hello-world')
+    this.pending = false
   },
 }
 </script>
