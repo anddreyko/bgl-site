@@ -1,35 +1,26 @@
 <script setup lang="ts">
-interface Game {
-  id: number
-  title: string
-  description: string
-  price: number
-}
+import type { Game } from '~/types'
 
-const { slug } = useRoute().params
-const { pending, data: game } = await useFetch<Game>(`/api/games/${slug}`)
+const { slug: id } = useRoute().params
+const { pending, data: game } = await useFetch<Game>(`/api/games/${id}`)
 
 if (!game.value) {
-  throw createError({ message: `Game '${slug}' not found`, statusCode: 404, fatal: true })
+  throw createError({ message: `Game '${id}' not found`, statusCode: 404, fatal: true })
 }
 
 useHead({
-  title: `4Record > Game > ${game.value?.title}`,
+  title: `4Record > Game > ${game.value?.name}`,
 })
 
 definePageMeta({ layout: 'games' })
 </script>
 
 <template>
-  <p v-if="pending">Game is loading...</p>
+  <p v-if="pending">
+    Game is loading...
+  </p>
   <GameCard
     v-else
     :game="game ?? undefined"
   />
 </template>
-
-<style scoped>
-article {
-  font-size: 1.2rem;
-}
-</style>

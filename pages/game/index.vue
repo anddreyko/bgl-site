@@ -1,38 +1,32 @@
 <template>
   <h2>Game catalog</h2>
   <section>
-    <p v-if="pending">Games are loading...</p>
+    <p v-if="pending">
+      Games are loading...
+    </p>
     <article
-      v-for="game in games"
+      v-for="game in games?.items"
       v-else
       :key="game.id"
     >
       <h3>
-        <NuxtLink :to="`/game/${game.id}`">{{ game.title }}</NuxtLink>
+        <NuxtLink :to="`/game/${game.id}`">
+          {{ game.name }}
+        </NuxtLink>
       </h3>
-      <p>{{ game.description }}</p>
     </article>
   </section>
 </template>
 
 <script setup lang="ts">
-interface Game {
-  id: number
-  title: string
-  description: string
-  price: number
-}
+import type { PaginatedResponse, Game } from '~/types'
 
 useHead({
   title: '4Record > Game',
 })
 definePageMeta({ layout: 'games' })
 
-const { pending, data: games } = await useLazyFetch<Game[]>('/api/games')
+const { pending, data: games } = await useLazyFetch<PaginatedResponse<Game>>('/api/games', {
+  query: { q: 'catan', page: 1, size: 20 },
+})
 </script>
-
-<style scoped>
-section {
-  font-size: 1rem;
-}
-</style>

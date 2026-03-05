@@ -15,10 +15,11 @@ export const Primary = {
   }),
   args: {
     game: {
-      id: 42,
-      title: 'Descent: Journeys in the Dark (Second Edition)',
-      description: 'The Best Game of Year!',
-      price: 200.99,
+      id: 'abc-123',
+      bggId: 13,
+      name: 'Descent: Journeys in the Dark (Second Edition)',
+      year: 2012,
+      type: 'base',
     },
   },
 }

@@ -4,10 +4,11 @@ import GameCard from '~/components/GameCard/index.vue'
 describe('GameCard', () => {
   it('renders game info', async () => {
     const game = {
-      id: 1,
-      title: 'Catan',
-      description: 'A strategy game',
-      price: 29.99,
+      id: 'abc-123',
+      bggId: 13,
+      name: 'Catan',
+      year: 1995,
+      type: 'base' as const,
     }
 
     const wrapper = await mountSuspended(GameCard, {
@@ -15,8 +16,7 @@ describe('GameCard', () => {
     })
 
     expect(wrapper.text()).toContain('Catan')
-    expect(wrapper.text()).toContain('A strategy game')
-    expect(wrapper.text()).toContain('29.99')
+    expect(wrapper.text()).toContain('1995')
   })
 
   it('handles missing game prop', async () => {

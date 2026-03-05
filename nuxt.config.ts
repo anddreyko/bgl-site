@@ -20,9 +20,9 @@ export default defineNuxtConfig({
       noscript: [],
     },
   },
+  css: ['~/assets/css/main.css'],
   runtimeConfig: {
-    apiHelloWorldHost: '',
-    apiGameHost: '',
+    apiHost: '',
   },
   postcss: {
     plugins: {
