@@ -21,4 +21,5 @@ export default defineNuxtConfig({
   runtimeConfig: {
     apiHost: '',
   },
+  compatibilityDate: '2026-03-05',
 })
