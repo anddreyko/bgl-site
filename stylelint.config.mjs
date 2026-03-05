@@ -9,5 +9,6 @@ export default {
     }],
     'selector-class-pattern': null,
     'no-empty-source': null,
+    'no-descending-specificity': null,
   },
 }

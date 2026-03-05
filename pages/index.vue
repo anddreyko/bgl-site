@@ -1,19 +1,13 @@
-<script>
-import fetch from '~/utils/fetch'
+<script setup lang="ts">
+import fetchRetry from '~/utils/fetch'
 
-export default {
-  data() {
-    return {
-      data: null,
-      pending: true,
-    }
-  },
+const pending = ref(true)
+const data = ref<{ data?: string, result?: boolean } | null>(null)
 
-  async mounted() {
-    this.data = await fetch('/api/hello-world')
-    this.pending = false
-  },
-}
+onMounted(async () => {
+  data.value = await fetchRetry('/api/hello-world') as typeof data.value
+  pending.value = false
+})
 </script>
 
 <template>

@@ -6,8 +6,17 @@
   </article>
 </template>
 
-<script setup>
-const { game } = defineProps(['game'])
+<script setup lang="ts">
+interface Game {
+  id: number
+  title: string
+  description: string
+  price: number
+}
+
+const { game } = defineProps<{
+  game?: Game
+}>()
 </script>
 
 <style scoped>

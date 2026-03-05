@@ -6,7 +6,7 @@ export default {
 }
 
 export const Primary = {
-  render: args => ({
+  render: (args: Record<string, unknown>) => ({
     components: { MainMenu },
     setup() {
       return { args }

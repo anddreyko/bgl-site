@@ -24,6 +24,11 @@ export default defineNuxtConfig({
     apiHelloWorldHost: '',
     apiGameHost: '',
   },
+  postcss: {
+    plugins: {
+      'postcss-nested': {},
+    },
+  },
   eslint: {
     config: {
       stylistic: {

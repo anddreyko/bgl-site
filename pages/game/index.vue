@@ -15,13 +15,20 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
+interface Game {
+  id: number
+  title: string
+  description: string
+  price: number
+}
+
 useHead({
   title: '4Record > Game',
 })
 definePageMeta({ layout: 'games' })
 
-const { pending, data: games } = await useLazyAsyncData('games', async () => $fetch('/api/games'))
+const { pending, data: games } = await useLazyFetch<Game[]>('/api/games')
 </script>
 
 <style scoped>

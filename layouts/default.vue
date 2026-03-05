@@ -1,6 +1,4 @@
-<script setup>
-import MainMenu from '../components/MainMenu'
-
+<script setup lang="ts">
 const app = useAppConfig()
 </script>
 

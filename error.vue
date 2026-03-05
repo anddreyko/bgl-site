@@ -6,8 +6,12 @@
   </article>
 </template>
 
-<script setup>
-const { error } = defineProps(['error'])
+<script setup lang="ts">
+import type { NuxtError } from '#app'
+
+const { error } = defineProps<{
+  error: NuxtError
+}>()
 </script>
 
 <style scoped>

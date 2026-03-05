@@ -1,15 +1,20 @@
-<script setup>
-import GameCard from '../../components/GameCard'
+<script setup lang="ts">
+interface Game {
+  id: number
+  title: string
+  description: string
+  price: number
+}
 
 const { slug } = useRoute().params
-const { pending, data: game } = await useFetch(`/api/games/${slug}`)
+const { pending, data: game } = await useFetch<Game>(`/api/games/${slug}`)
 
 if (!game.value) {
   throw createError({ message: `Game '${slug}' not found`, statusCode: 404, fatal: true })
 }
 
 useHead({
-  title: `4Record > Game > ${game?.title}`,
+  title: `4Record > Game > ${game.value?.title}`,
 })
 
 definePageMeta({ layout: 'games' })
@@ -19,7 +24,7 @@ definePageMeta({ layout: 'games' })
   <p v-if="pending">Game is loading...</p>
   <GameCard
     v-else
-    :game="game"
+    :game="game ?? undefined"
   />
 </template>
 
