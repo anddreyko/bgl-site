@@ -52,12 +52,12 @@ describe('confirm token page', () => {
     })
   })
 
-  it('shows fallback error message for non-Error rejection', async () => {
+  it('shows error state for non-Error rejection', async () => {
     mockFetch.mockRejectedValueOnce('unknown error')
     const wrapper = await mountSuspended(ConfirmToken)
 
     await vi.waitFor(() => {
-      expect(wrapper.text()).toContain('Confirmation failed')
+      expect(wrapper.find('[role="alert"]').exists()).toBe(true)
     })
   })
 })

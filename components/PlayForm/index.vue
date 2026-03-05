@@ -130,8 +130,6 @@
     <UiButton
       variant="record"
       type="submit"
-      :loading="submitting"
-      :disabled="submitting"
     >
       Start Play
     </UiButton>
@@ -162,8 +160,6 @@ const gameResults = ref<Array<{ id: string, name: string }>>([])
 const gameDropdownOpen = ref(false)
 const visibility = ref<Visibility>('private')
 const players = ref<PlayerDraft[]>([])
-const submitting = ref(false)
-
 let searchTimeout: ReturnType<typeof setTimeout> | null = null
 
 const visibilityOptions = [
@@ -190,10 +186,10 @@ function onGameSearch(query: string) {
 
   searchTimeout = setTimeout(async () => {
     try {
-      const data = await $fetch<Array<{ id: string, name: string }>>('/api/games', {
+      const data = await $fetch<{ items: Array<{ id: string, name: string }> }>('/api/games', {
         query: { q: query },
       })
-      gameResults.value = data
+      gameResults.value = data.items
       gameDropdownOpen.value = true
     }
     catch {
@@ -223,8 +219,6 @@ function removePlayer(index: number) {
 }
 
 function handleSubmit() {
-  submitting.value = true
-
   const payload: PlayCreatePayload = {
     gameId: selectedGameId.value,
     startedAt: new Date().toISOString(),
@@ -233,7 +227,6 @@ function handleSubmit() {
   }
 
   emit('submit', payload)
-  submitting.value = false
 }
 </script>
 

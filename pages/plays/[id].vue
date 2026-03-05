@@ -91,7 +91,7 @@
               :style="{ backgroundColor: player.color }"
               aria-hidden="true"
             />
-            <span class="play-detail__player-name">{{ player.mateId }}</span>
+            <span class="play-detail__player-name">{{ player.mateName ?? player.mateId }}</span>
             <span
               v-if="player.score != null"
               class="play-detail__player-score"
@@ -174,7 +174,7 @@ const playId = route.params.id as string
 
 useHead({ title: '4Record > Play Detail' })
 
-const { finishPlay, activePlay } = useActivePlay()
+const { activePlay } = useActivePlay()
 
 const overlayOpen = ref(false)
 const updating = ref(false)
@@ -226,8 +226,15 @@ const formattedDuration = computed(() => {
 async function onFinishPlay() {
   if (!play.value) return
 
-  activePlay.value = play.value
-  await finishPlay()
+  await $fetch(`/api/plays/${play.value.id}/finish`, {
+    method: 'PATCH',
+    body: { finished_at: new Date().toISOString() },
+  })
+
+  if (activePlay.value?.id === play.value.id) {
+    activePlay.value = null
+  }
+
   await refresh()
 }
 

@@ -67,9 +67,9 @@ import type { Game } from '~/types'
 import GameCard from '~/components/GameCard/index.vue'
 
 const route = useRoute()
-const gameId = route.params.id as string
+const gameId = computed(() => String(route.params.id))
 
-const { pending, data: game, error } = useLazyFetch<Game>(`/api/games/${gameId}`)
+const { pending, data: game, error } = useLazyFetch<Game>(() => `/api/games/${gameId.value}`)
 
 useHead({
   title: computed(() => `4Record > ${game.value?.name ?? 'Game'}`),

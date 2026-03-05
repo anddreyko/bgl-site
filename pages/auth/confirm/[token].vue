@@ -9,20 +9,21 @@ useHead({ title: 'Confirm Email' })
 const route = useRoute()
 const token = computed(() => route.params.token as string)
 
-const status = ref<'loading' | 'success' | 'error'>('loading')
-const errorMessage = ref('')
+const { status: fetchStatus, error: fetchError } = await useAsyncData(
+  `confirm-${token.value}`,
+  () => $fetch(`/api/auth/confirm/${token.value}`),
+  { server: false },
+)
 
-onMounted(async () => {
-  try {
-    await $fetch(`/api/auth/confirm/${token.value}`)
-    status.value = 'success'
-  }
-  catch (error: unknown) {
-    status.value = 'error'
-    errorMessage.value = error instanceof Error
-      ? error.message
-      : 'Confirmation failed. The link may be expired or invalid.'
-  }
+const status = computed<'loading' | 'success' | 'error'>(() => {
+  if (fetchStatus.value === 'pending' || fetchStatus.value === 'idle') return 'loading'
+  if (fetchError.value) return 'error'
+  return 'success'
+})
+
+const errorMessage = computed(() => {
+  if (!fetchError.value) return ''
+  return fetchError.value.message || 'Confirmation failed. The link may be expired or invalid.'
 })
 </script>
 

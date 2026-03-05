@@ -1,12 +1,13 @@
+import { ref, computed } from 'vue'
 import type { Play, PlaysListParams, PaginatedResponse } from '~/types'
 
 export function usePlays() {
-  const plays = useState<Play[]>('plays:list', () => [])
-  const total = useState<number>('plays:total', () => 0)
-  const currentPage = useState<number>('plays:page', () => 1)
-  const pageSize = useState<number>('plays:size', () => 10)
-  const loading = useState<boolean>('plays:loading', () => false)
-  const error = useState<string | null>('plays:error', () => null)
+  const plays = ref<Play[]>([])
+  const total = ref(0)
+  const currentPage = ref(1)
+  const pageSize = ref(10)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
   const totalPages = computed(() => Math.max(1, Math.ceil(total.value / pageSize.value)))
 

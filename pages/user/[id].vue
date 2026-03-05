@@ -4,7 +4,7 @@ import type { User } from '~/types'
 const route = useRoute()
 const userId = computed(() => String(route.params.id))
 
-const { data: user, status, error } = await useFetch<User>(`/api/user/${userId.value}`)
+const { data: user, status, error } = await useFetch<User>(() => `/api/user/${userId.value}`)
 
 const memberSince = computed(() => {
   if (!user.value?.createdAt) return ''

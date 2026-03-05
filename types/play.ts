@@ -5,6 +5,7 @@ export type PlayStatus = 'draft' | 'published' | 'deleted'
 export interface Player {
   id: string
   mateId: string
+  mateName?: string
   teamTag?: string
   score?: number
   number?: number

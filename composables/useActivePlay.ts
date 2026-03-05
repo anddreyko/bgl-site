@@ -29,7 +29,7 @@ export function useActivePlay() {
   async function checkActivePlay(): Promise<void> {
     try {
       const data = await $fetch<PaginatedResponse<Play>>('/api/plays', {
-        query: { page: 1, size: 5 },
+        query: { page: 1, size: 100 },
       })
       const active = data.items.find(p => !p.finishedAt && p.status === 'draft')
       activePlay.value = active ?? null

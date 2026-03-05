@@ -54,7 +54,7 @@
             aria-hidden="true"
           />
           <span class="play-card__player-name">
-            {{ player.mateId }}
+            {{ player.mateName ?? player.mateId }}
           </span>
           <span
             v-if="player.score != null"
