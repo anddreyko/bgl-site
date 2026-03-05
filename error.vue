@@ -6,7 +6,6 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: 'index' })
 const { error } = defineProps(['error'])
 </script>
 

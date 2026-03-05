@@ -9,22 +9,20 @@
     "design": "storybook dev -p 6006",
     "design:build": "storybook build"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "esbuild"
+    ],
+    "overrides": {
+      "serialize-javascript": "^7.0.3"
+    }
+  },
   "devDependencies": {
-    "@babel/core": "^7.21.3",
-    "@babel/preset-env": "^7.20.2",
-    "@storybook/addon-actions": "^7.0.0-rc.5",
-    "@storybook/addon-essentials": "^7.0.0-rc.5",
-    "@storybook/addon-interactions": "^7.0.0-rc.5",
-    "@storybook/addon-links": "^7.0.0-rc.5",
-    "@storybook/addon-mdx-gfm": "^7.0.0-rc.5",
-    "@storybook/testing-library": "^0.0.14-next.1",
-    "@storybook/vue3": "^7.0.0-rc.5",
-    "@storybook/vue3-webpack5": "^7.0.0-rc.5",
-    "babel-loader": "^8.3.0",
-    "nuxt": "^3.2.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "storybook": "^7.0.0-rc.5",
-    "vue-loader": "^16.8.3"
+    "@storybook/addon-docs": "^10.2.15",
+    "@storybook/addon-links": "^10.2.15",
+    "@storybook/vue3-vite": "^10.2.15",
+    "nuxt": "^3.21.1",
+    "storybook": "^10.2.15"
   }
 }

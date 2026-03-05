@@ -1,17 +1,24 @@
-module.exports = {
-  'stories': [
+import vue from '@vitejs/plugin-vue'
+
+export default {
+  stories: [
     '../components/**/*.mdx',
-    '../components/**/*.stories.@(js|jsx|ts|tsx)'],
-  'addons': [
+    '../components/**/*.stories.@(js|jsx|ts|tsx)',
+  ],
+  addons: [
     '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-mdx-gfm'],
-  'framework': {
-    name: '@storybook/vue3-webpack5',
+    '@storybook/addon-docs',
+  ],
+  framework: {
+    name: '@storybook/vue3-vite',
     options: {},
   },
   docs: {
     autodocs: true,
+  },
+  viteFinal(config) {
+    config.plugins = config.plugins || []
+    config.plugins.push(vue())
+    return config
   },
 }
