@@ -31,6 +31,7 @@ describe('POST /api/auth/refresh', () => {
   it('refreshes tokens and sets cookies', async () => {
     mockGetRefreshToken.mockReturnValue('old_refresh')
     mockFetch.mockResolvedValue({
+      code: 0,
       data: {
         access_token: 'new_at',
         refresh_token: 'new_rt',

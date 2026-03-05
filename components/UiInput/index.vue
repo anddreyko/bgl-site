@@ -11,6 +11,7 @@
       :placeholder="placeholder"
       :disabled="disabled"
       :aria-invalid="error || undefined"
+      :aria-describedby="ariaDescribedby"
       @input="onInput"
     />
   </div>
@@ -24,6 +25,7 @@ withDefaults(defineProps<{
   error?: boolean
   disabled?: boolean
   id?: string
+  ariaDescribedby?: string
 }>(), {
   type: 'text',
   error: false,

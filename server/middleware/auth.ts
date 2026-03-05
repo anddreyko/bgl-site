@@ -33,6 +33,10 @@ export default defineEventHandler(async (event) => {
       method: 'POST',
       body: { refreshToken },
     })
+    if (response.data === null || response.data === undefined) {
+      throw new Error('Invalid refresh response')
+    }
+
     const data = response.data
     setAuthCookies(event, {
       accessToken: data.access_token,

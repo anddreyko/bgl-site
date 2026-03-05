@@ -21,6 +21,11 @@ export default defineEventHandler(async (event) => {
       body: { refreshToken },
     })
 
+    if (response.code !== 0) {
+      clearAuthCookies(event)
+      throw createError({ statusCode: 401, message: 'Refresh failed' })
+    }
+
     const data = response.data
     setAuthCookies(event, {
       accessToken: data.access_token,

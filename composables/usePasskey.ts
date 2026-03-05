@@ -6,7 +6,7 @@ export function usePasskey() {
     const response = await startRegistration({ optionsJSON: options as unknown as Parameters<typeof startRegistration>[0]['optionsJSON'] })
     await $fetch('/api/auth/passkey/register-verify', {
       method: 'POST',
-      body: { response: JSON.stringify(response), label },
+      body: { response: response, label },
     })
   }
 
@@ -17,7 +17,7 @@ export function usePasskey() {
     const response = await startAuthentication({ optionsJSON: options as unknown as Parameters<typeof startAuthentication>[0]['optionsJSON'] })
     await $fetch('/api/auth/passkey/sign-in-verify', {
       method: 'POST',
-      body: { response: JSON.stringify(response) },
+      body: { response: response },
     })
     const { fetchCurrentUser } = useAuth()
     await fetchCurrentUser()

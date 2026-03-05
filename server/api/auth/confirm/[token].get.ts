@@ -4,10 +4,15 @@ import { createApiClient, unwrap } from '~/server/utils/api-client'
 
 export default defineEventHandler(async (event) => {
   const token = getRouterParam(event, 'token')
+
+  if (!token || !/^[\w-]+$/.test(token)) {
+    throw createError({ statusCode: 400, message: 'Invalid token format' })
+  }
+
   const api = createApiClient(event)
 
   try {
-    const response = await api<ApiResponse<string>>(`/v1/auth/confirm/${token}`, {
+    const response = await api<ApiResponse<string>>(`/v1/auth/confirm/${encodeURIComponent(token)}`, {
       method: 'GET',
     })
     const message = unwrap(response)
