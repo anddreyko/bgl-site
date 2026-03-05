@@ -1,0 +1,85 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { H3Error } from 'h3'
+
+const mockFetch = vi.fn()
+const mockUnwrap = vi.fn((r: unknown) => r)
+
+vi.mock('~/server/utils/api-client', () => ({
+  createApiClient: () => mockFetch,
+  unwrap: (r: unknown) => mockUnwrap(r),
+}))
+
+const mockReadBody = vi.fn()
+vi.mock('h3', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('h3')>()
+  return {
+    ...actual,
+    readBody: (...args: unknown[]) => mockReadBody(...args),
+  }
+})
+
+describe('server/api/plays/[id]/finish.patch', () => {
+  beforeEach(() => {
+    mockFetch.mockReset()
+    mockUnwrap.mockReset()
+    mockUnwrap.mockImplementation((r: unknown) => r)
+    mockReadBody.mockReset()
+  })
+
+  it('PATCH proxies to /v1/plays/sessions/{id}', async () => {
+    const fakeResponse = { code: 0, data: { id: 'p1' } }
+    mockFetch.mockResolvedValue(fakeResponse)
+    mockReadBody.mockResolvedValue({ finished_at: '2026-01-01T00:00:00Z' })
+
+    const { default: handler } = await import('~/server/api/plays/[id]/finish.patch')
+    const event = {
+      method: 'PATCH',
+      node: { req: { method: 'PATCH' } },
+      context: { params: { id: 'p1' } },
+    } as never
+
+    await handler(event)
+
+    expect(mockFetch).toHaveBeenCalledWith('/v1/plays/sessions/p1', expect.objectContaining({
+      method: 'PATCH',
+      body: { finished_at: '2026-01-01T00:00:00Z' },
+    }))
+    expect(mockUnwrap).toHaveBeenCalledWith(fakeResponse)
+  })
+
+  it('re-throws H3Error', async () => {
+    const h3Err = new H3Error('err')
+    h3Err.statusCode = 400
+    mockReadBody.mockResolvedValue({})
+    mockFetch.mockRejectedValue(h3Err)
+
+    const { default: handler } = await import('~/server/api/plays/[id]/finish.patch')
+    const event = {
+      method: 'PATCH',
+      node: { req: { method: 'PATCH' } },
+      context: { params: { id: 'x' } },
+    } as never
+
+    await expect(handler(event)).rejects.toThrow(h3Err)
+  })
+
+  it('wraps non-H3 errors as 502', async () => {
+    mockReadBody.mockResolvedValue({})
+    mockFetch.mockRejectedValue(new Error('fail'))
+
+    const { default: handler } = await import('~/server/api/plays/[id]/finish.patch')
+    const event = {
+      method: 'PATCH',
+      node: { req: { method: 'PATCH' } },
+      context: { params: { id: 'x' } },
+    } as never
+
+    try {
+      await handler(event)
+      expect.unreachable('should throw')
+    }
+    catch (err: unknown) {
+      expect((err as { statusCode: number }).statusCode).toBe(502)
+    }
+  })
+})
