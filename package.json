@@ -62,6 +62,7 @@
     "vue-tsc": "^3.2.5"
   },
   "dependencies": {
-    "@simplewebauthn/browser": "^13.2.2"
+    "@simplewebauthn/browser": "^13.2.2",
+    "radix-vue": "^1.9.17"
   }
 }

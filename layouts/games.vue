@@ -1,30 +1,40 @@
-<template>
-  <main class="hello-main">
-    <h1>{{ app?.name }}</h1>
-    <slot />
-  </main>
-  <footer class="hello hello__footer">
-    <p>ver {{ app?.version }} | Contact: <NuxtLink to="/user/admin">admin</NuxtLink></p>
-    <MainMenu />
-  </footer>
-</template>
-
 <script setup lang="ts">
+import MainMenu from '~/components/MainMenu/index.vue'
+
 const app = useAppConfig()
 </script>
 
+<template>
+  <div class="app-layout">
+    <main class="app-layout__main">
+      <slot />
+    </main>
+    <footer class="app-layout__footer">
+      <p>ver {{ app?.version }} | Contact: <NuxtLink to="/user/admin">admin</NuxtLink></p>
+      <MainMenu />
+    </footer>
+  </div>
+</template>
+
 <style scoped>
-.hello-main {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 3rem;
-  margin: 6rem 10rem;
-  padding: 0;
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-.hello__footer {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0 10rem;
-  padding: 0;
-  font-size: 1rem;
+.app-layout__main {
+  flex: 1;
+  padding: var(--space-8);
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.app-layout__footer {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  border-top: 1px solid var(--color-border);
 }
 </style>

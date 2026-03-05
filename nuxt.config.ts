@@ -1,8 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: [
-    '@nuxt/eslint',
-  ],
   app: {
     head: {
       title: '4Record -- record your records!',
@@ -23,19 +20,5 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     apiHost: '',
-  },
-  postcss: {
-    plugins: {
-      'postcss-nested': {},
-    },
-  },
-  eslint: {
-    config: {
-      stylistic: {
-        indent: 2,
-        quotes: 'single',
-        semi: false,
-      },
-    },
   },
 })

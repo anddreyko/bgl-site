@@ -21,6 +21,6 @@ definePageMeta({ layout: 'games' })
   </p>
   <GameCard
     v-else
-    :game="game ?? undefined"
+    :game="game!"
   />
 </template>
