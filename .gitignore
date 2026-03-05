@@ -8,4 +8,9 @@ storybook-static
 .env
 dist
 coverage
+e2e/.features-gen/
+e2e/reports/
+test-results/
+playwright-report/
+.unlighthouse/
 var
