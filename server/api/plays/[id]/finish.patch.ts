@@ -4,6 +4,10 @@ import { createApiClient, unwrap } from '~/server/utils/api-client'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
+  if (!id || !/^[\w-]+$/.test(id)) {
+    throw createError({ statusCode: 400, message: 'Invalid ID' })
+  }
+
   const api = createApiClient(event)
 
   try {

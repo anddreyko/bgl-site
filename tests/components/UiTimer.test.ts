@@ -16,7 +16,7 @@ describe('UiTimer', () => {
       props: { startedAt: new Date().toISOString(), running: false },
     })
     expect(wrapper.attributes('role')).toBe('timer')
-    expect(wrapper.attributes('aria-live')).toBe('polite')
+    expect(wrapper.attributes('aria-live')).toBe('off')
   })
 
   it('displays formatted time MM:SS', async () => {

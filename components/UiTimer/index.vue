@@ -3,7 +3,7 @@
     class="ui-timer"
     :class="{ 'ui-timer--running': running }"
     role="timer"
-    aria-live="polite"
+    aria-live="off"
   >
     {{ formatted }}
   </span>
@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<{
   running: true,
 })
 
-const now = ref(Date.now())
+const now = ref(0)
 let intervalId: ReturnType<typeof setInterval> | null = null
 
 function startTimer() {
@@ -37,6 +37,7 @@ function stopTimer() {
 }
 
 const elapsedSeconds = computed(() => {
+  if (now.value === 0) return 0
   const start = new Date(props.startedAt).getTime()
   return Math.max(0, Math.floor((now.value - start) / 1000))
 })
@@ -57,6 +58,7 @@ const formatted = computed(() => {
 })
 
 onMounted(() => {
+  now.value = Date.now()
   if (props.running) {
     startTimer()
   }

@@ -8,15 +8,24 @@
       label="Game"
       field-id="play-game"
     >
-      <div class="play-form__game-search">
+      <div
+        class="play-form__game-search"
+        @focusout="onSearchFocusOut"
+      >
         <UiInput
           id="play-game"
           v-model="gameQuery"
           placeholder="Search for a game..."
+          role="combobox"
+          aria-autocomplete="list"
+          :aria-expanded="gameDropdownOpen && gameResults.length > 0"
+          aria-controls="play-game-listbox"
           @update:model-value="onGameSearch"
+          @keydown.escape="gameDropdownOpen = false"
         />
         <ul
           v-if="gameResults.length > 0 && gameDropdownOpen"
+          id="play-game-listbox"
           class="play-form__game-dropdown"
           role="listbox"
           aria-label="Game search results"
@@ -26,8 +35,10 @@
             :key="game.id"
             class="play-form__game-option"
             role="option"
+            tabindex="0"
             :aria-selected="selectedGameId === game.id"
             @click="selectGame(game)"
+            @keydown.enter.prevent="selectGame(game)"
           >
             {{ game.name }}
           </li>
@@ -196,6 +207,13 @@ function onGameSearch(query: string) {
       gameResults.value = []
     }
   }, 300)
+}
+
+function onSearchFocusOut(e: FocusEvent) {
+  const container = e.currentTarget as HTMLElement
+  if (!container.contains(e.relatedTarget as Node)) {
+    gameDropdownOpen.value = false
+  }
 }
 
 function selectGame(game: { id: string, name: string }) {

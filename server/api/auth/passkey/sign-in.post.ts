@@ -1,13 +1,15 @@
 import { H3Error } from 'h3'
+import type { ApiResponse } from '~/types'
+import { createApiClient, unwrap } from '~/server/utils/api-client'
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  const api = createApiClient(event)
+
   try {
-    const { apiHost } = useRuntimeConfig()
-    const response = await $fetch<{ options: Record<string, unknown> }>('/v1/auth/passkey/sign-in', {
-      baseURL: apiHost,
+    const response = await api<ApiResponse<{ options: Record<string, unknown> }>>('/v1/auth/passkey/sign-in', {
       method: 'POST',
     })
-    return response
+    return unwrap(response)
   }
   catch (err) {
     if (err instanceof H3Error) throw err
