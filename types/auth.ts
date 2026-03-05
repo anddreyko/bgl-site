@@ -14,3 +14,15 @@ export interface SignInPayload {
   email: string
   password: string
 }
+
+export interface ConfirmPayload {
+  token: string
+}
+
+export interface PasskeyRegisterOptions {
+  options: Record<string, unknown>
+}
+
+export interface PasskeySignInOptions {
+  options: Record<string, unknown>
+}
