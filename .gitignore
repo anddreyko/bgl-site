@@ -8,3 +8,4 @@ storybook-static
 .env
 dist
 coverage
+var
