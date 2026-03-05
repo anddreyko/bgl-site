@@ -6,11 +6,11 @@ const app = useAppConfig()
 
 <template>
   <header class="hello-header">
-   <MainMenu />
+    <MainMenu />
   </header>
   <main class="hello-main">
     <h1>{{ app?.name }}</h1>
-    <slot/>
+    <slot />
   </main>
   <footer class="hello hello__footer">ver {{ app?.version }} | Contact: <NuxtLink to="/user/admin">admin</NuxtLink></footer>
 </template>

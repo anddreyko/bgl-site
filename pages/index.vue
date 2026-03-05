@@ -2,14 +2,14 @@
 import fetch from '~/utils/fetch'
 
 export default {
-  data () {
+  data() {
     return {
       data: null,
       pending: true,
     }
   },
 
-  async mounted () {
+  async mounted() {
     this.data = await fetch('/api/hello-world')
     this.pending = false
   },

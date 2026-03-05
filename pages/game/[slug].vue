@@ -17,7 +17,10 @@ definePageMeta({ layout: 'games' })
 
 <template>
   <p v-if="pending">Game is loading...</p>
-  <GameCard v-else :game="game"/>
+  <GameCard
+    v-else
+    :game="game"
+  />
 </template>
 
 <style scoped>

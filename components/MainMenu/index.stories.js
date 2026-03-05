@@ -6,9 +6,9 @@ export default {
 }
 
 export const Primary = {
-  render: (args) => ({
+  render: args => ({
     components: { MainMenu },
-    setup () {
+    setup() {
       return { args }
     },
     template: '<MainMenu v-bind="args" />',

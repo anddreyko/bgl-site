@@ -1,7 +1,7 @@
 <template>
   <main class="hello-main">
     <h1>{{ app?.name }}</h1>
-    <slot/>
+    <slot />
   </main>
   <footer class="hello hello__footer">
     <p>ver {{ app?.version }} | Contact: <NuxtLink to="/user/admin">admin</NuxtLink></p>
@@ -14,7 +14,6 @@ import MainMenu from '../components/MainMenu'
 
 const app = useAppConfig()
 </script>
-
 
 <style scoped>
 .hello-main {

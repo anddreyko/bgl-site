@@ -2,9 +2,13 @@
   <h2>Game catalog</h2>
   <section>
     <p v-if="pending">Games are loading...</p>
-    <article v-else v-for="game in games">
+    <article
+      v-for="game in games"
+      v-else
+      :key="game.id"
+    >
       <h3>
-        <NuxtLink :to='`/game/${game.id}`'>{{ game.title }}</NuxtLink>
+        <NuxtLink :to="`/game/${game.id}`">{{ game.title }}</NuxtLink>
       </h3>
       <p>{{ game.description }}</p>
     </article>

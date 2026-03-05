@@ -6,9 +6,9 @@ export default {
 }
 
 export const Primary = {
-  render: (args) => ({
+  render: args => ({
     components: { GameCard },
-    setup () {
+    setup() {
       return { args }
     },
     template: '<GameCard v-bind="args" />',

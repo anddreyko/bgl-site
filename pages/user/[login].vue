@@ -1,5 +1,5 @@
 <script setup>
-const { login } = useRoute().params;
+const { login } = useRoute().params
 </script>
 
 <template>
