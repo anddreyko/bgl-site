@@ -6,15 +6,21 @@ export interface Player {
   id: string
   mateId: string
   mateName?: string
-  teamTag?: string
   score?: number
-  number?: number
   color?: string
-  winner?: boolean
+  isWinner?: boolean
+}
+
+export interface PlayerPayload {
+  mateId: string
+  score?: number
+  isWinner?: boolean
+  color?: string
 }
 
 export interface Play {
   id: string
+  author?: { id: string, name: string }
   name?: string
   status: PlayStatus
   visibility: Visibility
@@ -23,7 +29,6 @@ export interface Play {
   game?: { id: string, name: string }
   gameName?: string
   players: Player[]
-  includeInStats: boolean
 }
 
 export interface PlayCreatePayload {
@@ -31,19 +36,22 @@ export interface PlayCreatePayload {
   name?: string
   startedAt?: string
   finishedAt?: string
-  visibility: Visibility
-  players: Omit<Player, 'id'>[]
+  visibility?: Visibility
+  players?: PlayerPayload[]
 }
 
 export interface PlayUpdatePayload {
   name?: string
   gameId?: string
-  visibility: Visibility
+  visibility?: Visibility
+  status?: PlayStatus | null
+  players?: PlayerPayload[]
 }
 
 export interface PlaysListParams {
   page?: number
   size?: number
+  authorId?: string
   gameId?: string
   from?: string
   to?: string

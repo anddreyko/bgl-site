@@ -2,8 +2,6 @@ export interface Mate {
   id: string
   name: string
   notes?: string
-  linkedUser?: string
-  bggAccount?: string
   createdAt: string
 }
 

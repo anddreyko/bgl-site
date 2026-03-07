@@ -5,12 +5,10 @@ export interface Game {
   bggId: number
   name: string
   alternativeNames?: string[]
-  year?: number
-  type: GameType
+  yearPublished?: number
+  type?: GameType
   minPlayers?: number
   maxPlayers?: number
-  minPlayTime?: number
-  maxPlayTime?: number
   image?: string
   family?: string
 }

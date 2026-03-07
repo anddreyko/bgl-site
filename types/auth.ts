@@ -1,9 +1,3 @@
-export interface TokenPair {
-  accessToken: string
-  refreshToken: string
-  expiresIn: number
-}
-
 export interface SignUpPayload {
   email: string
   password: string
