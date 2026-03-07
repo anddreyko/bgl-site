@@ -170,6 +170,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .home-page__actions {

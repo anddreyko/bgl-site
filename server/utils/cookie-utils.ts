@@ -44,7 +44,7 @@ export function clearAuthCookies(event: H3Event): void {
 }
 
 export function getAccessToken(event: H3Event): string | undefined {
-  return getCookie(event, ACCESS_TOKEN)
+  return getCookie(event, ACCESS_TOKEN) ?? event.context?.accessToken
 }
 
 export function getRefreshToken(event: H3Event): string | undefined {

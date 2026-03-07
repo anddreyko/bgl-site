@@ -26,6 +26,7 @@ vi.stubGlobal('createError', (opts: { statusCode: number, message: string }) => 
 function createFakeEvent(pathname: string) {
   return {
     _requestURL: new URL(`http://localhost${pathname}`),
+    context: {},
   }
 }
 

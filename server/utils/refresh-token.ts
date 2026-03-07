@@ -18,6 +18,7 @@ export async function tryRefreshToken(event: H3Event): Promise<boolean> {
 
     const data = snakeToCamel<{ accessToken: string, refreshToken: string, expiresIn: number }>(response.data)
     setAuthCookies(event, data)
+    event.context.accessToken = data.accessToken
     return true
   }
   catch {
