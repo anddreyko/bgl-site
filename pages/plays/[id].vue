@@ -15,9 +15,17 @@
 
     <template v-else>
       <div class="play-detail__header">
-        <h2 class="play-detail__title">
-          {{ play.game?.name ?? play.gameName ?? 'No game' }}
-        </h2>
+        <div class="play-detail__titles">
+          <h2 class="play-detail__title">
+            {{ play.name || play.game?.name || play.gameName || `Play #${play.id.slice(0, 8)}` }}
+          </h2>
+          <p
+            v-if="play.name && (play.game?.name || play.gameName)"
+            class="play-detail__subtitle"
+          >
+            {{ play.game?.name ?? play.gameName }}
+          </p>
+        </div>
         <div class="play-detail__actions">
           <UiButton
             variant="secondary"
@@ -32,6 +40,12 @@
           >
             Finish Play
           </UiButton>
+          <UiButton
+            variant="ghost"
+            @click="confirmDelete = true"
+          >
+            Delete
+          </UiButton>
         </div>
       </div>
 
@@ -40,6 +54,13 @@
           <UiBadge :variant="statusVariant">{{ play.status }}</UiBadge>
           <UiBadge variant="info">{{ play.visibility }}</UiBadge>
         </div>
+
+        <p
+          v-if="play.author"
+          class="play-detail__author"
+        >
+          by <NuxtLink :to="`/user/${play.author.name}`">{{ play.author.name }}</NuxtLink>
+        </p>
 
         <div class="play-detail__time">
           <p class="play-detail__started">
@@ -65,14 +86,6 @@
         </div>
       </div>
 
-      <section
-        v-if="play.name"
-        class="play-detail__section"
-      >
-        <h3>Name</h3>
-        <p>{{ play.name }}</p>
-      </section>
-
       <section class="play-detail__section">
         <h3>Players ({{ play.players.length }})</h3>
         <ul
@@ -85,87 +98,66 @@
             :key="player.id"
             class="play-detail__player"
           >
-            <span
-              v-if="player.color"
-              class="play-detail__player-color"
-              :style="{ backgroundColor: player.color }"
-              aria-hidden="true"
+            <PlayerBadge
+              :player="player"
             />
-            <span class="play-detail__player-name">{{ player.mateName ?? player.mateId }}</span>
-            <span
-              v-if="player.score != null"
-              class="play-detail__player-score"
-            >
-              Score: {{ player.score }}
-            </span>
-            <UiBadge
-              v-if="player.winner"
-              variant="success"
-            >
-              Winner
-            </UiBadge>
           </li>
         </ul>
         <p v-else>No players</p>
       </section>
     </template>
 
+    <!-- Delete confirmation -->
+    <UiOverlay
+      :open="confirmDelete"
+      title="Delete Play"
+      @update:open="confirmDelete = $event"
+    >
+      <div class="play-detail__confirm">
+        <p>Are you sure you want to delete this play? This cannot be undone.</p>
+        <div class="play-detail__confirm-actions">
+          <UiButton
+            variant="danger"
+            :loading="deleting"
+            @click="onDeletePlay"
+          >
+            Delete
+          </UiButton>
+          <UiButton
+            variant="secondary"
+            @click="confirmDelete = false"
+          >
+            Cancel
+          </UiButton>
+        </div>
+      </div>
+    </UiOverlay>
+
     <UiOverlay
       :open="overlayOpen"
       title="Edit Play"
       @update:open="overlayOpen = $event"
     >
-      <form
-        class="play-detail__edit-form"
-        @submit.prevent="onUpdatePlay"
-      >
-        <UiFormField
-          label="Name"
-          field-id="edit-name"
-        >
-          <UiInput
-            id="edit-name"
-            v-model="editName"
-            placeholder="Play name"
-          />
-        </UiFormField>
-
-        <UiFormField
-          label="Visibility"
-          field-id="edit-visibility"
-          required
-        >
-          <UiSelect
-            id="edit-visibility"
-            :model-value="editVisibility"
-            :options="visibilityOptions"
-            @update:model-value="editVisibility = $event as Visibility"
-          />
-        </UiFormField>
-
-        <UiButton
-          variant="primary"
-          type="submit"
-          :loading="updating"
-        >
-          Save
-        </UiButton>
-      </form>
+      <PlayForm
+        :initial-data="play"
+        :mates="mates"
+        submit-label="Save"
+        @submit="onUpdatePlay"
+      />
     </UiOverlay>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Play, PlayUpdatePayload, Visibility } from '~/types'
+import type { Play, PlayCreatePayload, PlayUpdatePayload } from '~/types'
 import UiSpinner from '~/components/UiSpinner/index.vue'
 import UiButton from '~/components/UiButton/index.vue'
 import UiBadge from '~/components/UiBadge/index.vue'
 import UiTimer from '~/components/UiTimer/index.vue'
 import UiOverlay from '~/components/UiOverlay/index.vue'
-import UiFormField from '~/components/UiFormField/index.vue'
-import UiInput from '~/components/UiInput/index.vue'
-import UiSelect from '~/components/UiSelect/index.vue'
+import PlayForm from '~/components/PlayForm/index.vue'
+import PlayerBadge from '~/components/PlayerBadge/index.vue'
 
 definePageMeta({ middleware: 'auth' })
 
@@ -175,19 +167,13 @@ const playId = route.params.id as string
 useHead({ title: '4Record > Play Detail' })
 
 const { activePlay } = useActivePlay()
+const { set: setBreadcrumb, clear: clearBreadcrumb } = useBreadcrumbLabel()
 
 const overlayOpen = ref(false)
-const updating = ref(false)
-const editName = ref('')
-const editVisibility = ref<Visibility>('private')
+const confirmDelete = ref(false)
+const deleting = ref(false)
 
-const visibilityOptions = [
-  { value: 'private', label: 'Private' },
-  { value: 'participants', label: 'Participants' },
-  { value: 'link', label: 'Link' },
-  { value: 'authenticated', label: 'Authenticated' },
-  { value: 'public', label: 'Public' },
-]
+const { mates } = useMateNames()
 
 const { data: play, pending, refresh } = await useAsyncData<Play>(
   `play-${playId}`,
@@ -228,7 +214,7 @@ async function onFinishPlay() {
 
   await $fetch(`/api/plays/${play.value.id}/finish`, {
     method: 'PATCH',
-    body: { finished_at: new Date().toISOString() },
+    body: { finishedAt: new Date().toISOString() },
   })
 
   if (activePlay.value?.id === play.value.id) {
@@ -238,31 +224,43 @@ async function onFinishPlay() {
   await refresh()
 }
 
-async function onUpdatePlay() {
-  if (!play.value) return
-
-  updating.value = true
+async function onDeletePlay() {
+  deleting.value = true
   try {
-    const body: PlayUpdatePayload = {
-      name: editName.value || undefined,
-      visibility: editVisibility.value,
+    await $fetch(`/api/plays/${playId}`, { method: 'DELETE' })
+    if (activePlay.value?.id === playId) {
+      activePlay.value = null
     }
-    await $fetch(`/api/plays/${playId}`, { method: 'PUT', body })
-    overlayOpen.value = false
-    await refresh()
+    await navigateTo('/plays')
   }
   finally {
-    updating.value = false
+    deleting.value = false
+    confirmDelete.value = false
   }
 }
 
-// Pre-fill edit form when data loads
+async function onUpdatePlay(payload: PlayCreatePayload) {
+  if (!play.value) return
+
+  const body: PlayUpdatePayload = {
+    name: payload.name,
+    gameId: payload.gameId,
+    visibility: payload.visibility,
+    players: payload.players,
+  }
+  await $fetch(`/api/plays/${playId}`, { method: 'PUT', body })
+  overlayOpen.value = false
+  await refresh()
+}
+
+// Set breadcrumb when data loads
 watch(play, (val) => {
   if (val) {
-    editName.value = val.name ?? ''
-    editVisibility.value = val.visibility
+    setBreadcrumb(val.game?.name || val.gameName || val.name || `Play #${val.id.slice(0, 8)}`)
   }
 }, { immediate: true })
+
+onUnmounted(() => clearBreadcrumb())
 </script>
 
 <style scoped>
@@ -279,11 +277,23 @@ watch(play, (val) => {
   gap: var(--space-3);
 }
 
+.play-detail__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
 .play-detail__title {
   margin: 0;
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
+}
+
+.play-detail__subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 .play-detail__actions {
@@ -300,6 +310,21 @@ watch(play, (val) => {
 .play-detail__badges {
   display: flex;
   gap: var(--space-2);
+}
+
+.play-detail__author {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.play-detail__author a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.play-detail__author a:hover {
+  text-decoration: underline;
 }
 
 .play-detail__time {
@@ -345,34 +370,19 @@ watch(play, (val) => {
 }
 
 .play-detail__player {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
   background-color: var(--color-surface-raised);
   border-radius: var(--radius-md);
 }
 
-.play-detail__player-color {
-  width: 1rem;
-  height: 1rem;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-}
-
-.play-detail__player-name {
-  flex: 1;
-  font-weight: var(--font-weight-medium);
-}
-
-.play-detail__player-score {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.play-detail__edit-form {
+.play-detail__confirm {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+}
+
+.play-detail__confirm-actions {
+  display: flex;
+  gap: var(--space-3);
 }
 </style>

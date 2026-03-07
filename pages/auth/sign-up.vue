@@ -16,7 +16,6 @@ const password = ref('')
 const confirmPassword = ref('')
 const errors = reactive({ name: '', email: '', password: '', confirmPassword: '', form: '' })
 const isLoading = ref(false)
-const successMessage = ref('')
 
 function validate(): boolean {
   errors.email = validateEmail(email.value) ?? ''
@@ -41,12 +40,12 @@ async function handleSubmit() {
   isLoading.value = true
   errors.form = ''
   try {
-    const result = await signUp({
+    await signUp({
       email: email.value,
       password: password.value,
       name: name.value || undefined,
     })
-    successMessage.value = result.message ?? 'Check your email to confirm registration'
+    await navigateTo('/auth/confirm')
   }
   catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Registration failed. Please try again.'
@@ -65,104 +64,94 @@ async function handleSubmit() {
     </h1>
 
     <div
-      v-if="successMessage"
-      class="sign-up__success"
-      role="status"
+      v-if="errors.form"
+      class="sign-up__error"
+      role="alert"
     >
-      {{ successMessage }}
+      {{ errors.form }}
     </div>
 
-    <template v-else>
-      <div
-        v-if="errors.form"
-        class="sign-up__error"
-        role="alert"
+    <form
+      class="sign-up__form"
+      novalidate
+      @submit.prevent="handleSubmit"
+    >
+      <UiFormField
+        label="Name"
+        field-id="sign-up-name"
+        :error="errors.name"
       >
-        {{ errors.form }}
-      </div>
+        <UiInput
+          id="sign-up-name"
+          v-model="name"
+          type="text"
+          placeholder="Your name (optional)"
+          :error="!!errors.name"
+          autocomplete="name"
+        />
+      </UiFormField>
 
-      <form
-        class="sign-up__form"
-        novalidate
-        @submit.prevent="handleSubmit"
+      <UiFormField
+        label="Email"
+        field-id="sign-up-email"
+        :error="errors.email"
+        required
       >
-        <UiFormField
-          label="Name"
-          field-id="sign-up-name"
-          :error="errors.name"
-        >
-          <UiInput
-            id="sign-up-name"
-            v-model="name"
-            type="text"
-            placeholder="Your name (optional)"
-            :error="!!errors.name"
-            autocomplete="name"
-          />
-        </UiFormField>
+        <UiInput
+          id="sign-up-email"
+          v-model="email"
+          type="email"
+          placeholder="you@example.com"
+          :error="!!errors.email"
+          :aria-describedby="errors.email ? 'sign-up-email-error' : undefined"
+          autocomplete="email"
+        />
+      </UiFormField>
 
-        <UiFormField
-          label="Email"
-          field-id="sign-up-email"
-          :error="errors.email"
-          required
-        >
-          <UiInput
-            id="sign-up-email"
-            v-model="email"
-            type="email"
-            placeholder="you@example.com"
-            :error="!!errors.email"
-            :aria-describedby="errors.email ? 'sign-up-email-error' : undefined"
-            autocomplete="email"
-          />
-        </UiFormField>
+      <UiFormField
+        label="Password"
+        field-id="sign-up-password"
+        :error="errors.password"
+        required
+      >
+        <UiInput
+          id="sign-up-password"
+          v-model="password"
+          type="password"
+          placeholder="At least 8 characters"
+          :error="!!errors.password"
+          :aria-describedby="errors.password ? 'sign-up-password-error' : undefined"
+          autocomplete="new-password"
+        />
+      </UiFormField>
 
-        <UiFormField
-          label="Password"
-          field-id="sign-up-password"
-          :error="errors.password"
-          required
-        >
-          <UiInput
-            id="sign-up-password"
-            v-model="password"
-            type="password"
-            placeholder="At least 8 characters"
-            :error="!!errors.password"
-            :aria-describedby="errors.password ? 'sign-up-password-error' : undefined"
-            autocomplete="new-password"
-          />
-        </UiFormField>
+      <UiFormField
+        label="Confirm Password"
+        field-id="sign-up-confirm-password"
+        :error="errors.confirmPassword"
+        required
+      >
+        <UiInput
+          id="sign-up-confirm-password"
+          v-model="confirmPassword"
+          type="password"
+          placeholder="Repeat your password"
+          :error="!!errors.confirmPassword"
+          :aria-describedby="errors.confirmPassword ? 'sign-up-confirm-password-error' : undefined"
+          autocomplete="new-password"
+        />
+      </UiFormField>
 
-        <UiFormField
-          label="Confirm Password"
-          field-id="sign-up-confirm-password"
-          :error="errors.confirmPassword"
-          required
-        >
-          <UiInput
-            id="sign-up-confirm-password"
-            v-model="confirmPassword"
-            type="password"
-            placeholder="Repeat your password"
-            :error="!!errors.confirmPassword"
-            :aria-describedby="errors.confirmPassword ? 'sign-up-confirm-password-error' : undefined"
-            autocomplete="new-password"
-          />
-        </UiFormField>
-
-        <UiButton
-          type="submit"
-          variant="primary"
-          size="lg"
-          :loading="isLoading"
-          class="sign-up__submit"
-        >
-          Sign Up
-        </UiButton>
-      </form>
-    </template>
+      <UiButton
+        type="submit"
+        variant="primary"
+        size="lg"
+        :loading="isLoading"
+        class="sign-up__submit"
+      >
+        Sign Up
+      </UiButton>
+    </form>
 
     <p class="sign-up__footer">
       Already have an account?
@@ -179,16 +168,6 @@ async function handleSubmit() {
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin: 0 0 var(--space-6);
-  text-align: center;
-}
-
-.sign-up__success {
-  padding: var(--space-4);
-  font-size: var(--font-size-md);
-  color: var(--color-text-primary);
-  background-color: var(--color-surface-sunken);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   text-align: center;
 }
 

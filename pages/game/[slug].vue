@@ -11,8 +11,6 @@ if (!game.value) {
 useHead({
   title: `4Record > Game > ${game.value?.name}`,
 })
-
-definePageMeta({ layout: 'games' })
 </script>
 
 <template>

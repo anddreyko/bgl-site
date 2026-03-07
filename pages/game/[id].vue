@@ -9,7 +9,7 @@
     </NuxtLink>
 
     <div
-      v-if="pending"
+      v-if="pending || statsLoading"
       class="game-detail__loading"
       role="status"
       aria-live="polite"
@@ -32,9 +32,10 @@
     </div>
 
     <template v-else-if="game">
-      <div class="game-detail__card">
-        <GameCard :game="game" />
-      </div>
+      <GameHero
+        :game="game"
+        :stats="stats"
+      />
 
       <section
         v-if="game.alternativeNames?.length"
@@ -58,74 +59,80 @@
         <h3 class="game-detail__section-title">Family</h3>
         <p>{{ game.family }}</p>
       </section>
+
+      <GamePlaysTable
+        v-if="stats.plays.length > 0"
+        :plays="stats.plays"
+      />
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Game } from '~/types'
-import GameCard from '~/components/GameCard/index.vue'
+import GameHero from '~/components/GameHero/index.vue'
+import GamePlaysTable from '~/components/GamePlaysTable/index.vue'
 
 const route = useRoute()
 const gameId = computed(() => String(route.params.id))
 
+const { set: setBreadcrumb, clear: clearBreadcrumb } = useBreadcrumbLabel()
+
 const { pending, data: game, error } = useLazyFetch<Game>(() => `/api/games/${gameId.value}`)
+const { stats, loading: statsLoading, fetchStats } = useGameStats(gameId)
+
+watch(game, (g) => {
+  if (g) {
+    fetchStats()
+    setBreadcrumb(g.name ?? 'Game')
+  }
+})
+
+onUnmounted(() => clearBreadcrumb())
 
 useHead({
   title: computed(() => `4Record > ${game.value?.name ?? 'Game'}`),
 })
-
-definePageMeta({ layout: 'games' })
 </script>
 
 <style scoped>
 .game-detail {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
 }
 
 .game-detail__back {
   display: inline-block;
-  margin-bottom: 1rem;
-  color: var(--color-link, #2563eb);
+  color: var(--color-primary);
   text-decoration: none;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 .game-detail__back:hover {
   text-decoration: underline;
 }
 
-.game-detail__back:focus {
-  outline: 2px solid var(--color-focus, #2563eb);
-  outline-offset: 2px;
-}
-
 .game-detail__loading,
 .game-detail__error {
   text-align: center;
-  padding: 2rem;
-  color: var(--color-text-muted, #666);
+  padding: var(--space-8);
+  color: var(--color-text-secondary);
 }
 
 .game-detail__back-link {
-  color: var(--color-link, #2563eb);
+  color: var(--color-primary);
   text-decoration: underline;
 }
 
-.game-detail__card {
-  margin-bottom: 1.5rem;
-}
-
 .game-detail__section {
-  margin-bottom: 1rem;
+  padding: 0;
 }
 
 .game-detail__section-title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--space-2);
 }
 
 .game-detail__alt-names {
@@ -134,6 +141,6 @@ definePageMeta({ layout: 'games' })
 }
 
 .game-detail__alt-names li {
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--space-1);
 }
 </style>

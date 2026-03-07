@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import UiSpinner from '~/components/UiSpinner/index.vue'
 import UiButton from '~/components/UiButton/index.vue'
 import UiInput from '~/components/UiInput/index.vue'
 import UiFormField from '~/components/UiFormField/index.vue'
@@ -8,60 +7,30 @@ definePageMeta({ layout: 'auth' })
 
 useHead({ title: 'Confirm Email' })
 
-const route = useRoute()
-const urlToken = route.params.token as string
+const code = ref('')
+const status = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
+const errorMessage = ref('')
 
-const manualCode = ref('')
-const manualStatus = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
-const manualError = ref('')
+async function handleSubmit() {
+  const token = code.value.trim()
+  if (!token) return
 
-type ConfirmResult = { ok: boolean }
-
-const { error, status: fetchStatus } = await useAsyncData<ConfirmResult>(
-  `confirm-${urlToken}`,
-  () => $fetch<ConfirmResult>(`/api/auth/confirm/${urlToken}`),
-  { server: false },
-)
-
-const status = computed(() => {
-  if (manualStatus.value !== 'idle') return manualStatus.value
-  if (fetchStatus.value === 'pending' || fetchStatus.value === 'idle') return 'loading'
-  if (error.value) return 'error'
-  return 'success'
-})
-
-const errorMessage = computed(() => {
-  if (manualError.value) return manualError.value
-  if (!error.value) return ''
-  return error.value.message || 'Confirmation failed. The code may be expired or invalid.'
-})
-
-watch(status, async (val) => {
-  if (val === 'success') {
-    await navigateTo('/auth/sign-in')
-  }
-}, { immediate: true })
-
-async function handleManualSubmit() {
-  const code = manualCode.value.trim()
-  if (!code) return
-
-  manualStatus.value = 'loading'
-  manualError.value = ''
+  status.value = 'loading'
+  errorMessage.value = ''
 
   try {
-    await $fetch<ConfirmResult>('/api/auth/confirm', {
+    await $fetch<{ ok: boolean }>('/api/auth/confirm', {
       method: 'POST',
-      body: { token: code },
+      body: { token },
     })
 
-    manualStatus.value = 'success'
+    status.value = 'success'
     await navigateTo('/auth/sign-in')
   }
-  catch (err: unknown) {
-    manualStatus.value = 'error'
-    const message = err instanceof Error ? err.message : ''
-    manualError.value = message || 'Confirmation failed. The code may be expired or invalid.'
+  catch (error: unknown) {
+    status.value = 'error'
+    const message = error instanceof Error ? error.message : ''
+    errorMessage.value = message || 'Confirmation failed. The code may be expired or invalid.'
   }
 }
 </script>
@@ -69,21 +38,15 @@ async function handleManualSubmit() {
 <template>
   <div class="confirm">
     <h1 class="confirm__title">
-      Email Confirmation
+      Confirm Your Email
     </h1>
 
-    <div
-      v-if="status === 'loading'"
-      class="confirm__loading"
-    >
-      <UiSpinner size="lg" />
-      <p class="confirm__text">
-        Confirming your email...
-      </p>
-    </div>
+    <p class="confirm__description">
+      We sent a confirmation code to your email. Enter it below to verify your account.
+    </p>
 
     <div
-      v-else-if="status === 'success'"
+      v-if="status === 'success'"
       class="confirm__result"
       role="status"
     >
@@ -94,28 +57,25 @@ async function handleManualSubmit() {
 
     <template v-else>
       <div
-        v-if="errorMessage"
+        v-if="status === 'error'"
         class="confirm__error"
         role="alert"
       >
         {{ errorMessage }}
       </div>
 
-      <p class="confirm__hint">
-        You can also enter the confirmation code manually:
-      </p>
-
       <form
         class="confirm__form"
-        @submit.prevent="handleManualSubmit"
+        @submit.prevent="handleSubmit"
       >
         <UiFormField
           label="Confirmation code"
           field-id="confirm-code"
+          required
         >
           <UiInput
             id="confirm-code"
-            v-model="manualCode"
+            v-model="code"
             placeholder="Enter the code from your email"
             autocomplete="one-time-code"
           />
@@ -125,7 +85,7 @@ async function handleManualSubmit() {
           type="submit"
           variant="primary"
           size="lg"
-          :loading="manualStatus === 'loading'"
+          :loading="status === 'loading'"
           class="confirm__submit"
         >
           Confirm
@@ -146,16 +106,15 @@ async function handleManualSubmit() {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin: 0 0 var(--space-6);
+  margin: 0 0 var(--space-2);
   text-align: center;
 }
 
-.confirm__loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-6) 0;
+.confirm__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin: 0 0 var(--space-6);
 }
 
 .confirm__result {
@@ -186,13 +145,6 @@ async function handleManualSubmit() {
   border: 1px solid var(--color-danger);
   border-radius: var(--radius-md);
   text-align: center;
-}
-
-.confirm__hint {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  text-align: center;
-  margin: 0 0 var(--space-2);
 }
 
 .confirm__form {

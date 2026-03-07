@@ -4,7 +4,7 @@
       <h2 class="plays-page__title">Plays</h2>
       <UiButton
         variant="record"
-        @click="overlayOpen = true"
+        @click="openRecord"
       >
         New Play
       </UiButton>
@@ -38,6 +38,7 @@
         v-for="play in plays"
         :key="play.id"
         :play="play"
+
         @click="navigateTo(`/plays/${play.id}`)"
       />
     </div>
@@ -49,70 +50,28 @@
       :size="pageSize"
       @update:page="onPageChange"
     />
-
-    <UiOverlay
-      :open="overlayOpen"
-      title="New Play"
-      @update:open="overlayOpen = $event"
-    >
-      <PlayForm
-        :mates="mates"
-        @submit="onCreatePlay"
-      />
-    </UiOverlay>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import type { PlayCreatePayload, Mate, PaginatedResponse } from '~/types'
 import PlayCard from '~/components/PlayCard/index.vue'
-import PlayForm from '~/components/PlayForm/index.vue'
 import UiButton from '~/components/UiButton/index.vue'
 import UiSpinner from '~/components/UiSpinner/index.vue'
 import UiPagination from '~/components/UiPagination/index.vue'
-import UiOverlay from '~/components/UiOverlay/index.vue'
 
 definePageMeta({ middleware: 'auth' })
 
 useHead({ title: '4Record > Plays' })
 
 const { plays, total, currentPage, pageSize, loading, error, fetchPlays } = usePlays()
-const { startPlay } = useActivePlay()
-
-const overlayOpen = ref(false)
-const mates = ref<Mate[]>([])
-
-async function loadMates() {
-  try {
-    const data = await $fetch<PaginatedResponse<Mate>>('/api/mates', {
-      query: { page: 1, size: 100 },
-    })
-    mates.value = data.items
-  }
-  catch {
-    mates.value = []
-  }
-}
+const { open: openRecord } = useRecordDialog()
 
 async function onPageChange(page: number) {
   await fetchPlays({ page })
 }
 
-async function onCreatePlay(payload: PlayCreatePayload) {
-  try {
-    await startPlay(payload)
-    overlayOpen.value = false
-    await fetchPlays({ page: 1 })
-  }
-  catch {
-    // Error handling is managed by composable
-  }
-}
-
 onMounted(async () => {
   await fetchPlays()
-  await loadMates()
 })
 </script>
 

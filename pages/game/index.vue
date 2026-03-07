@@ -52,7 +52,7 @@
     </div>
 
     <div
-      v-else-if="games.length === 0 && searchQuery.length >= 3"
+      v-else-if="hasSearched && games.length === 0"
       class="game-catalog__empty"
       role="status"
     >
@@ -60,7 +60,7 @@
     </div>
 
     <div
-      v-else
+      v-else-if="games.length > 0"
       class="game-catalog__grid"
       role="list"
     >
@@ -116,10 +116,9 @@ useHead({
   title: '4Record > Game Catalog',
 })
 
-definePageMeta({ layout: 'games' })
-
 const {
   searchQuery,
+  hasSearched,
   games,
   totalPages,
   currentPage,
@@ -131,12 +130,6 @@ const {
 </script>
 
 <style scoped>
-.game-catalog {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
 .game-catalog__title {
   font-size: 1.5rem;
   font-weight: 700;
