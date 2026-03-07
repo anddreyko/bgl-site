@@ -2,10 +2,7 @@ export default defineNuxtPlugin(async () => {
   const { user } = useAuth()
   const requestFetch = useRequestFetch()
   try {
-    const me = await requestFetch<import('~/types').User>('/api/user/me')
-    if (me?.id) {
-      user.value = await requestFetch<import('~/types').User>(`/api/user/${me.id}`)
-    }
+    user.value = await requestFetch<import('~/types').User>('/api/user/me')
   }
   catch {
     user.value = null

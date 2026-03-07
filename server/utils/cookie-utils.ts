@@ -33,14 +33,14 @@ export function setAuthCookies(event: H3Event, tokens: TokenData): void {
     httpOnly: true,
     secure: isProduction,
     sameSite: 'lax',
-    path: '/api/auth/',
+    path: '/api/',
     maxAge: refreshMaxAge,
   })
 }
 
 export function clearAuthCookies(event: H3Event): void {
   deleteCookie(event, ACCESS_TOKEN, { path: '/' })
-  deleteCookie(event, REFRESH_TOKEN, { path: '/api/auth/' })
+  deleteCookie(event, REFRESH_TOKEN, { path: '/api/' })
 }
 
 export function getAccessToken(event: H3Event): string | undefined {

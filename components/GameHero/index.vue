@@ -46,6 +46,12 @@
             <span class="game-hero__stat-label">win rate</span>
           </div>
         </div>
+        <p
+          v-if="stats?.isApproximate"
+          class="game-hero__approx"
+        >
+          Based on last 100 plays
+        </p>
       </div>
     </div>
   </section>
@@ -181,6 +187,12 @@ const formattedTime = computed(() => {
   opacity: 0.7;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.game-hero__approx {
+  font-size: var(--font-size-xs);
+  opacity: 0.7;
+  margin: var(--space-1) 0 0;
 }
 
 @media (width <= 640px) {

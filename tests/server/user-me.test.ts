@@ -9,6 +9,13 @@ vi.mock('h3', async (importOriginal) => {
   }
 })
 
+const mockApiFetch = vi.fn()
+vi.mock('~/server/utils/api-client', () => ({
+  createApiClient: () => mockApiFetch,
+  unwrap: (res: { data: unknown }) => res.data,
+  handleBackendError: (err: unknown) => { throw err },
+}))
+
 function makeToken(payload: Record<string, unknown>): string {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256' })).toString('base64url')
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url')
@@ -18,41 +25,21 @@ function makeToken(payload: Record<string, unknown>): string {
 describe('server/api/user/me.get', () => {
   beforeEach(() => {
     mockGetCookie.mockReset()
+    mockApiFetch.mockReset()
   })
 
-  it('returns user data from JWT payload', async () => {
+  it('returns full user profile from backend', async () => {
     const token = makeToken({ sub: 'user-42', email: 'test@example.com', name: 'Test' })
     mockGetCookie.mockReturnValue(token)
+    mockApiFetch.mockResolvedValue({ data: { id: 'user-42', email: 'test@example.com', name: 'Test' } })
 
     const { default: handler } = await import('~/server/api/user/me.get')
     const event = { method: 'GET', node: { req: { method: 'GET', headers: {} } } } as never
 
     const result = await handler(event)
 
-    expect(result).toEqual({
-      id: 'user-42',
-      sub: 'user-42',
-      email: 'test@example.com',
-      name: 'Test',
-    })
-  })
-
-  it('converts snake_case JWT claims to camelCase', async () => {
-    const token = makeToken({ sub: 'user-42', email: 'a@b.com', is_active: true, created_at: '2024-01-01' })
-    mockGetCookie.mockReturnValue(token)
-
-    const { default: handler } = await import('~/server/api/user/me.get')
-    const event = { method: 'GET', node: { req: { method: 'GET', headers: {} } } } as never
-
-    const result = await handler(event)
-
-    expect(result).toEqual({
-      id: 'user-42',
-      sub: 'user-42',
-      email: 'a@b.com',
-      isActive: true,
-      createdAt: '2024-01-01',
-    })
+    expect(result).toEqual({ id: 'user-42', email: 'test@example.com', name: 'Test' })
+    expect(mockApiFetch).toHaveBeenCalledWith('/v1/user/user-42')
   })
 
   it('throws 401 when no access_token cookie', async () => {

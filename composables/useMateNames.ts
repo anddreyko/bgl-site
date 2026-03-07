@@ -4,6 +4,7 @@ export function useMateNames() {
   const { data } = useAsyncData<{ items: Mate[] }>(
     'mate-names-global',
     () => $fetch<{ items: Mate[] }>('/api/mates', { query: { size: 100 } }),
+    { server: false },
   )
 
   const mateNames = computed(() => {

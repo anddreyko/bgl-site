@@ -17,6 +17,10 @@ export function createApiClient(event: H3Event) {
       ? { Authorization: `Bearer ${accessToken}` }
       : {},
     onRequest({ options }) {
+      const method = (options.method ?? 'GET').toString().toUpperCase()
+      if (method !== 'GET' && method !== 'HEAD') {
+        options.retry = 0
+      }
       if (options.body && typeof options.body === 'object') {
         options.body = camelToSnake(options.body)
       }

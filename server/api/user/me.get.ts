@@ -1,8 +1,9 @@
 import { defineEventHandler, getCookie, createError } from 'h3'
+import type { ApiResponse, User } from '~/types'
 import { decodeJwtPayload } from '~/server/utils/jwt'
-import { snakeToCamel } from '~/server/utils/case-convert'
+import { createApiClient, handleBackendError, unwrap } from '~/server/utils/api-client'
 
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
   const accessToken = getCookie(event, 'access_token')
   if (!accessToken) {
     throw createError({ statusCode: 401, message: 'Not authenticated' })
@@ -13,8 +14,13 @@ export default defineEventHandler((event) => {
     throw createError({ statusCode: 401, message: 'Invalid token: missing sub' })
   }
 
-  return snakeToCamel({
-    id: payload.sub,
-    ...payload,
-  })
+  const api = createApiClient(event)
+
+  try {
+    const response = await api<ApiResponse<User>>(`/v1/user/${encodeURIComponent(payload.sub)}`)
+    return unwrap(response)
+  }
+  catch (err) {
+    handleBackendError(err)
+  }
 })

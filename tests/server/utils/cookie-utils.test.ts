@@ -105,7 +105,7 @@ describe('cookie-utils', () => {
 
       expect(mockDeleteCookie).toHaveBeenCalledTimes(2)
       expect(mockDeleteCookie).toHaveBeenCalledWith(fakeEvent, 'access_token', { path: '/' })
-      expect(mockDeleteCookie).toHaveBeenCalledWith(fakeEvent, 'refresh_token', { path: '/api/auth/' })
+      expect(mockDeleteCookie).toHaveBeenCalledWith(fakeEvent, 'refresh_token', { path: '/api/' })
     })
   })
 

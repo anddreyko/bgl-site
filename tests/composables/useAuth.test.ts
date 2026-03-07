@@ -27,8 +27,7 @@ describe('useAuth', () => {
       const fullUser = { id: '1', email: 'test@test.com', name: 'Test', isActive: true, createdAt: '2024-01-01' }
       mockFetch
         .mockResolvedValueOnce({ ok: true }) // sign-in
-        .mockResolvedValueOnce({ id: '1' }) // user/me
-        .mockResolvedValueOnce(fullUser) // user/1
+        .mockResolvedValueOnce(fullUser) // user/me (now returns full profile)
 
       const { signIn, user } = useAuth()
       await signIn({ email: 'test@test.com', password: 'pass' })
@@ -86,9 +85,7 @@ describe('useAuth', () => {
   describe('fetchCurrentUser', () => {
     it('sets user on success', async () => {
       const fullUser = { id: '1', email: 'test@test.com', name: 'Test', isActive: true, createdAt: '2024-01-01' }
-      mockFetch
-        .mockResolvedValueOnce({ id: '1' }) // user/me
-        .mockResolvedValueOnce(fullUser) // user/1
+      mockFetch.mockResolvedValueOnce(fullUser) // user/me now returns full profile
 
       const { fetchCurrentUser, user } = useAuth()
       await fetchCurrentUser()

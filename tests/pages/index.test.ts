@@ -4,7 +4,6 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 
 const mockUser = ref<{ name: string } | null>(null)
 const mockActivePlay = ref<unknown>(null)
-const mockCheckActivePlay = vi.fn()
 const mockOpenRecord = vi.fn()
 const mockFetch = vi.fn()
 
@@ -18,7 +17,6 @@ vi.mock('~/composables/useAuth', () => ({
 vi.mock('~/composables/useActivePlay', () => ({
   useActivePlay: () => ({
     activePlay: mockActivePlay,
-    checkActivePlay: mockCheckActivePlay,
   }),
 }))
 
@@ -51,7 +49,6 @@ describe('pages/index.vue', () => {
   beforeEach(() => {
     mockUser.value = null
     mockActivePlay.value = null
-    mockCheckActivePlay.mockClear()
     mockOpenRecord.mockClear()
     mockFetch.mockResolvedValue({ items: [], total: 0, page: 1, size: 5 })
   })
@@ -87,15 +84,22 @@ describe('pages/index.vue', () => {
     expect(wrapper.text()).toContain('Welcome back, Alice')
   })
 
-  it('shows active play section when play is active', async () => {
-    mockUser.value = { name: 'Alice' }
-    mockActivePlay.value = {
+  it('shows active play section when active play is first item', async () => {
+    const activeDraft = {
       id: 'play-1',
       status: 'draft',
       visibility: 'private',
       startedAt: new Date().toISOString(),
       players: [],
     }
+    mockUser.value = { name: 'Alice' }
+    mockFetch.mockResolvedValue({
+      items: [activeDraft],
+      total: 1,
+      page: 1,
+      size: 5,
+    })
+    mockActivePlay.value = activeDraft
     const wrapper = await mountPage()
     expect(wrapper.find('.home-page__active').exists()).toBe(true)
   })

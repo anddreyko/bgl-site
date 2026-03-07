@@ -84,27 +84,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import type { Play, PaginatedResponse } from '~/types'
 import PlayCard from '~/components/PlayCard/index.vue'
 import UiButton from '~/components/UiButton/index.vue'
 
 const { user } = useAuth()
-const { activePlay, checkActivePlay } = useActivePlay()
+const { activePlay } = useActivePlay()
 const { open: openRecord } = useRecordDialog()
 
 const recentPlays = ref<Play[]>([])
 
 onMounted(async () => {
   if (!user.value) return
-  await checkActivePlay()
   try {
     const data = await $fetch<PaginatedResponse<Play>>('/api/plays', {
       query: { page: 1, size: 5 },
     })
-    recentPlays.value = data.items
+    const items = data.items
+    const first = items[0]
+    if (first && !first.finishedAt && first.status === 'draft') {
+      activePlay.value = first
+      recentPlays.value = items.slice(1)
+    }
+    else {
+      activePlay.value = null
+      recentPlays.value = items
+    }
   }
   catch {
+    activePlay.value = null
     recentPlays.value = []
   }
 })

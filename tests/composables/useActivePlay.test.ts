@@ -78,7 +78,7 @@ describe('useActivePlay', () => {
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it('checks for active play from recent plays', async () => {
+  it('checks for active play — first item is draft without finishedAt', async () => {
     const activeDraft = {
       id: 'play-2',
       status: 'draft',
@@ -87,23 +87,34 @@ describe('useActivePlay', () => {
       players: [],
     }
     mockFetch.mockResolvedValueOnce({
-      items: [
-        { id: 'play-1', status: 'published', finishedAt: '2024-01-01T01:00:00Z', startedAt: '2024-01-01T00:00:00Z', players: [] },
-        activeDraft,
-      ],
+      items: [activeDraft],
     })
 
     const { activePlay, checkActivePlay } = useActivePlay()
     await checkActivePlay()
 
     expect(activePlay.value).toEqual(activeDraft)
+    expect(mockFetch).toHaveBeenCalledWith('/api/plays', {
+      query: { page: 1, size: 1 },
+    })
   })
 
-  it('sets activePlay to null when no active play found', async () => {
+  it('sets activePlay to null when first item is finished', async () => {
     mockFetch.mockResolvedValueOnce({
       items: [
         { id: 'play-1', status: 'published', finishedAt: '2024-01-01T01:00:00Z', startedAt: '2024-01-01T00:00:00Z', players: [] },
       ],
+    })
+
+    const { activePlay, checkActivePlay } = useActivePlay()
+    await checkActivePlay()
+
+    expect(activePlay.value).toBeNull()
+  })
+
+  it('sets activePlay to null when no plays exist', async () => {
+    mockFetch.mockResolvedValueOnce({
+      items: [],
     })
 
     const { activePlay, checkActivePlay } = useActivePlay()

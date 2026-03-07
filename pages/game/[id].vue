@@ -79,11 +79,10 @@ const gameId = computed(() => String(route.params.id))
 const { set: setBreadcrumb, clear: clearBreadcrumb } = useBreadcrumbLabel()
 
 const { pending, data: game, error } = useLazyFetch<Game>(() => `/api/games/${gameId.value}`)
-const { stats, loading: statsLoading, fetchStats } = useGameStats(gameId)
+const { stats, loading: statsLoading } = useGameStats(gameId)
 
 watch(game, (g) => {
   if (g) {
-    fetchStats()
     setBreadcrumb(g.name ?? 'Game')
   }
 })

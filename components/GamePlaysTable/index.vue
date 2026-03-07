@@ -29,9 +29,9 @@
             <td>{{ formatDuration(play) }}</td>
             <td>{{ play.players.length }}</td>
             <td>
-              <template v-if="getWinners(play).length > 0">
+              <template v-if="play.players.some(p => p.isWinner)">
                 <PlayerBadge
-                  v-for="winner in getWinners(play)"
+                  v-for="winner in play.players.filter(p => p.isWinner)"
                   :key="winner.id"
                   :player="winner"
                 />
@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Play, Player } from '~/types'
+import type { Play } from '~/types'
 import PlayerBadge from '~/components/PlayerBadge/index.vue'
 
 defineProps<{
@@ -66,10 +66,6 @@ function formatDuration(play: Play): string {
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
   return m > 0 ? `${h}h ${m}m` : `${h}h`
-}
-
-function getWinners(play: Play): Player[] {
-  return play.players.filter(p => p.isWinner)
 }
 </script>
 

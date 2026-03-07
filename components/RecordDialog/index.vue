@@ -39,7 +39,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
 import {
   DialogRoot,
   DialogPortal,
@@ -48,27 +47,12 @@ import {
   DialogTitle,
   DialogClose,
 } from 'radix-vue'
-import type { Mate, PlayCreatePayload, PaginatedResponse } from '~/types'
+import type { PlayCreatePayload } from '~/types'
 import PlayForm from '~/components/PlayForm/index.vue'
 
 const { isOpen, open, close } = useRecordDialog()
 const { startPlay } = useActivePlay()
-
-const mates = ref<Mate[]>([])
-
-watch(isOpen, async (opened) => {
-  if (opened) {
-    try {
-      const data = await $fetch<PaginatedResponse<Mate>>('/api/mates', {
-        query: { page: 1, size: 100 },
-      })
-      mates.value = data.items
-    }
-    catch {
-      mates.value = []
-    }
-  }
-})
+const { mates } = useMateNames()
 
 async function onSubmit(payload: PlayCreatePayload) {
   try {

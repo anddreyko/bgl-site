@@ -9,7 +9,15 @@ const param = computed(() => String(route.params.id))
 
 const { set: setBreadcrumb, clear: clearBreadcrumb } = useBreadcrumbLabel()
 
-const { data: user, status, error } = await useFetch<User>(() => `/api/user/${param.value}`)
+const [{ data: user, status, error }, { data: playsData, status: playsStatus }] = await Promise.all([
+  useFetch<User>(() => `/api/user/${param.value}`),
+  useAsyncData(
+    `user-plays-${param.value}`,
+    () => $fetch<PaginatedResponse<Play>>('/api/plays', {
+      query: { page: 1, size: 20, authorId: param.value },
+    }).then(data => data.items),
+  ),
+])
 
 watch(user, (u) => {
   if (u) setBreadcrumb(u.name ?? 'User')
@@ -25,20 +33,6 @@ const memberSince = computed(() => {
     day: 'numeric',
   })
 })
-
-const { data: playsData, status: playsStatus } = await useAsyncData(
-  `user-plays-${param.value}`,
-  async () => {
-    if (!user.value) return null
-    const data = await $fetch<PaginatedResponse<Play>>('/api/plays', {
-      query: { page: 1, size: 20, authorId: user.value.id },
-    })
-    return data.items.map(play => ({
-      ...play,
-      author: play.author ?? { id: user.value!.id, name: user.value!.name },
-    }))
-  },
-)
 
 const plays = computed(() => playsData.value ?? [])
 const playsLoading = computed(() => playsStatus.value === 'pending')

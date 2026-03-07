@@ -63,6 +63,6 @@ describe('UserIdPage', () => {
     })
 
     const wrapper = await mountSuspended(UserIdPage)
-    expect(wrapper.find('.public-profile__heading').text()).toBe('Charlie')
+    expect(wrapper.find('.public-profile__name').text()).toBe('Charlie')
   })
 })
