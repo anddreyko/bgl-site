@@ -1,21 +1,21 @@
-import { H3Error } from 'h3'
-import type { ApiResponse } from '~/types'
-import { createApiClient, unwrap } from '~/server/utils/api-client'
+import { handleBackendError } from '~/server/utils/api-client'
+import { getAccessToken } from '~/server/utils/cookie-utils'
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<{ response: string, label?: string }>(event)
-  const api = createApiClient(event)
+  const body = await readBody(event)
+  const { apiHost } = useRuntimeConfig()
+  const accessToken = getAccessToken(event)
 
   try {
-    const response = await api<ApiResponse<unknown>>('/v1/auth/passkey/register/verify', {
+    // Send raw WebAuthn response — do NOT run camelToSnake
+    await $fetch(`${apiHost}/v1/auth/passkey/register/verify`, {
       method: 'POST',
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
       body,
     })
-    unwrap(response)
     return { ok: true }
   }
   catch (err) {
-    if (err instanceof H3Error) throw err
-    throw createError({ statusCode: 502, message: 'Backend unavailable' })
+    handleBackendError(err)
   }
 })

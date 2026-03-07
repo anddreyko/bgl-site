@@ -1,6 +1,6 @@
-import { H3Error, defineEventHandler, getRouterParam, getMethod, readBody, createError } from 'h3'
+import { defineEventHandler, getRouterParam, getMethod, readBody, createError } from 'h3'
 import type { ApiResponse, Mate, MatePayload } from '~/types'
-import { createApiClient, unwrap } from '~/server/utils/api-client'
+import { createApiClient, handleBackendError, unwrap } from '~/server/utils/api-client'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
@@ -32,7 +32,6 @@ export default defineEventHandler(async (event) => {
     return unwrap(response)
   }
   catch (err) {
-    if (err instanceof H3Error) throw err
-    throw createError({ statusCode: 502, message: 'Backend unavailable' })
+    handleBackendError(err)
   }
 })

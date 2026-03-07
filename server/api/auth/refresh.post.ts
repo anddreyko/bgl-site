@@ -1,6 +1,7 @@
 import { H3Error } from 'h3'
 import type { ApiResponse } from '~/types'
 import { getRefreshToken, setAuthCookies, clearAuthCookies } from '~/server/utils/cookie-utils'
+import { snakeToCamel } from '~/server/utils/case-convert'
 
 export default defineEventHandler(async (event) => {
   const refreshToken = getRefreshToken(event)
@@ -11,27 +12,14 @@ export default defineEventHandler(async (event) => {
 
   try {
     const { apiHost } = useRuntimeConfig()
-    const response = await $fetch<ApiResponse<{
-      access_token: string
-      refresh_token: string
-      expires_in: number
-    }>>('/v1/auth/refresh', {
+    const response = await $fetch<ApiResponse<Record<string, unknown>>>('/v1/auth/refresh', {
       baseURL: apiHost,
       method: 'POST',
-      body: { refreshToken },
+      body: { refresh_token: refreshToken },
     })
 
-    if (response.code !== 0) {
-      clearAuthCookies(event)
-      throw createError({ statusCode: 401, message: 'Refresh failed' })
-    }
-
-    const data = response.data
-    setAuthCookies(event, {
-      accessToken: data.access_token,
-      refreshToken: data.refresh_token,
-      expiresIn: data.expires_in,
-    })
+    const data = snakeToCamel<{ accessToken: string, refreshToken: string }>(response.data)
+    setAuthCookies(event, data)
 
     return { ok: true }
   }

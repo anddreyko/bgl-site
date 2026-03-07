@@ -1,28 +1,20 @@
-import { H3Error, defineEventHandler, getCookie, createError } from 'h3'
-import type { ApiResponse, User } from '~/types'
-import { createApiClient, unwrap } from '~/server/utils/api-client'
+import { defineEventHandler, getCookie, createError } from 'h3'
 import { decodeJwtPayload } from '~/server/utils/jwt'
+import { snakeToCamel } from '~/server/utils/case-convert'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler((event) => {
   const accessToken = getCookie(event, 'access_token')
   if (!accessToken) {
     throw createError({ statusCode: 401, message: 'Not authenticated' })
   }
 
   const payload = decodeJwtPayload(accessToken)
-  const userId = payload.sub
-  if (!userId) {
+  if (!payload.sub) {
     throw createError({ statusCode: 401, message: 'Invalid token: missing sub' })
   }
 
-  const api = createApiClient(event)
-
-  try {
-    const response = await api<ApiResponse<User>>(`/v1/user/${userId}`)
-    return unwrap(response)
-  }
-  catch (err) {
-    if (err instanceof H3Error) throw err
-    throw createError({ statusCode: 502, message: 'Backend unavailable' })
-  }
+  return snakeToCamel({
+    id: payload.sub,
+    ...payload,
+  })
 })

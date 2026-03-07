@@ -1,9 +1,9 @@
-import { H3Error } from 'h3'
 import type { ApiResponse, PaginatedResponse, Game } from '~/types'
-import { createApiClient, unwrap } from '~/server/utils/api-client'
+import { createApiClient, unwrap, handleBackendError } from '~/server/utils/api-client'
 
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event)
+  const raw = getQuery(event)
+  const query = { q: '', ...raw }
   const api = createApiClient(event)
 
   try {
@@ -11,7 +11,6 @@ export default defineEventHandler(async (event) => {
     return unwrap(response)
   }
   catch (err) {
-    if (err instanceof H3Error) throw err
-    throw createError({ statusCode: 502, message: 'Backend unavailable' })
+    handleBackendError(err)
   }
 })

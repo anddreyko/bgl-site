@@ -1,6 +1,6 @@
-import { H3Error, defineEventHandler, getRouterParam, readBody, createError } from 'h3'
+import { defineEventHandler, getRouterParam, readBody, createError } from 'h3'
 import type { ApiResponse, Play } from '~/types'
-import { createApiClient, unwrap } from '~/server/utils/api-client'
+import { createApiClient, handleBackendError, unwrap } from '~/server/utils/api-client'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   const api = createApiClient(event)
 
   try {
-    const body = await readBody<{ finished_at?: string }>(event)
+    const body = await readBody<{ finishedAt?: string }>(event)
     const response = await api<ApiResponse<Play>>(`/v1/plays/sessions/${id}`, {
       method: 'PATCH',
       body,
@@ -19,7 +19,6 @@ export default defineEventHandler(async (event) => {
     return unwrap(response)
   }
   catch (err) {
-    if (err instanceof H3Error) throw err
-    throw createError({ statusCode: 502, message: 'Backend unavailable' })
+    handleBackendError(err)
   }
 })
