@@ -4,15 +4,14 @@ export function useActivePlay() {
   const activePlay = useState<Play | null>('active-play', () => null)
 
   async function startPlay(payload: PlayCreatePayload): Promise<string> {
-    const result = await $fetch<{ session_id: string }>('/api/plays', {
+    const play = await $fetch<Play>('/api/plays', {
       method: 'POST',
       body: payload,
     })
 
-    const play = await $fetch<Play>(`/api/plays/${result.session_id}`)
     activePlay.value = play
 
-    return result.session_id
+    return play.id
   }
 
   async function finishPlay(): Promise<void> {
@@ -20,7 +19,7 @@ export function useActivePlay() {
 
     await $fetch(`/api/plays/${activePlay.value.id}/finish`, {
       method: 'PATCH',
-      body: { finished_at: new Date().toISOString() },
+      body: { finishedAt: new Date().toISOString() },
     })
 
     activePlay.value = null

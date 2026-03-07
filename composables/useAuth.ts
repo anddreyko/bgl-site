@@ -6,7 +6,10 @@ export function useAuth() {
 
   async function fetchCurrentUser(): Promise<void> {
     try {
-      user.value = await $fetch<User>('/api/user/me')
+      const me = await $fetch<User>('/api/user/me')
+      if (me?.id) {
+        user.value = await $fetch<User>(`/api/user/${me.id}`)
+      }
     }
     catch {
       user.value = null
