@@ -10,28 +10,29 @@ const basPlay: Play = {
   startedAt: '2024-01-15T10:00:00Z',
   finishedAt: '2024-01-15T11:30:00Z',
   players: [
-    { id: 'p1', mateId: 'mate-1', score: 42, winner: true },
-    { id: 'p2', mateId: 'mate-2', score: 30, winner: false },
+    { id: 'p1', mateId: 'mate-1', score: 42, isWinner: true },
+    { id: 'p2', mateId: 'mate-2', score: 30, isWinner: false },
   ],
-  includeInStats: true,
 }
 
 describe('PlayCard', () => {
-  it('renders game name from game object', async () => {
-    const play = { ...basPlay, game: { id: 'g1', name: 'Catan' } }
+  it('renders session name as title when present', async () => {
+    const play = { ...basPlay, name: 'Friday night', game: { id: 'g1', name: 'Catan' } }
     const wrapper = await mountSuspended(PlayCard, { props: { play } })
+    expect(wrapper.find('.play-card__name').text()).toBe('Friday night')
     expect(wrapper.find('.play-card__game-name').text()).toBe('Catan')
   })
 
-  it('renders gameName when game object is missing', async () => {
-    const play = { ...basPlay, gameName: 'Ticket to Ride' }
+  it('renders game name as title when no session name', async () => {
+    const play = { ...basPlay, game: { id: 'g1', name: 'Catan' } }
     const wrapper = await mountSuspended(PlayCard, { props: { play } })
-    expect(wrapper.find('.play-card__game-name').text()).toBe('Ticket to Ride')
+    expect(wrapper.find('.play-card__name').text()).toBe('Catan')
+    expect(wrapper.find('.play-card__game-name').exists()).toBe(false)
   })
 
-  it('renders "No game" when neither game nor gameName provided', async () => {
+  it('renders Play #id when neither name nor game provided', async () => {
     const wrapper = await mountSuspended(PlayCard, { props: { play: basPlay } })
-    expect(wrapper.find('.play-card__game-name').text()).toBe('No game')
+    expect(wrapper.find('.play-card__name').text()).toBe(`Play #${basPlay.id.slice(0, 8)}`)
   })
 
   it('renders status badge', async () => {
@@ -56,7 +57,7 @@ describe('PlayCard', () => {
 
   it('renders player score', async () => {
     const wrapper = await mountSuspended(PlayCard, { props: { play: basPlay } })
-    const scores = wrapper.findAll('.play-card__player-score')
+    const scores = wrapper.findAll('.player-badge__score')
     expect(scores[0].text()).toBe('42')
   })
 
@@ -97,7 +98,7 @@ describe('PlayCard', () => {
       players: [{ id: 'p1', mateId: 'mate-1', color: '#ff0000' }],
     }
     const wrapper = await mountSuspended(PlayCard, { props: { play } })
-    const colorDot = wrapper.find('.play-card__player-color')
+    const colorDot = wrapper.find('.player-badge__color')
     expect(colorDot.exists()).toBe(true)
   })
 })

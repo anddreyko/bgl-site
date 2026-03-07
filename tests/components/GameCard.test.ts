@@ -6,7 +6,7 @@ describe('GameCard', () => {
   const baseGame = {
     id: '1',
     name: 'Descent',
-    year: 2012,
+    yearPublished: 2012,
     type: 'Strategy',
     minPlayers: 1,
     maxPlayers: 5,

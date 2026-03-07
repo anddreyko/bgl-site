@@ -4,10 +4,17 @@ import { H3Error } from 'h3'
 const mockFetch = vi.fn()
 const mockUnwrap = vi.fn((r: unknown) => r)
 
-vi.mock('~/server/utils/api-client', () => ({
-  createApiClient: () => mockFetch,
-  unwrap: (r: unknown) => mockUnwrap(r),
-}))
+vi.mock('~/server/utils/api-client', async (importOriginal) => {
+  const h3 = await import('h3')
+  globalThis.H3Error = h3.H3Error
+  globalThis.createError = h3.createError
+  const actual = await importOriginal<typeof import('~/server/utils/api-client')>()
+  return {
+    ...actual,
+    createApiClient: () => mockFetch,
+    unwrap: (r: unknown) => mockUnwrap(r),
+  }
+})
 
 const mockReadBody = vi.fn()
 vi.mock('h3', async (importOriginal) => {

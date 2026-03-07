@@ -7,9 +7,16 @@ vi.mock('~/server/utils/cookie-utils', () => ({
 }))
 
 const mockApi = vi.fn()
-vi.mock('~/server/utils/api-client', () => ({
-  createApiClient: () => mockApi,
-}))
+vi.mock('~/server/utils/api-client', async (importOriginal) => {
+  const h3 = await import('h3')
+  globalThis.H3Error = h3.H3Error
+  globalThis.createError = h3.createError
+  const actual = await importOriginal<typeof import('~/server/utils/api-client')>()
+  return {
+    ...actual,
+    createApiClient: () => mockApi,
+  }
+})
 
 vi.stubGlobal('defineEventHandler', (handler: (...args: unknown[]) => unknown) => handler)
 

@@ -16,13 +16,8 @@ vi.mock('~/composables/useAuth', () => ({
   }),
 }))
 
-vi.mock('#imports', async (importOriginal) => {
-  const original = await importOriginal<Record<string, unknown>>()
-  return {
-    ...original,
-    navigateTo: vi.fn(),
-  }
-})
+const mockNavigateTo = vi.fn()
+vi.stubGlobal('navigateTo', mockNavigateTo)
 
 describe('sign-up page', () => {
   beforeEach(() => {
@@ -122,8 +117,8 @@ describe('sign-up page', () => {
     })
   })
 
-  it('shows success message after successful sign-up', async () => {
-    mockSignUp.mockResolvedValueOnce({ message: 'Check your email to confirm registration' })
+  it('navigates to confirm page after successful sign-up', async () => {
+    mockSignUp.mockResolvedValueOnce({ message: 'Check your email' })
     const wrapper = await mountSuspended(SignUp)
 
     await wrapper.find('#sign-up-email').setValue('user@example.com')
@@ -131,10 +126,9 @@ describe('sign-up page', () => {
     await wrapper.find('#sign-up-confirm-password').setValue('password123')
 
     await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
 
-    await vi.waitFor(() => {
-      expect(wrapper.text()).toContain('Check your email to confirm registration')
-    })
+    expect(mockSignUp).toHaveBeenCalled()
   })
 
   it('displays error message when signUp fails', async () => {

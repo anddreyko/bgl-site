@@ -32,11 +32,8 @@ describe('useActivePlay', () => {
       visibility: 'private',
       startedAt: '2024-01-01T00:00:00Z',
       players: [],
-      includeInStats: true,
     }
-    mockFetch
-      .mockResolvedValueOnce({ session_id: 'play-1' })
-      .mockResolvedValueOnce(mockPlay)
+    mockFetch.mockResolvedValueOnce(mockPlay)
 
     const { activePlay, startPlay } = useActivePlay()
     const id = await startPlay({
@@ -46,6 +43,7 @@ describe('useActivePlay', () => {
 
     expect(id).toBe('play-1')
     expect(activePlay.value).toEqual(mockPlay)
+    expect(mockFetch).toHaveBeenCalledTimes(1)
     expect(mockFetch).toHaveBeenCalledWith('/api/plays', {
       method: 'POST',
       body: { visibility: 'private', players: [] },
@@ -59,7 +57,6 @@ describe('useActivePlay', () => {
       visibility: 'private',
       startedAt: '2024-01-01T00:00:00Z',
       players: [],
-      includeInStats: true,
     }
     stateStore['active-play'] = { value: mockPlay }
     mockFetch.mockResolvedValueOnce({})
@@ -70,7 +67,7 @@ describe('useActivePlay', () => {
     expect(activePlay.value).toBeNull()
     expect(mockFetch).toHaveBeenCalledWith('/api/plays/play-1/finish', {
       method: 'PATCH',
-      body: expect.objectContaining({ finished_at: expect.any(String) }),
+      body: expect.objectContaining({ finishedAt: expect.any(String) }),
     })
   })
 
@@ -88,7 +85,6 @@ describe('useActivePlay', () => {
       visibility: 'private',
       startedAt: '2024-01-01T00:00:00Z',
       players: [],
-      includeInStats: true,
     }
     mockFetch.mockResolvedValueOnce({
       items: [

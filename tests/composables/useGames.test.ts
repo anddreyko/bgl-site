@@ -109,10 +109,16 @@ describe('useGames', () => {
 
   it('should expose pending and error state', async () => {
     const { useGames } = await import('~/composables/useGames')
-    const { pending, error } = useGames()
+    const { pending, error, search } = useGames()
 
     expect(pending.value).toBe(false)
     expect(error.value).toBeNull()
+
+    // Trigger search to set hasSearched = true (isLoading depends on it)
+    search('catan')
+    await nextTick() // flush watcher
+    vi.advanceTimersByTime(300)
+    await nextTick() // flush setTimeout callback
 
     mockPending.value = true
     mockError.value = new Error('Network error')

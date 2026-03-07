@@ -29,6 +29,24 @@ vi.mock('#app/composables/router', async (importOriginal) => {
   }
 })
 
+// Mock useGameStats
+const mockStats = ref({
+  totalPlays: 0,
+  totalTimeMinutes: 0,
+  winRate: 0,
+  plays: [],
+})
+const mockStatsLoading = ref(false)
+const mockFetchStats = vi.fn()
+
+vi.mock('~/composables/useGameStats', () => ({
+  useGameStats: () => ({
+    stats: mockStats,
+    loading: mockStatsLoading,
+    fetchStats: mockFetchStats,
+  }),
+}))
+
 // Stub NuxtLink
 const NuxtLinkStub = defineComponent({
   name: 'NuxtLink',
@@ -38,12 +56,21 @@ const NuxtLinkStub = defineComponent({
   },
 })
 
-// Stub GameCard
-const GameCardStub = defineComponent({
-  name: 'GameCard',
-  props: ['game'],
+// Stub GameHero
+const GameHeroStub = defineComponent({
+  name: 'GameHero',
+  props: ['game', 'stats'],
   setup(props) {
-    return () => h('div', { class: 'game-card-stub' }, props.game?.name)
+    return () => h('div', { class: 'game-hero-stub' }, props.game?.name)
+  },
+})
+
+// Stub GamePlaysTable
+const GamePlaysTableStub = defineComponent({
+  name: 'GamePlaysTable',
+  props: ['plays'],
+  setup() {
+    return () => h('div', { class: 'game-plays-table-stub' })
   },
 })
 
@@ -53,6 +80,7 @@ describe('pages/game/[id].vue', () => {
     mockPending.value = false
     mockError.value = null
     mockRouteParams.id = 'test-game-123'
+    mockFetchStats.mockClear()
   })
 
   async function mountPage() {
@@ -61,7 +89,9 @@ describe('pages/game/[id].vue', () => {
       global: {
         stubs: {
           NuxtLink: NuxtLinkStub,
-          GameCard: GameCardStub,
+          GameHero: GameHeroStub,
+          GameCard: true,
+          GamePlaysTable: GamePlaysTableStub,
         },
       },
     })
@@ -79,18 +109,18 @@ describe('pages/game/[id].vue', () => {
     expect(wrapper.text()).toContain('Failed to load game details')
   })
 
-  it('should render game card when data is loaded', async () => {
+  it('should render game hero when data is loaded', async () => {
     mockGameData.value = {
       id: 'test-game-123',
       bggId: 123,
       name: 'Catan',
       type: 'base',
-      year: 1995,
+      yearPublished: 1995,
     }
     const wrapper = await mountPage()
-    const card = wrapper.find('.game-card-stub')
-    expect(card.exists()).toBe(true)
-    expect(card.text()).toBe('Catan')
+    const hero = wrapper.find('.game-hero-stub')
+    expect(hero.exists()).toBe(true)
+    expect(hero.text()).toBe('Catan')
   })
 
   it('should render back link to catalog', async () => {

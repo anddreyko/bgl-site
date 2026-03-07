@@ -9,12 +9,14 @@ const mockCurrentPage = ref(1)
 const mockPending = ref(false)
 const mockError = ref<unknown>(null)
 const mockSearchQuery = ref('')
+const mockHasSearched = ref(false)
 const mockGoToPage = vi.fn()
 const mockRefresh = vi.fn()
 
 vi.mock('~/composables/useGames', () => ({
   useGames: () => ({
     searchQuery: mockSearchQuery,
+    hasSearched: mockHasSearched,
     games: computed(() => mockGames.value),
     totalPages: computed(() => mockTotalPages.value),
     currentPage: mockCurrentPage,
@@ -46,6 +48,7 @@ describe('pages/game/index.vue', () => {
     mockPending.value = false
     mockError.value = null
     mockSearchQuery.value = ''
+    mockHasSearched.value = false
     mockGoToPage.mockClear()
     mockRefresh.mockClear()
   })
@@ -100,6 +103,7 @@ describe('pages/game/index.vue', () => {
 
   it('should show empty state when no games found', async () => {
     mockSearchQuery.value = 'xyz'
+    mockHasSearched.value = true
     mockGames.value = []
     const wrapper = await mountPage()
     expect(wrapper.text()).toContain('No games found')

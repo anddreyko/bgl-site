@@ -44,7 +44,7 @@ describe('POST /api/auth/refresh', () => {
 
     expect(mockFetch).toHaveBeenCalledWith('/v1/auth/refresh', expect.objectContaining({
       method: 'POST',
-      body: { refreshToken: 'old_refresh' },
+      body: { refresh_token: 'old_refresh' },
     }))
     expect(mockSetAuthCookies).toHaveBeenCalledWith(fakeEvent, {
       accessToken: 'new_at',

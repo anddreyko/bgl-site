@@ -13,16 +13,26 @@ vi.stubGlobal('getCookie', mockGetCookie)
 
 const fakeEvent = {} as H3Event
 
+function makeJwt(payload: Record<string, unknown>): string {
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256' })).toString('base64url')
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url')
+  return `${header}.${body}.fake`
+}
+
 describe('cookie-utils', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   describe('setAuthCookies', () => {
-    it('sets access_token and refresh_token cookies', () => {
+    it('sets access_token and refresh_token cookies with exp from JWT', () => {
+      const refreshExp = Math.floor(Date.now() / 1000) + 7 * 24 * 3600
+      const accessToken = makeJwt({ sub: 'user-1', exp: Math.floor(Date.now() / 1000) + 3600 })
+      const refreshToken = makeJwt({ sub: 'user-1', exp: refreshExp })
+
       setAuthCookies(fakeEvent, {
-        accessToken: 'abc123',
-        refreshToken: 'ref456',
+        accessToken,
+        refreshToken,
         expiresIn: 3600,
       })
 
@@ -31,7 +41,7 @@ describe('cookie-utils', () => {
       expect(mockSetCookie).toHaveBeenCalledWith(
         fakeEvent,
         'access_token',
-        'abc123',
+        accessToken,
         expect.objectContaining({
           httpOnly: true,
           sameSite: 'lax',
@@ -40,33 +50,48 @@ describe('cookie-utils', () => {
         }),
       )
 
-      expect(mockSetCookie).toHaveBeenCalledWith(
-        fakeEvent,
-        'refresh_token',
-        'ref456',
-        expect.objectContaining({
-          httpOnly: true,
-          sameSite: 'lax',
-          path: '/api/auth/',
-          maxAge: 30 * 24 * 3600,
-        }),
+      const refreshCall = mockSetCookie.mock.calls.find(
+        (c: unknown[]) => c[1] === 'refresh_token',
       )
+      expect(refreshCall).toBeTruthy()
+      const refreshMaxAge = refreshCall![3].maxAge as number
+      expect(refreshMaxAge).toBeGreaterThan(6 * 24 * 3600)
+      expect(refreshMaxAge).toBeLessThanOrEqual(7 * 24 * 3600)
+    })
+
+    it('falls back to 30 days when refresh JWT has no exp', () => {
+      const accessToken = makeJwt({ sub: 'user-1' })
+      const refreshToken = makeJwt({ sub: 'user-1' })
+
+      setAuthCookies(fakeEvent, {
+        accessToken,
+        refreshToken,
+        expiresIn: 3600,
+      })
+
+      const refreshCall = mockSetCookie.mock.calls.find(
+        (c: unknown[]) => c[1] === 'refresh_token',
+      )
+      expect(refreshCall![3].maxAge).toBe(30 * 24 * 3600)
     })
 
     it('sets secure flag based on NODE_ENV', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'production'
 
+      const accessToken = makeJwt({ sub: 'user-1' })
+      const refreshToken = makeJwt({ sub: 'user-1' })
+
       setAuthCookies(fakeEvent, {
-        accessToken: 'abc',
-        refreshToken: 'ref',
+        accessToken,
+        refreshToken,
         expiresIn: 3600,
       })
 
       expect(mockSetCookie).toHaveBeenCalledWith(
         fakeEvent,
         'access_token',
-        'abc',
+        accessToken,
         expect.objectContaining({ secure: true }),
       )
 

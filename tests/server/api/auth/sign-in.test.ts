@@ -8,13 +8,20 @@ vi.mock('~/server/utils/cookie-utils', () => ({
 }))
 
 const mockApi = vi.fn()
-vi.mock('~/server/utils/api-client', () => ({
-  createApiClient: () => mockApi,
-  unwrap: (response: { code: number, data: unknown }) => {
-    if (response.code !== 0) throw new Error('API error')
-    return response.data
-  },
-}))
+vi.mock('~/server/utils/api-client', async (importOriginal) => {
+  const h3 = await import('h3')
+  globalThis.H3Error = h3.H3Error
+  globalThis.createError = h3.createError
+  const actual = await importOriginal<typeof import('~/server/utils/api-client')>()
+  return {
+    ...actual,
+    createApiClient: () => mockApi,
+    unwrap: (response: { code: number, data: unknown }) => {
+      if (response.code !== 0) throw new Error('API error')
+      return response.data
+    },
+  }
+})
 
 const mockReadBody = vi.fn()
 vi.stubGlobal('readBody', mockReadBody)
@@ -37,9 +44,9 @@ describe('POST /api/auth/sign-in', () => {
     mockApi.mockResolvedValue({
       code: 0,
       data: {
-        access_token: 'at_abc',
-        refresh_token: 'rt_def',
-        expires_in: 3600,
+        accessToken: 'at_abc',
+        refreshToken: 'rt_def',
+        expiresIn: 3600,
       },
     })
 

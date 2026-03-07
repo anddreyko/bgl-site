@@ -9,7 +9,6 @@ const mockActivePlay: Play = {
   visibility: 'private',
   startedAt: new Date().toISOString(),
   players: [],
-  includeInStats: true,
 }
 
 describe('RecordButton', () => {
