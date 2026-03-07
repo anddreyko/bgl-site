@@ -1,2 +1,8 @@
 @import url('./tokens.css');
 @import url('./reset.css');
+
+/* Radix popper (Select, Combobox) renders via portal to body.
+   Scoped styles don't apply to portaled content. */
+[data-radix-popper-content-wrapper] {
+  z-index: calc(var(--z-overlay) + 10) !important;
+}

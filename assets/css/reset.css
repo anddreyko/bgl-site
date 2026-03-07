@@ -11,6 +11,7 @@ body {
   line-height: var(--line-height-normal);
   color: var(--color-text-primary);
   background-color: var(--color-surface);
+  color-scheme: light dark;
   -webkit-font-smoothing: antialiased;
 }
 

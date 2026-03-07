@@ -20,6 +20,16 @@
   --color-border-focus: #1d4ed8;
   --color-overlay-bg: rgb(17 24 39 / 72%);
 
+  /* Badge */
+  --color-badge-success-bg: #dcfce7;
+  --color-badge-success-text: #15803d;
+  --color-badge-warning-bg: #fef3c7;
+  --color-badge-warning-text: #b45309;
+  --color-badge-danger-bg: #fee2e2;
+  --color-badge-danger-text: #dc2626;
+  --color-badge-info-bg: #dbeafe;
+  --color-badge-info-text: #1d4ed8;
+
   /* Typography */
   --font-family-base: system-ui, -apple-system, 'Segoe UI', helvetica, arial, sans-serif;
   --font-family-mono: ui-monospace, 'Cascadia Code', menlo, monospace;
@@ -67,8 +77,48 @@
   --transition-normal: 250ms ease;
   --transition-slow: 350ms ease;
 
+  /* Avatars */
+  --avatar-sm: 1.5rem;
+  --avatar-md: 2rem;
+  --avatar-lg: 3rem;
+
   /* Z-index */
   --z-dialog: 1000;
   --z-overlay: 1100;
   --z-fab: 900;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-record: #ef4444;
+    --color-record-hover: #f05555;
+    --color-record-active: #e84444;
+    --color-record-pulse: #fca5a5;
+    --color-primary: #60a5fa;
+    --color-primary-hover: #7ab8fb;
+    --color-success: #22c55e;
+    --color-warning: #f59e0b;
+    --color-danger: #f87171;
+    --color-text-primary: #f3f4f6;
+    --color-text-secondary: #9ca3af;
+    --color-text-disabled: #919191;
+    --color-text-inverse: #111827;
+    --color-surface: #1a1a1a;
+    --color-surface-raised: #2a2a2a;
+    --color-surface-sunken: #121212;
+    --color-border: #6c737f;
+    --color-border-focus: #3b82f6;
+    --color-overlay-bg: rgb(0 0 0 / 72%);
+    --color-badge-success-bg: #052e16;
+    --color-badge-success-text: #4ade80;
+    --color-badge-warning-bg: #451a03;
+    --color-badge-warning-text: #fbbf24;
+    --color-badge-danger-bg: #450a0a;
+    --color-badge-danger-text: #fca5a5;
+    --color-badge-info-bg: #172554;
+    --color-badge-info-text: #93c5fd;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 20%);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 30%), 0 2px 4px -2px rgb(0 0 0 / 30%);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 30%), 0 4px 6px -4px rgb(0 0 0 / 30%);
+  }
 }
