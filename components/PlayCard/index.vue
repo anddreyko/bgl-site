@@ -6,9 +6,17 @@
   >
     <template #header>
       <div class="play-card__header">
-        <h3 class="play-card__game-name">
-          {{ play.game?.name ?? play.gameName ?? 'No game' }}
-        </h3>
+        <div class="play-card__titles">
+          <h3 class="play-card__name">
+            {{ play.name || play.game?.name || play.gameName || `Play #${play.id.slice(0, 8)}` }}
+          </h3>
+          <p
+            v-if="play.name && (play.game?.name || play.gameName)"
+            class="play-card__game-name"
+          >
+            {{ play.game?.name ?? play.gameName }}
+          </p>
+        </div>
         <div class="play-card__badges">
           <UiBadge :variant="statusVariant">{{ play.status }}</UiBadge>
           <UiBadge variant="info">{{ play.visibility }}</UiBadge>
@@ -18,6 +26,14 @@
 
     <div class="play-card__body">
       <div class="play-card__meta">
+        <NuxtLink
+          v-if="play.author"
+          :to="`/user/${play.author.name}`"
+          class="play-card__author"
+          @click.stop
+        >
+          {{ play.author.name }}
+        </NuxtLink>
         <time
           class="play-card__date"
           :datetime="play.startedAt"
@@ -47,27 +63,9 @@
           :key="player.id"
           class="play-card__player"
         >
-          <span
-            v-if="player.color"
-            class="play-card__player-color"
-            :style="{ backgroundColor: player.color }"
-            aria-hidden="true"
+          <PlayerBadge
+            :player="player"
           />
-          <span class="play-card__player-name">
-            {{ player.mateName ?? player.mateId }}
-          </span>
-          <span
-            v-if="player.score != null"
-            class="play-card__player-score"
-          >
-            {{ player.score }}
-          </span>
-          <UiBadge
-            v-if="player.winner"
-            variant="success"
-          >
-            Winner
-          </UiBadge>
         </li>
       </ul>
       <p
@@ -77,13 +75,6 @@
         No players
       </p>
     </div>
-
-    <template
-      v-if="play.name"
-      #footer
-    >
-      <p class="play-card__name">{{ play.name }}</p>
-    </template>
   </UiCard>
 </template>
 
@@ -93,6 +84,7 @@ import type { Play } from '~/types'
 import UiCard from '~/components/UiCard/index.vue'
 import UiBadge from '~/components/UiBadge/index.vue'
 import UiTimer from '~/components/UiTimer/index.vue'
+import PlayerBadge from '~/components/PlayerBadge/index.vue'
 
 const props = defineProps<{
   play: Play
@@ -146,11 +138,24 @@ const formattedDuration = computed(() => {
   gap: var(--space-2);
 }
 
-.play-card__game-name {
+.play-card__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.play-card__name {
   margin: 0;
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
+}
+
+.play-card__game-name {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 .play-card__badges {
@@ -168,9 +173,24 @@ const formattedDuration = computed(() => {
 .play-card__meta {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+}
+
+.play-card__meta > *:not(:first-child)::before {
+  content: '\00B7';
+  margin-right: var(--space-2);
+}
+
+.play-card__author {
+  color: var(--color-primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.play-card__author:hover {
+  text-decoration: underline;
 }
 
 .play-card__date {
@@ -191,38 +211,12 @@ const formattedDuration = computed(() => {
 }
 
 .play-card__player {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
   font-size: var(--font-size-sm);
-}
-
-.play-card__player-color {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-}
-
-.play-card__player-name {
-  flex: 1;
-}
-
-.play-card__player-score {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
 }
 
 .play-card__no-players {
   margin: 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-disabled);
-}
-
-.play-card__name {
-  margin: 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  font-style: italic;
 }
 </style>

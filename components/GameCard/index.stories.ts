@@ -14,7 +14,7 @@ export const WithImage: Story = {
     game: {
       id: '1',
       name: 'Descent: Journeys in the Dark',
-      year: 2012,
+      yearPublished: 2012,
       bggId: 104162,
       type: 'base' as const,
       minPlayers: 1,
@@ -29,7 +29,7 @@ export const WithoutImage: Story = {
     game: {
       id: '2',
       name: 'Gloomhaven',
-      year: 2017,
+      yearPublished: 2017,
       bggId: 174430,
       type: 'base' as const,
       minPlayers: 1,

@@ -1,5 +1,8 @@
 <template>
-  <article class="game-card">
+  <article
+    class="game-card"
+    :style="{ '--card-accent': accentColor }"
+  >
     <div class="game-card__image">
       <img
         v-if="game.image"
@@ -35,7 +38,7 @@
     <div class="game-card__body">
       <h3 class="game-card__name">{{ game.name }}</h3>
       <div class="game-card__meta">
-        <span v-if="game.year">{{ game.year }}</span>
+        <span v-if="game.yearPublished">{{ game.yearPublished }}</span>
         <span v-if="game.minPlayers && game.maxPlayers">
           {{ game.minPlayers }}&ndash;{{ game.maxPlayers }} players
         </span>
@@ -51,12 +54,16 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Game } from '~/types'
 import UiBadge from '~/components/UiBadge/index.vue'
+import { colorFromString } from '~/utils/color-from-string'
 
-defineProps<{
+const props = defineProps<{
   game: Game
 }>()
+
+const accentColor = computed(() => colorFromString(props.game.name).bg)
 </script>
 
 <style scoped>
@@ -68,6 +75,7 @@ defineProps<{
   overflow: hidden;
   background-color: var(--color-surface);
   transition: box-shadow var(--transition-fast);
+  border-top: 3px solid var(--card-accent, var(--color-border));
 }
 
 .game-card:hover {

@@ -1,15 +1,18 @@
 <template>
   <nav class="main-menu">
     <div class="main-menu__brand">
-      <NuxtLink to="/">4Record</NuxtLink>
+      <NuxtLink
+        to="/"
+        class="main-menu__brand-text"
+      >
+        For the
+      </NuxtLink>
+      <RecordButton
+        :active-play="activePlay"
+        @click="onRecord"
+      />
     </div>
     <ul class="main-menu__links">
-      <li>
-        <NuxtLink
-          to="/"
-          class="main-menu__link"
-        >Home</NuxtLink>
-      </li>
       <li>
         <NuxtLink
           to="/game"
@@ -28,49 +31,40 @@
           class="main-menu__link"
         >Plays</NuxtLink>
       </li>
-      <li>
-        <NuxtLink
-          to="/about"
-          class="main-menu__link"
-        >About</NuxtLink>
-      </li>
-      <li>
-        <NuxtLink
-          to="/user"
-          class="main-menu__link"
-        >Profile</NuxtLink>
-      </li>
     </ul>
-    <div
-      v-if="activePlay"
-      class="main-menu__active-play"
+    <UserAvatar
+      v-if="user"
+      :name="user.name || user.email || '?'"
+      size="md"
+    />
+    <NuxtLink
+      v-else
+      to="/auth/sign-in"
+      class="main-menu__link"
     >
-      <UiTimer
-        :started-at="activePlay.startedAt"
-        :running="true"
-      />
-    </div>
-    <UiButton
-      variant="record"
-      size="sm"
-      @click="$emit('record')"
-    >
-      Record
-    </UiButton>
+      Sign In
+    </NuxtLink>
   </nav>
 </template>
 
 <script setup lang="ts">
-import UiButton from '~/components/UiButton/index.vue'
-import UiTimer from '~/components/UiTimer/index.vue'
+import RecordButton from '~/components/RecordButton/index.vue'
+import UserAvatar from '~/components/UserAvatar/index.vue'
+
+import type { Play, User } from '~/types'
 
 defineProps<{
-  activePlay?: { id: string, startedAt: string } | null
+  activePlay?: Play | null
+  user?: User | null
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   record: []
 }>()
+
+function onRecord() {
+  emit('record')
+}
 </script>
 
 <style scoped>
@@ -82,12 +76,15 @@ defineEmits<{
 }
 
 .main-menu__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
 }
 
-.main-menu__brand a {
-  color: var(--color-record);
+.main-menu__brand-text {
+  color: var(--color-text-primary);
   text-decoration: none;
 }
 
@@ -112,10 +109,5 @@ defineEmits<{
 .main-menu__link:hover {
   color: var(--color-text-primary);
   text-decoration: none;
-}
-
-.main-menu__active-play {
-  display: flex;
-  align-items: center;
 }
 </style>

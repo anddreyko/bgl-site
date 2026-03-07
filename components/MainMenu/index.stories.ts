@@ -17,7 +17,22 @@ export const WithActivePlay: Story = {
   args: {
     activePlay: {
       id: 'play-1',
+      status: 'draft',
+      visibility: 'private',
       startedAt: new Date(Date.now() - 1800000).toISOString(),
+      players: [],
+    },
+  },
+}
+
+export const WithUser: Story = {
+  args: {
+    user: {
+      id: 'user-1',
+      name: 'John Doe',
+      email: 'john@example.com',
+      isActive: true,
+      createdAt: '2024-01-01T00:00:00Z',
     },
   },
 }
