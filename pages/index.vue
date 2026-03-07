@@ -36,6 +36,12 @@
             @click="navigateTo(`/plays/${play.id}`)"
           />
         </div>
+        <UiPagination
+          :page="currentPage"
+          :total="totalPlays"
+          :size="PAGE_SIZE"
+          @update:page="goToPage"
+        />
       </section>
 
       <!-- Quick actions -->
@@ -88,34 +94,56 @@ import { ref } from 'vue'
 import type { Play, PaginatedResponse } from '~/types'
 import PlayCard from '~/components/PlayCard/index.vue'
 import UiButton from '~/components/UiButton/index.vue'
+import UiPagination from '~/components/UiPagination/index.vue'
+
+const PAGE_SIZE = 5
 
 const { user } = useAuth()
 const { activePlay } = useActivePlay()
 const { open: openRecord } = useRecordDialog()
 
 const recentPlays = ref<Play[]>([])
+const currentPage = ref(1)
+const totalPlays = ref(0)
 
-onMounted(async () => {
-  if (!user.value) return
+async function fetchPlays(page: number) {
   try {
     const data = await $fetch<PaginatedResponse<Play>>('/api/plays', {
-      query: { page: 1, size: 5 },
+      query: { page, size: PAGE_SIZE },
     })
     const items = data.items
-    const first = items[0]
-    if (first && !first.finishedAt && first.status === 'draft') {
-      activePlay.value = first
-      recentPlays.value = items.slice(1)
+
+    if (page === 1) {
+      const first = items[0]
+      if (first && !first.finishedAt && first.status === 'draft') {
+        activePlay.value = first
+        recentPlays.value = items.slice(1)
+      }
+      else {
+        activePlay.value = null
+        recentPlays.value = items
+      }
     }
     else {
-      activePlay.value = null
       recentPlays.value = items
     }
+
+    totalPlays.value = data.total
+    currentPage.value = page
   }
   catch {
     activePlay.value = null
     recentPlays.value = []
   }
+}
+
+function goToPage(page: number) {
+  fetchPlays(page)
+}
+
+onMounted(() => {
+  if (!user.value) return
+  fetchPlays(1)
 })
 </script>
 

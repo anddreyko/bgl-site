@@ -60,6 +60,7 @@ describe('pages/index.vue', () => {
         stubs: {
           PlayCard: PlayCardStub,
           UiButton: UiButtonStub,
+          UiPagination: true,
           NuxtLink: true,
         },
       },
