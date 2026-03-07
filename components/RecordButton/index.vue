@@ -47,13 +47,14 @@ defineEmits<{
   background-color: transparent;
   color: var(--color-text-primary);
   cursor: pointer;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-size: inherit;
+  font-weight: inherit;
   transition: background-color var(--transition-fast);
 }
 
 .record-button:hover {
   background-color: var(--color-surface-sunken);
+  outline: 1px solid var(--color-record);
 }
 
 .record-button__dot {

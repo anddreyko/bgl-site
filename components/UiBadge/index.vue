@@ -32,22 +32,22 @@ withDefaults(defineProps<{
 }
 
 .ui-badge--success {
-  background-color: #dcfce7;
-  color: var(--color-success);
+  background-color: var(--color-badge-success-bg);
+  color: var(--color-badge-success-text);
 }
 
 .ui-badge--warning {
-  background-color: #fef3c7;
-  color: var(--color-warning);
+  background-color: var(--color-badge-warning-bg);
+  color: var(--color-badge-warning-text);
 }
 
 .ui-badge--danger {
-  background-color: #fee2e2;
-  color: var(--color-danger);
+  background-color: var(--color-badge-danger-bg);
+  color: var(--color-badge-danger-text);
 }
 
 .ui-badge--info {
-  background-color: #dbeafe;
-  color: var(--color-primary);
+  background-color: var(--color-badge-info-bg);
+  color: var(--color-badge-info-text);
 }
 </style>

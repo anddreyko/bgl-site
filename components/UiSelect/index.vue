@@ -98,6 +98,42 @@ defineEmits<{
 }>()
 </script>
 
+<!-- Global styles for portaled dropdown content -->
+<style>
+.ui-select__content {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-1);
+  min-width: var(--radix-select-trigger-width);
+}
+
+.ui-select__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ui-select__item:focus {
+  outline: none;
+  background-color: var(--color-surface-sunken);
+}
+
+.ui-select__item[data-highlighted] {
+  background-color: var(--color-surface-sunken);
+}
+
+.ui-select__indicator {
+  color: var(--color-primary);
+}
+</style>
+
 <style scoped>
 .ui-select__trigger {
   display: inline-flex;
@@ -134,39 +170,5 @@ defineEmits<{
 
 .ui-select__icon {
   color: var(--color-text-secondary);
-}
-
-.ui-select__content {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  padding: var(--space-1);
-  z-index: var(--z-dialog);
-  min-width: var(--radix-select-trigger-width);
-}
-
-.ui-select__item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-md);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  user-select: none;
-}
-
-.ui-select__item:focus {
-  outline: none;
-  background-color: var(--color-surface-sunken);
-}
-
-.ui-select__item[data-highlighted] {
-  background-color: var(--color-surface-sunken);
-}
-
-.ui-select__indicator {
-  color: var(--color-primary);
 }
 </style>

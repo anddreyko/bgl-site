@@ -65,17 +65,19 @@ defineEmits<{
 
 .ui-overlay__panel {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 90vw;
-  max-width: 480px;
+  max-width: 500px;
+  max-height: 85vh;
   background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   z-index: var(--z-overlay);
   display: flex;
   flex-direction: column;
-  animation: ui-overlay-slide-in var(--transition-normal);
+  animation: ui-overlay-scale-in var(--transition-normal);
 }
 
 .ui-overlay__header {
@@ -116,8 +118,15 @@ defineEmits<{
   overflow-y: auto;
 }
 
-@keyframes ui-overlay-slide-in {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+@keyframes ui-overlay-scale-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 </style>
