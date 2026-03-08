@@ -1,14 +1,7 @@
 import { defineConfig } from '@playwright/test'
-import { defineBddConfig, cucumberReporter } from 'playwright-bdd'
-
-const testDir = defineBddConfig({
-  features: 'e2e/features/**/*.feature',
-  steps: 'e2e/steps/**/*.ts',
-  outputDir: 'e2e/.features-gen',
-})
+import { defineBddProject, cucumberReporter } from 'playwright-bdd'
 
 export default defineConfig({
-  testDir,
   reporter: [
     cucumberReporter('html', { outputFile: 'e2e/reports/report.html' }),
   ],
@@ -18,7 +11,33 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   projects: [
-    { name: 'chromium', use: { browserName: 'chromium' } },
+    {
+      name: 'setup',
+      testDir: 'e2e',
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
+      ...defineBddProject({
+        name: 'guest',
+        features: 'e2e/features/**/*.feature',
+        steps: 'e2e/steps/**/*.ts',
+        tags: '@guest',
+      }),
+      use: { browserName: 'chromium' },
+    },
+    {
+      ...defineBddProject({
+        name: 'authenticated',
+        features: 'e2e/features/**/*.feature',
+        steps: 'e2e/steps/**/*.ts',
+        tags: '@authenticated',
+      }),
+      use: {
+        browserName: 'chromium',
+        storageState: 'e2e/.auth/user.json',
+      },
+      dependencies: ['setup'],
+    },
   ],
   webServer: {
     command: 'pnpm dev',
