@@ -19,6 +19,7 @@
         />
       </svg>
     </span>
+    <span class="ui-fab__label">{{ label }}</span>
   </button>
 </template>
 
@@ -44,9 +45,8 @@ defineEmits<{
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  width: 56px;
   height: 56px;
-  padding: 0;
+  padding: 0 var(--space-5) 0 var(--space-4);
   justify-content: center;
   background-color: var(--color-surface);
   color: var(--color-record);
@@ -58,6 +58,10 @@ defineEmits<{
   font-weight: var(--font-weight-semibold);
   z-index: var(--z-fab);
   transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.ui-fab__label {
+  display: inline;
 }
 
 .ui-fab:hover {
@@ -78,6 +82,17 @@ defineEmits<{
 
 .ui-fab--active .ui-fab__circle {
   animation: ui-fab-pulse 1.5s ease-in-out infinite;
+}
+
+@media (width <= 640px) {
+  .ui-fab {
+    width: 56px;
+    padding: 0;
+  }
+
+  .ui-fab__label {
+    display: none;
+  }
 }
 
 @keyframes ui-fab-pulse {
