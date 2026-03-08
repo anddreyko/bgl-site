@@ -1,23 +1,33 @@
 <script setup lang="ts">
 import type { User, Play, PaginatedResponse } from '~/types'
+import { ref } from 'vue'
 import PlayCard from '~/components/PlayCard/index.vue'
 import UserAvatar from '~/components/UserAvatar/index.vue'
 import UiSpinner from '~/components/UiSpinner/index.vue'
+import UiPagination from '~/components/UiPagination/index.vue'
 
 const route = useRoute()
 const param = computed(() => String(route.params.id))
 
 const { set: setBreadcrumb, clear: clearBreadcrumb } = useBreadcrumbLabel()
 
-const [{ data: user, status, error }, { data: playsData, status: playsStatus }] = await Promise.all([
-  useFetch<User>(() => `/api/user/${param.value}`),
-  useAsyncData(
-    `user-plays-${param.value}`,
-    () => $fetch<PaginatedResponse<Play>>('/api/plays', {
-      query: { page: 1, size: 20, authorId: param.value },
-    }).then(data => data.items),
-  ),
-])
+const PAGE_SIZE = 20
+const currentPage = ref(1)
+const totalPlays = ref(0)
+
+const { data: user, status, error } = await useFetch<User>(() => `/api/user/${param.value}`)
+
+const { data: playsData, status: playsStatus } = useAsyncData(
+  `user-plays-${param.value}`,
+  async () => {
+    const data = await $fetch<PaginatedResponse<Play>>('/api/plays', {
+      query: { page: currentPage.value, size: PAGE_SIZE, authorId: param.value },
+    })
+    totalPlays.value = data.total
+    return data.items
+  },
+  { watch: [currentPage] },
+)
 
 watch(user, (u) => {
   if (u) setBreadcrumb(u.name ?? 'User')
@@ -122,6 +132,12 @@ const playsLoading = computed(() => playsStatus.value === 'pending')
             @click="navigateTo(`/plays/${play.id}`)"
           />
         </div>
+        <UiPagination
+          :page="currentPage"
+          :total="totalPlays"
+          :size="PAGE_SIZE"
+          @update:page="currentPage = $event"
+        />
       </section>
     </template>
   </section>
@@ -170,6 +186,7 @@ const playsLoading = computed(() => playsStatus.value === 'pending')
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .public-profile__empty {
