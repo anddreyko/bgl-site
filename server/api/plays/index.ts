@@ -17,13 +17,13 @@ export default defineEventHandler(async (event) => {
     }
 
     const raw = getQuery(event)
-    const query = {
-      ...raw,
-      ...(raw.page ? { page: Number(raw.page) } : {}),
-      ...(raw.size ? { size: Number(raw.size) } : {}),
-      ...(raw.gameId ? { game_id: raw.gameId, gameId: undefined } : {}),
-      ...(raw.authorId ? { author_id: raw.authorId, authorId: undefined } : {}),
-    }
+    const query: Record<string, unknown> = {}
+    if (raw.page) query.page = Number(raw.page)
+    if (raw.size) query.size = Number(raw.size)
+    if (raw.gameId) query.game_id = raw.gameId
+    if (raw.authorId) query.author_id = raw.authorId
+    if (raw.from) query.from = raw.from
+    if (raw.to) query.to = raw.to
     const response = await api<ApiResponse<PaginatedResponse<Play>>>('/v1/plays/sessions', { query })
     return unwrap(response)
   }
