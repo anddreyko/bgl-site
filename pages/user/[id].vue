@@ -16,7 +16,7 @@ const { data: playsData, status: playsStatus } = useAsyncData(
   () => $fetch<PaginatedResponse<Play>>('/api/plays', {
     query: { page: 1, size: 20, authorId: user.value!.id },
   }).then(data => data.items),
-  { watch: [user], immediate: !!user.value },
+  { server: false, watch: [user], immediate: !!user.value },
 )
 
 watch(user, (u) => {
