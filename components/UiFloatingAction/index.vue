@@ -19,7 +19,6 @@
         />
       </svg>
     </span>
-    <span class="ui-fab__label">{{ label }}</span>
   </button>
 </template>
 
@@ -45,10 +44,13 @@ defineEmits<{
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-5);
-  background-color: var(--color-record);
-  color: var(--color-text-inverse);
-  border: none;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  justify-content: center;
+  background-color: var(--color-surface);
+  color: var(--color-record);
+  border: 2px solid var(--color-record);
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-lg);
   cursor: pointer;
@@ -59,12 +61,12 @@ defineEmits<{
 }
 
 .ui-fab:hover {
-  background-color: var(--color-record-hover);
+  background-color: var(--color-surface-raised);
   transform: scale(1.05);
 }
 
 .ui-fab:active {
-  background-color: var(--color-record-active);
+  background-color: var(--color-surface);
   transform: scale(0.98);
 }
 
