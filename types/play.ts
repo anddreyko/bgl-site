@@ -9,6 +9,8 @@ export interface Player {
   score?: number
   color?: string
   isWinner?: boolean
+  teamTag?: string
+  number?: number
 }
 
 export interface PlayerPayload {
@@ -22,12 +24,14 @@ export interface Play {
   id: string
   author?: { id: string, name: string }
   name?: string
+  notes?: string
   status: PlayStatus
   visibility: Visibility
   startedAt: string
   finishedAt?: string
   game?: { id: string, name: string }
   gameName?: string
+  locationId?: string
   players: Player[]
 }
 
