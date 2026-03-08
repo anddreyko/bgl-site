@@ -62,7 +62,7 @@
                 v-if="hasWinner(play)"
                 class="game-plays-table__outcome game-plays-table__outcome--win"
               >
-                {{ winnerName(play) }}
+                {{ winnerNames(play) }}
               </span>
               <span
                 v-else-if="play.finishedAt"
@@ -123,10 +123,10 @@ function hasWinner(play: Play): boolean {
   return play.players.some(p => p.isWinner)
 }
 
-function winnerName(play: Play): string {
-  const winner = play.players.find(p => p.isWinner)
-  if (!winner) return 'Winner'
-  return playerName(winner)
+function winnerNames(play: Play): string {
+  const winners = play.players.filter(p => p.isWinner)
+  if (winners.length === 0) return 'Winner'
+  return winners.map(w => playerName(w)).join(', ')
 }
 </script>
 
