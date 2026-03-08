@@ -28,20 +28,24 @@ onMounted(() => {
 <template>
   <div class="app-layout">
     <header class="app-layout__header">
-      <MainMenu
-        :active-play="activePlay"
-        :user="user"
-        @record="handleRecord"
-      />
+      <div class="app-layout__container">
+        <MainMenu
+          :active-play="activePlay"
+          :user="user"
+          @record="handleRecord"
+        />
+      </div>
     </header>
-    <div class="app-layout__breadcrumbs">
+    <div class="app-layout__breadcrumbs app-layout__container">
       <AppBreadcrumbs />
     </div>
-    <main class="app-layout__main">
+    <main class="app-layout__main app-layout__container">
       <slot />
     </main>
     <footer class="app-layout__footer">
-      ver {{ app?.version }}
+      <div class="app-layout__container">
+        ver {{ app?.version }}
+      </div>
     </footer>
     <RecordDialog />
     <UiFloatingAction
@@ -59,31 +63,28 @@ onMounted(() => {
   min-height: 100vh;
 }
 
-.app-layout__header {
-  padding: 0 var(--space-8);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.app-layout__breadcrumbs {
-  padding: 0 var(--space-8);
+.app-layout__container {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+  padding: 0 var(--space-8);
+}
+
+.app-layout__header {
+  border-bottom: 1px solid var(--color-border);
 }
 
 .app-layout__main {
   flex: 1;
-  padding: var(--space-4) var(--space-8);
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
 }
 
 .app-layout__footer {
-  padding: var(--space-4) var(--space-8);
+  border-top: 1px solid var(--color-border);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  border-top: 1px solid var(--color-border);
+  padding: var(--space-4) 0;
 }
 
 /* FAB visible only on mobile */
