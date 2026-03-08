@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { ref, computed, defineComponent, h } from 'vue'
+import { mount, flushPromises } from '@vue/test-utils'
+import { ref, computed, defineComponent, h, Suspense } from 'vue'
 
 // Mock useGames composable
 const mockGames = ref<unknown[]>([])
@@ -30,6 +30,9 @@ vi.mock('~/composables/useGames', () => ({
 // Stub Nuxt globals
 vi.stubGlobal('useHead', () => {})
 vi.stubGlobal('definePageMeta', () => {})
+vi.stubGlobal('useAsyncData', (_key: string, _fn: () => Promise<unknown>) => {
+  return Promise.resolve({ data: ref(null) })
+})
 
 // Stub NuxtLink as a simple <a> tag
 const NuxtLinkStub = defineComponent({
@@ -55,13 +58,29 @@ describe('pages/game/index.vue', () => {
 
   async function mountPage() {
     const GameIndexPage = (await import('~/pages/game/index.vue')).default
-    return mount(GameIndexPage, {
-      global: {
-        stubs: {
-          NuxtLink: NuxtLinkStub,
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () => h(Suspense, null, { default: () => h(GameIndexPage) })
+        },
+      }),
+      {
+        global: {
+          stubs: {
+            NuxtLink: NuxtLinkStub,
+            GameCard: defineComponent({
+              name: 'GameCard',
+              props: ['game'],
+              setup(props) {
+                return () => h('div', { class: 'game-card' }, props.game?.name)
+              },
+            }),
+          },
         },
       },
-    })
+    )
+    await flushPromises()
+    return wrapper
   }
 
   it('should render search input', async () => {

@@ -69,7 +69,7 @@ describe('GamePlaysTable', () => {
     const wrapper = await mountSuspended(GamePlaysTable, {
       props: { plays: basePlays },
     })
-    expect(wrapper.text()).toContain('1h 30m')
+    expect(wrapper.text()).toContain('1.5h')
   })
 
   it('renders title', async () => {

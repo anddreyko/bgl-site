@@ -33,9 +33,9 @@
                   v-for="player in play.players.slice(0, 4)"
                   :key="player.id"
                   class="game-plays-table__player-avatar"
-                  :title="player.mateName ?? ''"
+                  :title="playerName(player)"
                 >
-                  {{ getInitials(player.mateName ?? '?') }}
+                  {{ getInitials(playerName(player)) }}
                 </span>
                 <span
                   v-if="play.players.length > 4"
@@ -92,6 +92,12 @@ defineProps<{
   plays: Play[]
 }>()
 
+const { mateNames } = useMateNames()
+
+function playerName(player: { mateId: string, mateName?: string }): string {
+  return player.mateName || mateNames.value[player.mateId] || player.mateId.slice(0, 8)
+}
+
 function formatDate(iso: string): string {
   const d = new Date(iso)
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -119,7 +125,8 @@ function hasWinner(play: Play): boolean {
 
 function winnerName(play: Play): string {
   const winner = play.players.find(p => p.isWinner)
-  return winner?.mateName ?? 'Winner'
+  if (!winner) return 'Winner'
+  return playerName(winner)
 }
 </script>
 
