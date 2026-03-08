@@ -9,15 +9,15 @@ const param = computed(() => String(route.params.id))
 
 const { set: setBreadcrumb, clear: clearBreadcrumb } = useBreadcrumbLabel()
 
-const [{ data: user, status, error }, { data: playsData, status: playsStatus }] = await Promise.all([
-  useFetch<User>(() => `/api/user/${param.value}`),
-  useAsyncData(
-    `user-plays-${param.value}`,
-    () => $fetch<PaginatedResponse<Play>>('/api/plays', {
-      query: { page: 1, size: 20, authorId: param.value },
-    }).then(data => data.items),
-  ),
-])
+const { data: user, status, error } = await useFetch<User>(() => `/api/user/${param.value}`)
+
+const { data: playsData, status: playsStatus } = useAsyncData(
+  `user-plays-${param.value}`,
+  () => $fetch<PaginatedResponse<Play>>('/api/plays', {
+    query: { page: 1, size: 20, authorId: user.value!.id },
+  }).then(data => data.items),
+  { watch: [user], immediate: !!user.value },
+)
 
 watch(user, (u) => {
   if (u) setBreadcrumb(u.name ?? 'User')
