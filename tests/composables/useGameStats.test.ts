@@ -6,30 +6,9 @@ const mockFetch = vi.fn()
 
 vi.stubGlobal('$fetch', mockFetch)
 
-const asyncDataResults = new Map<string, { value: unknown }>()
-vi.stubGlobal('useAsyncData', (key: string, fetcher: () => Promise<unknown>, opts?: { default?: () => unknown }) => {
-  const data = ref(opts?.default?.() ?? null)
-  const status = ref('idle')
-
-  const execute = async () => {
-    status.value = 'pending'
-    try {
-      data.value = await fetcher()
-      status.value = 'success'
-    }
-    catch {
-      status.value = 'error'
-    }
-  }
-
-  asyncDataResults.set(key, data)
-  return { data, status, execute }
-})
-
 describe('useGameStats', () => {
   beforeEach(() => {
     mockFetch.mockReset()
-    asyncDataResults.clear()
   })
 
   it('starts with zero stats', () => {

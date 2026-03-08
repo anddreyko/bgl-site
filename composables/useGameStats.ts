@@ -9,9 +9,18 @@ export interface GameStats {
 }
 
 export function useGameStats(gameId: Ref<string>) {
-  const { data: stats, status, execute: fetchStats } = useAsyncData<GameStats>(
-    `game-stats-${gameId.value}`,
-    async () => {
+  const stats = ref<GameStats>({
+    totalPlays: 0,
+    totalTimeMinutes: 0,
+    winRate: 0,
+    plays: [],
+    isApproximate: false,
+  })
+  const loading = ref(false)
+
+  async function fetchStats(): Promise<void> {
+    loading.value = true
+    try {
       const data = await $fetch<PaginatedResponse<Play>>('/api/plays', {
         query: { gameId: gameId.value, size: 100 },
       })
@@ -32,18 +41,25 @@ export function useGameStats(gameId: Ref<string>) {
         if (hasWinner) wins++
       }
 
-      return {
+      stats.value = {
         totalPlays: data.total,
         totalTimeMinutes: Math.round(totalMinutes),
         winRate: plays.length > 0 ? Math.round((wins / plays.length) * 100) : 0,
         plays,
         isApproximate: data.total > plays.length,
       }
-    },
-    { default: () => ({ totalPlays: 0, totalTimeMinutes: 0, winRate: 0, plays: [], isApproximate: false }) },
-  )
+    }
+    catch {
+      // keep defaults
+    }
+    finally {
+      loading.value = false
+    }
+  }
 
-  const loading = computed(() => status.value === 'pending')
+  watch(gameId, (id) => {
+    if (id) fetchStats()
+  }, { immediate: true })
 
   return { stats, loading, fetchStats }
 }
