@@ -51,6 +51,14 @@ When('I type {string} into {string}', async ({ page }, value: string, selector: 
   await input.fill(value)
 })
 
+When('I wait for hydration', async ({ page }) => {
+  await page.waitForTimeout(1000)
+})
+
+When('I wait for dialog to open', async ({ page }) => {
+  await page.locator('[role="dialog"]').waitFor({ state: 'visible', timeout: 5000 })
+})
+
 When('I submit the form', async ({ page }) => {
   await page.locator('form button[type="submit"]').click()
 })

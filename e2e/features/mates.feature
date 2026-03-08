@@ -8,7 +8,9 @@ Feature: Mates page
 
   Scenario: Add Mate dialog opens
     Given I am on "/mates"
-    When I click on "Add Mate"
+    When I wait for hydration
+    And I click on "Add Mate"
+    And I wait for dialog to open
     Then the element "#mate-name" should be visible
     And the element "#mate-notes" should be visible
     And I should see button "Cancel"

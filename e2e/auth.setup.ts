@@ -3,17 +3,21 @@ import { test as setup, expect } from '@playwright/test'
 const authFile = 'e2e/.auth/user.json'
 
 setup('authenticate', async ({ page }) => {
-  const email = process.env.E2E_USER_EMAIL
-  const password = process.env.E2E_USER_PASSWORD
-
-  if (!email || !password) {
-    throw new Error('E2E_USER_EMAIL and E2E_USER_PASSWORD env variables are required')
-  }
+  const email = process.env.E2E_USER_EMAIL ?? 'e2e-test@4record.app'
+  const password = process.env.E2E_USER_PASSWORD ?? 'E2eTest123!'
 
   await page.goto('/auth/sign-in')
-  await page.locator('#sign-in-email').fill(email)
-  await page.locator('#sign-in-password').fill(password)
-  await page.locator('.sign-in__submit button').click()
+  await page.waitForTimeout(1000)
+
+  const emailInput = page.locator('#sign-in-email')
+  await emailInput.click()
+  await emailInput.pressSequentially(email, { delay: 30 })
+
+  const passwordInput = page.locator('#sign-in-password')
+  await passwordInput.click()
+  await passwordInput.pressSequentially(password, { delay: 30 })
+
+  await page.getByRole('button', { name: 'Sign In', exact: true }).click()
 
   await expect(page).toHaveURL('/', { timeout: 10_000 })
   await expect(page.locator('.home-page__greeting')).toBeVisible()
