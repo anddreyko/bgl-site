@@ -28,6 +28,29 @@
       </p>
     </div>
 
+    <!-- Recent games from plays -->
+    <section
+      v-if="showRecent"
+      class="game-catalog__recent"
+    >
+      <h3 class="game-catalog__section-title">
+        Recently played
+      </h3>
+      <ul class="game-catalog__recent-list">
+        <li
+          v-for="game in recentGames"
+          :key="game.id"
+        >
+          <NuxtLink
+            :to="`/game/${game.id}`"
+            class="game-catalog__recent-link"
+          >
+            {{ game.name }}
+          </NuxtLink>
+        </li>
+      </ul>
+    </section>
+
     <div
       v-if="pending"
       class="game-catalog__loading"
@@ -109,6 +132,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Play, PaginatedResponse } from '~/types'
 import GameCard from '~/components/GameCard/index.vue'
 import { useGames } from '~/composables/useGames'
 
@@ -127,6 +151,28 @@ const {
   goToPage,
   refresh,
 } = useGames()
+
+const { data: recentGamesData } = await useAsyncData(
+  'recent-played-games',
+  async () => {
+    const data = await $fetch<PaginatedResponse<Play>>('/api/plays', {
+      query: { page: 1, size: 50 },
+    })
+    const seen = new Set<string>()
+    const result: Array<{ id: string, name: string }> = []
+    for (const play of data.items) {
+      if (play.game && !seen.has(play.game.id)) {
+        seen.add(play.game.id)
+        result.push(play.game)
+        if (result.length >= 10) break
+      }
+    }
+    return result
+  },
+)
+
+const recentGames = computed(() => recentGamesData.value ?? [])
+const showRecent = computed(() => !hasSearched.value && recentGames.value.length > 0)
 </script>
 
 <style scoped>
@@ -252,5 +298,31 @@ const {
 .game-catalog__page-info {
   font-size: 0.875rem;
   color: var(--color-text-secondary, #555);
+}
+
+.game-catalog__section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-primary);
+}
+
+.game-catalog__recent-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.game-catalog__recent-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: var(--font-size-md);
+}
+
+.game-catalog__recent-link:hover {
+  text-decoration: underline;
 }
 </style>
