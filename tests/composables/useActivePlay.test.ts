@@ -28,7 +28,6 @@ describe('useActivePlay', () => {
   it('starts a play and sets activePlay', async () => {
     const mockPlay = {
       id: 'play-1',
-      status: 'draft',
       visibility: 'private',
       startedAt: '2024-01-01T00:00:00Z',
       players: [],
@@ -53,7 +52,6 @@ describe('useActivePlay', () => {
   it('finishes the active play', async () => {
     const mockPlay = {
       id: 'play-1',
-      status: 'draft',
       visibility: 'private',
       startedAt: '2024-01-01T00:00:00Z',
       players: [],
@@ -65,7 +63,7 @@ describe('useActivePlay', () => {
     await finishPlay()
 
     expect(activePlay.value).toBeNull()
-    expect(mockFetch).toHaveBeenCalledWith('/api/plays/play-1/finish', {
+    expect(mockFetch).toHaveBeenCalledWith('/api/plays/play-1', {
       method: 'PATCH',
       body: expect.objectContaining({ finishedAt: expect.any(String) }),
     })
@@ -81,7 +79,6 @@ describe('useActivePlay', () => {
   it('checks for active play — first item is draft without finishedAt', async () => {
     const activeDraft = {
       id: 'play-2',
-      status: 'draft',
       visibility: 'private',
       startedAt: '2024-01-01T00:00:00Z',
       players: [],
@@ -102,7 +99,7 @@ describe('useActivePlay', () => {
   it('sets activePlay to null when first item is finished', async () => {
     mockFetch.mockResolvedValueOnce({
       items: [
-        { id: 'play-1', status: 'published', finishedAt: '2024-01-01T01:00:00Z', startedAt: '2024-01-01T00:00:00Z', players: [] },
+        { id: 'play-1', finishedAt: '2024-01-01T01:00:00Z', visibility: 'private', startedAt: '2024-01-01T00:00:00Z', players: [] },
       ],
     })
 

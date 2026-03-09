@@ -1,7 +1,5 @@
 export type Visibility = 'private' | 'participants' | 'link' | 'authenticated' | 'public'
 
-export type PlayStatus = 'draft' | 'published' | 'deleted'
-
 export interface Player {
   id: string
   mateId: string
@@ -25,7 +23,6 @@ export interface Play {
   author?: { id: string, name: string }
   name?: string
   notes?: string
-  status: PlayStatus
   visibility: Visibility
   startedAt: string
   finishedAt?: string
@@ -37,6 +34,7 @@ export interface Play {
 
 export interface PlayCreatePayload {
   gameId?: string
+  locationId?: string
   name?: string
   startedAt?: string
   finishedAt?: string
@@ -47,8 +45,8 @@ export interface PlayCreatePayload {
 export interface PlayUpdatePayload {
   name?: string
   gameId?: string
+  locationId?: string
   visibility?: Visibility
-  status?: PlayStatus | null
   players?: PlayerPayload[]
 }
 

@@ -115,7 +115,7 @@ async function fetchPlays(page: number) {
 
     if (page === 1) {
       const first = items[0]
-      if (first && !first.finishedAt && first.status === 'draft') {
+      if (first && !first.finishedAt) {
         activePlay.value = first
         recentPlays.value = items.slice(1)
       }

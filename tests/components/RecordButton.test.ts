@@ -5,7 +5,6 @@ import type { Play } from '~/types'
 
 const mockActivePlay: Play = {
   id: 'play-1',
-  status: 'draft',
   visibility: 'private',
   startedAt: new Date().toISOString(),
   players: [],

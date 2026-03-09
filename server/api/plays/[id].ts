@@ -28,6 +28,15 @@ export default defineEventHandler(async (event) => {
       return unwrap(response)
     }
 
+    if (method === 'PATCH') {
+      const body = await readBody(event)
+      const response = await api<ApiResponse<Play>>(`/v1/plays/sessions/${id}`, {
+        method: 'PATCH',
+        body,
+      })
+      return unwrap(response)
+    }
+
     const response = await api<ApiResponse<Play>>(`/v1/plays/sessions/${id}`)
     return unwrap(response)
   }

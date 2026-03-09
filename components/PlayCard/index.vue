@@ -18,7 +18,7 @@
           </p>
         </div>
         <div class="play-card__badges">
-          <UiBadge :variant="statusVariant">{{ play.status }}</UiBadge>
+          <UiBadge :variant="play.finishedAt ? 'success' : 'warning'">{{ play.finishedAt ? 'Finished' : 'In progress' }}</UiBadge>
           <UiBadge variant="info">{{ play.visibility }}</UiBadge>
         </div>
       </div>
@@ -93,14 +93,6 @@ const props = defineProps<{
 defineEmits<{
   click: [play: Play]
 }>()
-
-const statusVariant = computed(() => {
-  switch (props.play.status) {
-    case 'published': return 'success'
-    case 'deleted': return 'danger'
-    default: return 'warning'
-  }
-})
 
 const formattedDate = computed(() => {
   const date = new Date(props.play.startedAt)

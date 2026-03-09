@@ -5,7 +5,6 @@ import type { Play } from '~/types'
 
 const basPlay: Play = {
   id: 'play-1',
-  status: 'draft',
   visibility: 'private',
   startedAt: '2024-01-15T10:00:00Z',
   finishedAt: '2024-01-15T11:30:00Z',
@@ -35,10 +34,18 @@ describe('PlayCard', () => {
     expect(wrapper.find('.play-card__name').text()).toBe(`Play #${basPlay.id.slice(0, 8)}`)
   })
 
-  it('renders status badge', async () => {
+  it('renders status badge for finished play', async () => {
     const wrapper = await mountSuspended(PlayCard, { props: { play: basPlay } })
     const badges = wrapper.findAll('.ui-badge')
-    const statusBadge = badges.find(b => b.text() === 'draft')
+    const statusBadge = badges.find(b => b.text() === 'Finished')
+    expect(statusBadge).toBeDefined()
+  })
+
+  it('renders status badge for in-progress play', async () => {
+    const activePlay = { ...basPlay, finishedAt: undefined }
+    const wrapper = await mountSuspended(PlayCard, { props: { play: activePlay } })
+    const badges = wrapper.findAll('.ui-badge')
+    const statusBadge = badges.find(b => b.text() === 'In progress')
     expect(statusBadge).toBeDefined()
   })
 
@@ -61,11 +68,10 @@ describe('PlayCard', () => {
     expect(scores[0].text()).toBe('42')
   })
 
-  it('renders winner badge', async () => {
+  it('renders winner crown', async () => {
     const wrapper = await mountSuspended(PlayCard, { props: { play: basPlay } })
-    const winnerBadges = wrapper.findAll('.ui-badge--success')
-    expect(winnerBadges).toHaveLength(1)
-    expect(winnerBadges[0].text()).toBe('Winner')
+    const crown = wrapper.find('.player-badge__crown')
+    expect(crown.exists()).toBe(true)
   })
 
   it('renders duration for finished play', async () => {

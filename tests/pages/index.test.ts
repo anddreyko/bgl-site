@@ -88,7 +88,6 @@ describe('pages/index.vue', () => {
   it('shows active play section when active play is first item', async () => {
     const activeDraft = {
       id: 'play-1',
-      status: 'draft',
       visibility: 'private',
       startedAt: new Date().toISOString(),
       players: [],

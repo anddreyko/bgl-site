@@ -17,28 +17,32 @@ vi.mock('~/server/utils/api-client', async (importOriginal) => {
 })
 
 const mockReadBody = vi.fn()
+const mockGetMethod = vi.fn()
 vi.mock('h3', async (importOriginal) => {
   const actual = await importOriginal<typeof import('h3')>()
   return {
     ...actual,
     readBody: (...args: unknown[]) => mockReadBody(...args),
+    getMethod: (...args: unknown[]) => mockGetMethod(...args),
   }
 })
 
-describe('server/api/plays/[id]/finish.patch', () => {
+describe('server/api/plays/[id] PATCH', () => {
   beforeEach(() => {
     mockFetch.mockReset()
     mockUnwrap.mockReset()
     mockUnwrap.mockImplementation((r: unknown) => r)
     mockReadBody.mockReset()
+    mockGetMethod.mockReset()
   })
 
   it('PATCH proxies to /v1/plays/sessions/{id}', async () => {
     const fakeResponse = { code: 0, data: { id: 'p1' } }
     mockFetch.mockResolvedValue(fakeResponse)
     mockReadBody.mockResolvedValue({ finishedAt: '2026-01-01T00:00:00Z' })
+    mockGetMethod.mockReturnValue('PATCH')
 
-    const { default: handler } = await import('~/server/api/plays/[id]/finish.patch')
+    const { default: handler } = await import('~/server/api/plays/[id]')
     const event = {
       method: 'PATCH',
       node: { req: { method: 'PATCH' } },
@@ -58,9 +62,10 @@ describe('server/api/plays/[id]/finish.patch', () => {
     const h3Err = new H3Error('err')
     h3Err.statusCode = 400
     mockReadBody.mockResolvedValue({})
+    mockGetMethod.mockReturnValue('PATCH')
     mockFetch.mockRejectedValue(h3Err)
 
-    const { default: handler } = await import('~/server/api/plays/[id]/finish.patch')
+    const { default: handler } = await import('~/server/api/plays/[id]')
     const event = {
       method: 'PATCH',
       node: { req: { method: 'PATCH' } },
@@ -72,9 +77,10 @@ describe('server/api/plays/[id]/finish.patch', () => {
 
   it('wraps non-H3 errors as 502', async () => {
     mockReadBody.mockResolvedValue({})
+    mockGetMethod.mockReturnValue('PATCH')
     mockFetch.mockRejectedValue(new Error('fail'))
 
-    const { default: handler } = await import('~/server/api/plays/[id]/finish.patch')
+    const { default: handler } = await import('~/server/api/plays/[id]')
     const event = {
       method: 'PATCH',
       node: { req: { method: 'PATCH' } },

@@ -34,7 +34,7 @@ describe('usePlays', () => {
   it('fetches plays and updates state', async () => {
     const mockData = {
       items: [
-        { id: '1', status: 'draft', visibility: 'private', startedAt: '2024-01-01T00:00:00Z', players: [] },
+        { id: '1', visibility: 'private', startedAt: '2024-01-01T00:00:00Z', players: [] },
       ],
       total: 1,
       page: 1,

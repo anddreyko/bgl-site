@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- hat brim -->
+  <path d="M3 11 C3 11 6 10 12 10 C18 10 21 11 21 11" />
+  <!-- hat top -->
+  <path d="M6 10 L8 4 L16 4 L18 10" />
+  <!-- face outline -->
+  <path d="M5 11 C5 11 5 16 8 19 L10 21 L12 19.5 L14 21 L16 19 C19 16 19 11 19 11" />
+  <!-- eyes -->
+  <path d="M8 13.5 L10.5 13 L12 13.5" />
+  <path d="M12 13.5 L13.5 13 L16 13.5" />
+  <!-- nose hint -->
+  <line x1="12" y1="14" x2="12" y2="16" />
+  <!-- mustache -->
+  <path d="M9 17 C10 16.5 11 16.5 12 17 C13 16.5 14 16.5 15 17" />
+</svg>

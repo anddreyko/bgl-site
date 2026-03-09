@@ -17,7 +17,7 @@ export function useActivePlay() {
   async function finishPlay(): Promise<void> {
     if (!activePlay.value) return
 
-    await $fetch(`/api/plays/${activePlay.value.id}/finish`, {
+    await $fetch(`/api/plays/${activePlay.value.id}`, {
       method: 'PATCH',
       body: { finishedAt: new Date().toISOString() },
     })
@@ -31,7 +31,7 @@ export function useActivePlay() {
         query: { page: 1, size: 1 },
       })
       const first = data.items[0]
-      activePlay.value = first && !first.finishedAt && first.status === 'draft' ? first : null
+      activePlay.value = first && !first.finishedAt ? first : null
     }
     catch {
       activePlay.value = null

@@ -1,4 +1,4 @@
-import { defineEventHandler, getRouterParam, readBody, createError } from 'h3'
+import { defineEventHandler, getRouterParam, createError } from 'h3'
 import type { ApiResponse, Play } from '~/types'
 import { createApiClient, handleBackendError, unwrap } from '~/server/utils/api-client'
 
@@ -11,10 +11,8 @@ export default defineEventHandler(async (event) => {
   const api = createApiClient(event)
 
   try {
-    const body = await readBody<{ finishedAt?: string }>(event)
-    const response = await api<ApiResponse<Play>>(`/v1/plays/sessions/${id}`, {
+    const response = await api<ApiResponse<Play>>(`/v1/plays/sessions/${id}/restore`, {
       method: 'PATCH',
-      body,
     })
     return unwrap(response)
   }
