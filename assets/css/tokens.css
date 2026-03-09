@@ -21,14 +21,14 @@
   --color-overlay-bg: rgb(17 24 39 / 72%);
 
   /* Badge */
-  --color-badge-success-bg: #dcfce7;
-  --color-badge-success-text: #15803d;
-  --color-badge-warning-bg: #fef3c7;
-  --color-badge-warning-text: #b45309;
-  --color-badge-danger-bg: #fee2e2;
-  --color-badge-danger-text: #dc2626;
-  --color-badge-info-bg: #dbeafe;
-  --color-badge-info-text: #1d4ed8;
+  --color-badge-success-bg: #e8eaed;
+  --color-badge-success-text: #3c4043;
+  --color-badge-warning-bg: #e8eaed;
+  --color-badge-warning-text: #3c4043;
+  --color-badge-danger-bg: #e8eaed;
+  --color-badge-danger-text: #3c4043;
+  --color-badge-info-bg: #e8eaed;
+  --color-badge-info-text: #3c4043;
 
   /* Typography */
   --font-family-base: system-ui, -apple-system, 'Segoe UI', helvetica, arial, sans-serif;
@@ -82,6 +82,21 @@
   --avatar-md: 2rem;
   --avatar-lg: 3rem;
 
+  /* Accent */
+  --color-crown: #d97706;
+
+  /* Player colors */
+  --player-red: #c0392b;
+  --player-orange: #d35400;
+  --player-yellow: #c49000;
+  --player-green: #2e7d32;
+  --player-cyan: #0097a7;
+  --player-blue: #2471a3;
+  --player-pink: #a1457e;
+  --player-brown: #6d4c30;
+  --player-black: #2c3e50;
+  --player-white: #bdc3c7;
+
   /* Z-index */
   --z-dialog: 1000;
   --z-overlay: 1100;
@@ -109,14 +124,25 @@
     --color-border: #6c737f;
     --color-border-focus: #3b82f6;
     --color-overlay-bg: rgb(0 0 0 / 72%);
-    --color-badge-success-bg: #052e16;
-    --color-badge-success-text: #4ade80;
-    --color-badge-warning-bg: #451a03;
-    --color-badge-warning-text: #fbbf24;
-    --color-badge-danger-bg: #450a0a;
-    --color-badge-danger-text: #fca5a5;
-    --color-badge-info-bg: #172554;
-    --color-badge-info-text: #93c5fd;
+    --color-badge-success-bg: #2a2d30;
+    --color-badge-success-text: #9aa0a6;
+    --color-badge-warning-bg: #2a2d30;
+    --color-badge-warning-text: #9aa0a6;
+    --color-badge-danger-bg: #2a2d30;
+    --color-badge-danger-text: #9aa0a6;
+    --color-badge-info-bg: #2a2d30;
+    --color-badge-info-text: #9aa0a6;
+    --color-crown: #fbbf24;
+    --player-red: #e74c3c;
+    --player-orange: #e67e22;
+    --player-yellow: #f1c40f;
+    --player-green: #4caf50;
+    --player-cyan: #00bcd4;
+    --player-blue: #5dade2;
+    --player-pink: #d98cb3;
+    --player-brown: #a0785a;
+    --player-black: #5d6d7e;
+    --player-white: #ecf0f1;
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 20%);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 30%), 0 2px 4px -2px rgb(0 0 0 / 30%);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 30%), 0 4px 6px -4px rgb(0 0 0 / 30%);

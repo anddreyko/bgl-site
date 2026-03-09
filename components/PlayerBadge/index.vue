@@ -1,10 +1,16 @@
 <template>
   <span class="player-badge">
+    <MateAvatar
+      :mate-id="player.mateId"
+      :mate-name="player.mateName"
+    />
     <span
       v-if="player.color"
       class="player-badge__color"
-      :style="{ backgroundColor: player.color }"
-      aria-hidden="true"
+      :style="{ backgroundColor: resolveColor(player.color) }"
+      :title="player.color"
+      role="img"
+      :aria-label="`Color: ${player.color}`"
     />
     <span class="player-badge__name">{{ displayName }}</span>
     <span
@@ -13,28 +19,31 @@
     >
       {{ player.score }}
     </span>
-    <UiBadge
+    <span
       v-if="player.isWinner"
-      variant="success"
-    >
-      Winner
-    </UiBadge>
+      class="player-badge__crown"
+      role="img"
+      aria-label="Winner"
+      v-html="crownSvg"
+    />
   </span>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Player } from '~/types'
-import UiBadge from '~/components/UiBadge/index.vue'
+import MateAvatar from '~/components/MateAvatar/index.vue'
+import crownSvg from '~/assets/icons/crown.svg?raw'
+import { resolveColor } from '~/utils/player-colors'
 
 const props = defineProps<{
   player: Player
 }>()
 
-const { mateNames } = useMateNames()
+const { resolveName } = useMateNames()
 
 const displayName = computed(() =>
-  props.player.mateName || mateNames.value[props.player.mateId] || props.player.mateId.slice(0, 8),
+  resolveName(props.player.mateId, props.player.mateName),
 )
 </script>
 
@@ -59,5 +68,16 @@ const displayName = computed(() =>
 .player-badge__score {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+}
+
+.player-badge__crown {
+  color: var(--color-crown);
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+.player-badge__crown :deep(svg) {
+  width: 16px;
+  height: 16px;
 }
 </style>

@@ -37,7 +37,7 @@
     </div>
 
     <div
-      v-else-if="mates.length === 0"
+      v-else-if="visibleMates.length === 0"
       class="mates-page__empty"
     >
       <p>No mates yet. Add your first mate to get started.</p>
@@ -48,7 +48,7 @@
       class="mates-page__grid"
     >
       <MateCard
-        v-for="mate in mates"
+        v-for="mate in visibleMates"
         :key="mate.id"
         :mate="mate"
         @edit="openEditDialog"
@@ -148,6 +148,8 @@ const {
   updateMate,
   deleteMate,
 } = useMates()
+
+const visibleMates = computed(() => mates.value.filter(m => !m.isSystem))
 
 const addDialogOpen = ref(false)
 const editDialogOpen = ref(false)

@@ -15,7 +15,21 @@ export function useMateNames() {
     return map
   })
 
-  const mates = computed(() => data.value?.items ?? [])
+  const systemMateIds = computed(() => {
+    const set = new Set<string>()
+    for (const m of data.value?.items ?? []) {
+      if (m.isSystem) set.add(m.id)
+    }
+    return set
+  })
 
-  return { mateNames, mates }
+  const allMates = computed(() => data.value?.items ?? [])
+  const mates = computed(() => allMates.value.filter(m => !m.isSystem))
+  const systemMates = computed(() => allMates.value.filter(m => m.isSystem))
+
+  function resolveName(mateId: string, mateName?: string): string {
+    return mateName || mateNames.value[mateId] || mateId.slice(0, 8)
+  }
+
+  return { mateNames, systemMateIds, allMates, mates, systemMates, resolveName }
 }

@@ -2,6 +2,7 @@ export interface Mate {
   id: string
   name: string
   notes?: string
+  isSystem?: boolean
   createdAt: string
 }
 
