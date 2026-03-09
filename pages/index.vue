@@ -90,7 +90,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import type { Play, PaginatedResponse } from '~/types'
 import PlayCard from '~/components/PlayCard/index.vue'
 import UiButton from '~/components/UiButton/index.vue'
@@ -102,49 +101,45 @@ const { user } = useAuth()
 const { activePlay } = useActivePlay()
 const { open: openRecord } = useRecordDialog()
 
-const recentPlays = ref<Play[]>([])
 const currentPage = ref(1)
-const totalPlays = ref(0)
 
-async function fetchPlays(page: number) {
-  try {
-    const data = await $fetch<PaginatedResponse<Play>>('/api/plays', {
-      query: { page, size: PAGE_SIZE },
-    })
-    const items = data.items
+const { data: playsData, refresh: refreshPlays } = useAsyncData(
+  'home:plays',
+  () => $fetch<PaginatedResponse<Play>>('/api/plays', {
+    query: { page: currentPage.value, size: PAGE_SIZE },
+  }),
+  { default: () => null, watch: false, server: !!user.value },
+)
 
-    if (page === 1) {
-      const first = items[0]
-      if (first && !first.finishedAt) {
-        activePlay.value = first
-        recentPlays.value = items.slice(1)
-      }
-      else {
-        activePlay.value = null
-        recentPlays.value = items
-      }
-    }
-    else {
-      recentPlays.value = items
-    }
-
-    totalPlays.value = data.total
-    currentPage.value = page
+const recentPlays = computed(() => {
+  if (!playsData.value) return []
+  const items = playsData.value.items
+  if (currentPage.value === 1 && items[0] && !items[0].finishedAt) {
+    return items.slice(1)
   }
-  catch {
+  return items
+})
+
+const totalPlays = computed(() => playsData.value?.total ?? 0)
+
+watchEffect(() => {
+  if (!playsData.value) {
     activePlay.value = null
-    recentPlays.value = []
+    return
   }
-}
+  const items = playsData.value.items
+  if (currentPage.value === 1 && items[0] && !items[0].finishedAt) {
+    activePlay.value = items[0]
+  }
+  else {
+    activePlay.value = null
+  }
+})
 
 function goToPage(page: number) {
-  fetchPlays(page)
+  currentPage.value = page
+  refreshPlays()
 }
-
-onMounted(() => {
-  if (!user.value) return
-  fetchPlays(1)
-})
 </script>
 
 <style scoped>
