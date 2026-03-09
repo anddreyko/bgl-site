@@ -106,10 +106,11 @@ onMounted(() => {
 }
 
 .app-layout__status-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
+  translate: 0 1px;
 }
 
 .app-layout__status-dot--ok {
