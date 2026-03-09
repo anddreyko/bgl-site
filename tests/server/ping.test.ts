@@ -1,10 +1,10 @@
+import type { H3Event } from 'h3'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const mockFetch = vi.fn()
 
 vi.mock('h3', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  defineEventHandler: (fn: Function) => fn,
+  defineEventHandler: (fn: (event: H3Event) => unknown) => fn,
   createError: (opts: { statusCode: number, message: string }) => {
     const err = new Error(opts.message) as Error & { statusCode: number }
     err.statusCode = opts.statusCode
@@ -32,8 +32,7 @@ describe('GET /api/ping', () => {
     })
 
     const handler = (await import('~/server/api/ping.get')).default
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = await handler({} as any)
+    const result = await handler({} as H3Event)
 
     expect(result).toEqual({
       status: 'ok',
