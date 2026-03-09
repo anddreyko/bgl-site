@@ -16,7 +16,6 @@ describe('GamePlaysTable', () => {
   const basePlays: Play[] = [
     {
       id: 'play-1',
-      status: 'published',
       visibility: 'public',
       startedAt: '2024-01-15T10:00:00Z',
       finishedAt: '2024-01-15T11:30:00Z',
@@ -27,7 +26,6 @@ describe('GamePlaysTable', () => {
     },
     {
       id: 'play-2',
-      status: 'draft',
       visibility: 'private',
       startedAt: '2024-01-10T14:00:00Z',
       players: [
@@ -51,18 +49,22 @@ describe('GamePlaysTable', () => {
     expect(wrapper.find('table').exists()).toBe(false)
   })
 
-  it('shows winner name', async () => {
+  it('shows W for plays with winner', async () => {
     const wrapper = await mountSuspended(GamePlaysTable, {
       props: { plays: basePlays },
     })
-    expect(wrapper.text()).toContain('Alice')
+    const outcomes = wrapper.findAll('.game-plays-table__outcome--win')
+    expect(outcomes.length).toBeGreaterThan(0)
+    expect(outcomes[0].text()).toBe('W')
   })
 
-  it('shows "In progress" for unfinished plays', async () => {
+  it('shows ... for unfinished plays', async () => {
     const wrapper = await mountSuspended(GamePlaysTable, {
       props: { plays: basePlays },
     })
-    expect(wrapper.text()).toContain('In progress')
+    const progress = wrapper.findAll('.game-plays-table__outcome--progress')
+    expect(progress.length).toBeGreaterThan(0)
+    expect(progress[0].text()).toBe('...')
   })
 
   it('shows duration for finished plays', async () => {
@@ -77,5 +79,13 @@ describe('GamePlaysTable', () => {
       props: { plays: basePlays },
     })
     expect(wrapper.find('.game-plays-table__title').text()).toBe('Play History')
+  })
+
+  it('shows Place column', async () => {
+    const wrapper = await mountSuspended(GamePlaysTable, {
+      props: { plays: basePlays },
+    })
+    const headers = wrapper.findAll('th')
+    expect(headers.map(h => h.text())).toContain('Place')
   })
 })

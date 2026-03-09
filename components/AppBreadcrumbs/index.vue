@@ -39,6 +39,7 @@ const segmentLabels: Record<string, string> = {
   game: 'Games',
   plays: 'Plays',
   mates: 'Mates',
+  places: 'Places',
   user: 'Profile',
   auth: 'Auth',
 }

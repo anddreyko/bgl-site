@@ -113,6 +113,20 @@
       />
     </UiFormField>
 
+    <!-- Place -->
+    <UiFormField
+      label="Place"
+      field-id="play-place"
+    >
+      <UiSelect
+        id="play-place"
+        :model-value="selectedPlaceId ?? ''"
+        :options="placeOptions"
+        placeholder="Select place"
+        @update:model-value="selectedPlaceId = $event || undefined"
+      />
+    </UiFormField>
+
     <!-- Visibility -->
     <UiFormField
       label="Visibility"
@@ -167,11 +181,10 @@
           label="Color"
           :field-id="`player-color-${index}`"
         >
-          <UiInput
-            :id="`player-color-${index}`"
-            :model-value="player.color ?? ''"
-            type="color"
-            @update:model-value="player.color = $event || undefined"
+          <ColorPicker
+            :model-value="player.color"
+            :label="`Color for player ${index + 1}`"
+            @update:model-value="player.color = $event"
           />
         </UiFormField>
 
@@ -194,14 +207,45 @@
         </UiButton>
       </div>
 
-      <UiButton
-        variant="secondary"
-        size="sm"
-        type="button"
-        @click="addPlayer"
-      >
-        Add player
-      </UiButton>
+      <div class="play-form__player-actions">
+        <UiButton
+          variant="secondary"
+          size="sm"
+          type="button"
+          @click="addPlayer"
+        >
+          Add player
+        </UiButton>
+        <UiButton
+          v-if="automaMate"
+          variant="ghost"
+          size="sm"
+          type="button"
+          @click="addSystemPlayer(automaMate!)"
+        >
+          + Automa
+        </UiButton>
+        <UiButton
+          v-if="anonymousMate"
+          variant="ghost"
+          size="sm"
+          type="button"
+          @click="addSystemPlayer(anonymousMate!)"
+        >
+          + Anonymous
+        </UiButton>
+
+        <span class="play-form__actions-divider" />
+
+        <UiButton
+          variant="secondary"
+          size="sm"
+          type="button"
+          @click="openNewMateDialog"
+        >
+          Create Mate
+        </UiButton>
+      </div>
     </fieldset>
 
     <!-- Submit -->
@@ -211,21 +255,39 @@
     >
       {{ submitLabel ?? 'Start Play' }}
     </UiButton>
+
+    <!-- New mate dialog -->
+    <UiDialog
+      :open="newMateDialogOpen"
+      title="Create Mate"
+      @update:open="!$event && closeNewMateDialog()"
+    >
+      <MateForm
+        :loading="creatingMate"
+        @submit="handleNewMate"
+        @cancel="closeNewMateDialog"
+      />
+    </UiDialog>
   </form>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Mate, Play, PlayCreatePayload, Visibility, Player } from '~/types'
+import type { Mate, MatePayload, Place, Play, PlayCreatePayload, Visibility, Player } from '~/types'
 import UiFormField from '~/components/UiFormField/index.vue'
 import UiInput from '~/components/UiInput/index.vue'
 import UiSelect from '~/components/UiSelect/index.vue'
 import UiButton from '~/components/UiButton/index.vue'
+import UiDialog from '~/components/UiDialog/index.vue'
+import ColorPicker from '~/components/ColorPicker/index.vue'
+import MateForm from '~/components/MateForm/index.vue'
 
 type PlayerDraft = Omit<Player, 'id'>
 
 const props = defineProps<{
   mates?: Mate[]
+  systemMates?: Mate[]
+  places?: Place[]
   initialData?: Play | null
   submitLabel?: string
 }>()
@@ -243,6 +305,7 @@ const sessionName = ref(init?.name ?? '')
 const startedAtLocal = ref(toLocalDatetime(init?.startedAt ? new Date(init.startedAt) : new Date()))
 const finishedAtLocal = ref(init?.finishedAt ? toLocalDatetime(new Date(init.finishedAt)) : '')
 const durationMode = ref<'stopwatch' | 'manual'>(init?.finishedAt ? 'manual' : 'stopwatch')
+const selectedPlaceId = ref<string | undefined>(init?.locationId)
 const visibility = ref<Visibility>(init?.visibility ?? 'private')
 const players = ref<PlayerDraft[]>(
   init?.players?.map(p => ({
@@ -271,9 +334,19 @@ const visibilityOptions = [
   { value: 'public', label: 'Public' },
 ]
 
-const mateOptions = computed(() =>
-  (props.mates ?? []).map(m => ({ value: m.id, label: m.name })),
+const placeOptions = computed(() =>
+  (props.places ?? []).map(p => ({ value: p.id, label: p.name })),
 )
+
+const mateOptions = computed(() => {
+  const system = (props.systemMates ?? []).map(m => ({ value: m.id, label: m.name, group: 'system' }))
+  const regular = (props.mates ?? []).map(m => ({ value: m.id, label: m.name }))
+  const existingIds = new Set([...system, ...regular].map(o => o.value))
+  const created = createdMates.value
+    .filter(m => !existingIds.has(m.id))
+    .map(m => ({ value: m.id, label: m.name }))
+  return [...system, ...regular, ...created]
+})
 
 function onGameSearch(query: string) {
   if (searchTimeout) clearTimeout(searchTimeout)
@@ -313,6 +386,50 @@ function selectGame(game: { id: string, name: string }) {
   gameResults.value = []
 }
 
+const newMateDialogOpen = ref(false)
+const creatingMate = ref(false)
+const createdMates = ref<Array<{ id: string, name: string }>>([])
+
+function openNewMateDialog() {
+  newMateDialogOpen.value = true
+}
+
+function closeNewMateDialog() {
+  newMateDialogOpen.value = false
+}
+
+async function handleNewMate(payload: MatePayload) {
+  creatingMate.value = true
+  try {
+    const mate = await $fetch<Mate>('/api/mates', {
+      method: 'POST',
+      body: payload,
+    })
+    createdMates.value.push({ id: mate.id, name: mate.name })
+    closeNewMateDialog()
+  }
+  finally {
+    creatingMate.value = false
+  }
+}
+
+const automaMate = computed(() =>
+  (props.systemMates ?? []).find(m => m.name.toLowerCase() === 'automa'),
+)
+
+const anonymousMate = computed(() =>
+  (props.systemMates ?? []).find(m => m.name.toLowerCase() === 'anonymous'),
+)
+
+function addSystemPlayer(mate: Mate) {
+  players.value.push({
+    mateId: mate.id,
+    score: undefined,
+    color: undefined,
+    isWinner: false,
+  })
+}
+
 function addPlayer() {
   players.value.push({
     mateId: '',
@@ -331,6 +448,7 @@ function handleSubmit() {
 
   const payload: PlayCreatePayload = {
     gameId: selectedGameId.value || undefined,
+    locationId: selectedPlaceId.value || undefined,
     name: sessionName.value || undefined,
     startedAt: toW3CDatetime(startedAtLocal.value ? new Date(startedAtLocal.value) : new Date()),
     finishedAt: durationMode.value === 'manual' && finishedAtLocal.value
@@ -430,6 +548,20 @@ function handleSubmit() {
   flex-wrap: wrap;
   padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--color-border);
+}
+
+.play-form__player-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.play-form__actions-divider {
+  width: 1px;
+  height: 1.5rem;
+  background-color: var(--color-border);
+  margin: 0 var(--space-1);
 }
 
 .play-form__winner-label {

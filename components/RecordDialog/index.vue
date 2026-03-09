@@ -30,6 +30,8 @@
         <div class="record-dialog__body">
           <PlayForm
             :mates="mates"
+            :system-mates="systemMates"
+            :places="places"
             @submit="onSubmit"
           />
         </div>
@@ -52,7 +54,8 @@ import PlayForm from '~/components/PlayForm/index.vue'
 
 const { isOpen, open, close } = useRecordDialog()
 const { startPlay } = useActivePlay()
-const { mates } = useMateNames()
+const { mates, systemMates } = useMateNames()
+const { places } = usePlaceNames()
 
 async function onSubmit(payload: PlayCreatePayload) {
   try {

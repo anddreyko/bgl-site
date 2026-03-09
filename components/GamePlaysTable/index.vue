@@ -10,9 +10,9 @@
           <tr>
             <th>Players</th>
             <th>Date</th>
+            <th>Place</th>
             <th>Title</th>
             <th>Duration</th>
-            <th>Score</th>
             <th>Outcome</th>
           </tr>
         </thead>
@@ -29,14 +29,12 @@
           >
             <td>
               <div class="game-plays-table__players">
-                <span
+                <MateAvatar
                   v-for="player in play.players.slice(0, 4)"
                   :key="player.id"
-                  class="game-plays-table__player-avatar"
-                  :title="playerName(player)"
-                >
-                  {{ getInitials(playerName(player)) }}
-                </span>
+                  :mate-id="player.mateId"
+                  :mate-name="player.mateName"
+                />
                 <span
                   v-if="play.players.length > 4"
                   class="game-plays-table__player-more"
@@ -48,34 +46,54 @@
             <td class="game-plays-table__date">
               {{ formatDate(play.startedAt) }}
             </td>
+            <td class="game-plays-table__place">
+              -
+            </td>
             <td class="game-plays-table__name">
               {{ play.name || '-' }}
             </td>
             <td class="game-plays-table__duration">
               {{ formatDuration(play) }}
             </td>
-            <td class="game-plays-table__score">
-              {{ topScore(play) }}
-            </td>
             <td>
               <span
-                v-if="hasWinner(play)"
-                class="game-plays-table__outcome game-plays-table__outcome--win"
-              >
-                {{ winnerNames(play) }}
-              </span>
-              <span
-                v-else-if="play.finishedAt"
-                class="game-plays-table__outcome"
-              >
-                -
-              </span>
-              <span
-                v-else
+                v-if="!play.finishedAt"
                 class="game-plays-table__outcome game-plays-table__outcome--progress"
               >
-                In progress
+                ...
               </span>
+              <template v-else-if="isSingleTeam(play)">
+                <span
+                  v-if="hasWinner(play)"
+                  class="game-plays-table__outcome game-plays-table__outcome--win"
+                >
+                  W
+                </span>
+                <span
+                  v-else
+                  class="game-plays-table__outcome game-plays-table__outcome--loss"
+                >
+                  L
+                </span>
+              </template>
+              <div
+                v-else
+                class="game-plays-table__outcome-list"
+              >
+                <span
+                  v-for="entry in outcomeEntries(play)"
+                  :key="entry.name"
+                  class="game-plays-table__outcome-entry"
+                >
+                  <span class="game-plays-table__outcome-name">{{ entry.name }}</span>
+                  <span
+                    class="game-plays-table__outcome"
+                    :class="entry.won ? 'game-plays-table__outcome--win' : 'game-plays-table__outcome--loss'"
+                  >
+                    {{ entry.won ? 'W' : 'L' }}
+                  </span>
+                </span>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -86,21 +104,23 @@
 
 <script setup lang="ts">
 import type { Play } from '~/types'
-import { getInitials } from '~/utils/color-from-string'
+import MateAvatar from '~/components/MateAvatar/index.vue'
 
 defineProps<{
   plays: Play[]
 }>()
 
-const { mateNames } = useMateNames()
-
-function playerName(player: { mateId: string, mateName?: string }): string {
-  return player.mateName || mateNames.value[player.mateId] || player.mateId.slice(0, 8)
-}
+const { resolveName } = useMateNames()
 
 function formatDate(iso: string): string {
   const d = new Date(iso)
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  const isMidnightUtc = d.getUTCHours() === 0 && d.getUTCMinutes() === 0 && d.getUTCSeconds() === 0
+  const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }
+  if (!isMidnightUtc) {
+    opts.hour = '2-digit'
+    opts.minute = '2-digit'
+  }
+  return d.toLocaleDateString('en-GB', opts)
 }
 
 function formatDuration(play: Play): string {
@@ -113,20 +133,34 @@ function formatDuration(play: Play): string {
   return m > 0 ? `${h}.${Math.round(m / 6)}h` : `${h}h`
 }
 
-function topScore(play: Play): string {
-  const scores = play.players.filter(p => p.score != null).map(p => p.score!)
-  if (scores.length === 0) return '-'
-  return String(Math.max(...scores))
-}
-
 function hasWinner(play: Play): boolean {
   return play.players.some(p => p.isWinner)
 }
 
-function winnerNames(play: Play): string {
-  const winners = play.players.filter(p => p.isWinner)
-  if (winners.length === 0) return 'Winner'
-  return winners.map(w => playerName(w)).join(', ')
+function isSingleTeam(play: Play): boolean {
+  if (play.players.length <= 1) return true
+  const tags = play.players.map(p => p.teamTag).filter(Boolean)
+  if (tags.length === 0) return false
+  return new Set(tags).size <= 1
+}
+
+function outcomeEntries(play: Play): { name: string, won: boolean }[] {
+  const tags = new Set(play.players.map(p => p.teamTag).filter(Boolean))
+
+  if (tags.size > 1) {
+    const teamResults = new Map<string, boolean>()
+    for (const p of play.players) {
+      if (p.teamTag && !teamResults.has(p.teamTag)) {
+        teamResults.set(p.teamTag, !!p.isWinner)
+      }
+    }
+    return [...teamResults.entries()].map(([name, won]) => ({ name, won }))
+  }
+
+  return play.players.map(p => ({
+    name: resolveName(p.mateId, p.mateName),
+    won: !!p.isWinner,
+  }))
 }
 </script>
 
@@ -182,20 +216,6 @@ function winnerNames(play: Play): string {
   align-items: center;
 }
 
-.game-plays-table__player-avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-surface-raised);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
-  flex-shrink: 0;
-}
-
 .game-plays-table__player-more {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
@@ -218,21 +238,44 @@ function winnerNames(play: Play): string {
   font-weight: var(--font-weight-medium);
 }
 
-.game-plays-table__score {
-  font-weight: var(--font-weight-bold);
+.game-plays-table__place {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 
 .game-plays-table__outcome {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-secondary);
 }
 
 .game-plays-table__outcome--win {
-  color: var(--color-success);
-  font-weight: var(--font-weight-semibold);
+  color: var(--color-warning);
+}
+
+.game-plays-table__outcome--loss {
+  color: var(--color-text-disabled);
 }
 
 .game-plays-table__outcome--progress {
   color: var(--color-warning);
+  font-weight: var(--font-weight-normal);
+}
+
+.game-plays-table__outcome-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.game-plays-table__outcome-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+}
+
+.game-plays-table__outcome-name {
+  color: var(--color-text-secondary);
 }
 </style>

@@ -27,6 +27,12 @@
       </li>
       <li>
         <NuxtLink
+          to="/places"
+          class="main-menu__link"
+        >Places</NuxtLink>
+      </li>
+      <li>
+        <NuxtLink
           to="/plays"
           class="main-menu__link"
         >Plays</NuxtLink>

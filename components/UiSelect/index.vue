@@ -41,6 +41,7 @@
             :key="option.value"
             :value="option.value"
             class="ui-select__item"
+            :class="{ 'ui-select__item--muted': option.group === 'system' }"
           >
             <SelectItemText>{{ option.label }}</SelectItemText>
             <SelectItemIndicator class="ui-select__indicator">
@@ -82,7 +83,7 @@ import {
 
 withDefaults(defineProps<{
   modelValue: string
-  options: Array<{ value: string, label: string }>
+  options: Array<{ value: string, label: string, group?: string }>
   placeholder?: string
   disabled?: boolean
   error?: boolean
@@ -127,6 +128,12 @@ defineEmits<{
 
 .ui-select__item[data-highlighted] {
   background-color: var(--color-surface-sunken);
+}
+
+.ui-select__item--muted {
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text-secondary);
+  font-style: italic;
 }
 
 .ui-select__indicator {
