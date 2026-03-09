@@ -4,10 +4,10 @@ import AppBreadcrumbs from '~/components/AppBreadcrumbs/index.vue'
 import RecordDialog from '~/components/RecordDialog/index.vue'
 import UiFloatingAction from '~/components/UiFloatingAction/index.vue'
 
-const app = useAppConfig()
 const { user } = useAuth()
 const { activePlay, checkActivePlay } = useActivePlay()
 const { open: openRecord } = useRecordDialog()
+const { backendOnline, backendVersion, gitHash, stageEnvLabel, checkBackend } = useAppStatus()
 
 function handleRecord() {
   if (activePlay.value) {
@@ -19,6 +19,7 @@ function handleRecord() {
 }
 
 onMounted(() => {
+  checkBackend()
   if (user.value) {
     checkActivePlay()
   }
@@ -44,7 +45,18 @@ onMounted(() => {
     </main>
     <footer class="app-layout__footer">
       <div class="app-layout__container">
-        ver {{ app?.version }}
+        <span class="app-layout__footer-content">
+          <span
+            class="app-layout__status-dot"
+            :class="backendOnline ? 'app-layout__status-dot--ok' : 'app-layout__status-dot--err'"
+          />
+          <template v-if="backendOnline">
+            {{ stageEnvLabel }} · {{ backendVersion }} · {{ gitHash }}
+          </template>
+          <template v-else>
+            {{ stageEnvLabel }} · offline · {{ gitHash }}
+          </template>
+        </span>
       </div>
     </footer>
     <RecordDialog />
@@ -85,6 +97,27 @@ onMounted(() => {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   padding: var(--space-4) 0;
+}
+
+.app-layout__footer-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.app-layout__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.app-layout__status-dot--ok {
+  background-color: #22c55e;
+}
+
+.app-layout__status-dot--err {
+  background-color: #ef4444;
 }
 
 /* FAB visible only on mobile */

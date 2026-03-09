@@ -1,3 +1,14 @@
+import { execFileSync } from 'node:child_process'
+
+function getGitCommitHash(): string {
+  try {
+    return execFileSync('git', ['rev-parse', '--short', 'HEAD']).toString().trim()
+  }
+  catch {
+    return 'unknown'
+  }
+}
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
@@ -20,6 +31,10 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     apiHost: '',
+    public: {
+      gitCommitHash: process.env.NUXT_PUBLIC_GIT_COMMIT_HASH || getGitCommitHash(),
+      releaseStage: process.env.NUXT_PUBLIC_RELEASE_STAGE || 'alpha',
+    },
   },
   compatibilityDate: '2026-03-05',
 })
