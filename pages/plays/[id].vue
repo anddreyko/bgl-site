@@ -17,13 +17,33 @@
       <div class="play-detail__header">
         <div class="play-detail__titles">
           <h2 class="play-detail__title">
-            {{ play.name || play.game?.name || play.gameName || `Play #${play.id.slice(0, 8)}` }}
+            <NuxtLink
+              v-if="!play.name && play.game"
+              :to="`/game/${play.game.id}`"
+              class="play-detail__game-link"
+            >
+              {{ play.game.name }}
+            </NuxtLink>
+            <template v-else>
+              {{ play.name || play.gameName || `Play #${play.id.slice(0, 8)}` }}
+            </template>
           </h2>
           <p
-            v-if="play.name && (play.game?.name || play.gameName)"
+            v-if="play.game"
             class="play-detail__subtitle"
           >
-            {{ play.game?.name ?? play.gameName }}
+            <NuxtLink
+              :to="`/game/${play.game.id}`"
+              class="play-detail__game-link"
+            >
+              {{ play.game.name }}
+            </NuxtLink>
+          </p>
+          <p
+            v-else-if="play.gameName"
+            class="play-detail__subtitle"
+          >
+            {{ play.gameName }}
           </p>
         </div>
         <div class="play-detail__actions">
@@ -51,7 +71,7 @@
 
       <div class="play-detail__meta">
         <div class="play-detail__badges">
-          <UiBadge :variant="statusVariant">{{ play.status }}</UiBadge>
+          <UiBadge :variant="play.finishedAt ? 'success' : 'warning'">{{ play.finishedAt ? 'Finished' : 'In progress' }}</UiBadge>
           <UiBadge variant="info">{{ play.visibility }}</UiBadge>
         </div>
 
@@ -141,6 +161,8 @@
       <PlayForm
         :initial-data="play"
         :mates="mates"
+        :system-mates="systemMates"
+        :places="places"
         submit-label="Save"
         @submit="onUpdatePlay"
       />
@@ -173,20 +195,14 @@ const overlayOpen = ref(false)
 const confirmDelete = ref(false)
 const deleting = ref(false)
 
-const { mates } = useMateNames()
+const { mates, systemMates } = useMateNames()
+const { places } = usePlaceNames()
 
+const requestFetch = useRequestFetch()
 const { data: play, pending, refresh } = await useAsyncData<Play>(
   `play-${playId}`,
-  () => $fetch<Play>(`/api/plays/${playId}`),
+  () => requestFetch<Play>(`/api/plays/${playId}`),
 )
-
-const statusVariant = computed(() => {
-  switch (play.value?.status) {
-    case 'published': return 'success'
-    case 'deleted': return 'danger'
-    default: return 'warning'
-  }
-})
 
 const formattedStarted = computed(() => {
   if (!play.value) return ''
@@ -212,7 +228,7 @@ const formattedDuration = computed(() => {
 async function onFinishPlay() {
   if (!play.value) return
 
-  await $fetch(`/api/plays/${play.value.id}/finish`, {
+  await $fetch(`/api/plays/${play.value.id}`, {
     method: 'PATCH',
     body: { finishedAt: new Date().toISOString() },
   })
@@ -245,6 +261,7 @@ async function onUpdatePlay(payload: PlayCreatePayload) {
   const body: PlayUpdatePayload = {
     name: payload.name,
     gameId: payload.gameId,
+    locationId: payload.locationId,
     visibility: payload.visibility,
     players: payload.players,
   }
@@ -294,6 +311,15 @@ onUnmounted(() => clearBreadcrumb())
   margin: 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+}
+
+.play-detail__game-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.play-detail__game-link:hover {
+  text-decoration: underline;
 }
 
 .play-detail__actions {

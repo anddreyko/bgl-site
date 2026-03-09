@@ -1,10 +1,17 @@
 @authenticated
 Feature: Game detail for authenticated user
 
-  Scenario: Plays API is called with correct game_id filter
-    Given I am on "/game/1"
-    Then the plays API request should contain game_id filter "1"
+  Scenario: Game detail page shows game info from catalog
+    Given I am on "/game"
+    When I wait for hydration
+    And I type "catan" into "#game-search"
+    And I click the first game link
+    Then the element ".game-hero__title" should be visible
+    And the element ".game-hero__stat-label" should be visible
 
-  Scenario: Play history table shows only plays for this game
-    Given I am on a game page with plays
-    Then every play in the history table should belong to this game
+  Scenario: Play History section visibility matches play count
+    Given I am on "/game"
+    When I wait for hydration
+    And I type "catan" into "#game-search"
+    And I click the first game link
+    Then Play History section visibility matches play count

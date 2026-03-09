@@ -35,6 +35,29 @@ export const Winner: Story = {
   },
 }
 
+export const Automa: Story = {
+  args: {
+    player: {
+      id: 'p-automa',
+      mateId: 'mate-sys-automa',
+      mateName: 'Automa',
+      score: 45,
+    },
+  },
+}
+
+export const Anonymous: Story = {
+  args: {
+    player: {
+      id: 'p-anon',
+      mateId: 'mate-sys-anonymous',
+      mateName: 'Anonymous',
+      score: 30,
+      isWinner: true,
+    },
+  },
+}
+
 export const NoColor: Story = {
   args: {
     player: {

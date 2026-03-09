@@ -85,7 +85,7 @@ watch(game, (g) => {
   if (g) {
     setBreadcrumb(g.name ?? 'Game')
   }
-})
+}, { immediate: true })
 
 onUnmounted(() => clearBreadcrumb())
 

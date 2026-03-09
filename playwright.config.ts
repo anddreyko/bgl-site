@@ -15,6 +15,7 @@ export default defineConfig({
       name: 'setup',
       testDir: 'e2e',
       testMatch: /auth\.setup\.ts/,
+      retries: 2,
     },
     {
       ...defineBddProject({

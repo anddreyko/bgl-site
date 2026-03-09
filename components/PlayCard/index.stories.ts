@@ -14,7 +14,6 @@ export const Finished: Story = {
     play: {
       id: 'play-1',
       name: 'Friday Night Session',
-      status: 'published' as const,
       visibility: 'public' as const,
       startedAt: '2024-06-15T19:00:00Z',
       finishedAt: '2024-06-15T21:30:00Z',
@@ -32,7 +31,6 @@ export const InProgress: Story = {
   args: {
     play: {
       id: 'play-2',
-      status: 'draft' as const,
       visibility: 'private' as const,
       startedAt: new Date(Date.now() - 3600000).toISOString(),
       game: { id: 'g2', name: 'Descent' },
@@ -46,12 +44,28 @@ export const InProgress: Story = {
   },
 }
 
+export const WithSystemMates: Story = {
+  args: {
+    play: {
+      id: 'play-4',
+      name: 'Solo vs Automa',
+      visibility: 'private' as const,
+      startedAt: '2024-06-18T20:00:00Z',
+      finishedAt: '2024-06-18T21:30:00Z',
+      game: { id: 'g1', name: 'Scythe' },
+      players: [
+        { id: 'p1', mateId: 'mate-1', mateName: 'Alice', score: 50, isWinner: true },
+        { id: 'p2', mateId: 'mate-sys-automa', mateName: 'Automa', score: 45, isWinner: false },
+      ],
+    },
+  },
+}
+
 export const NoPlayers: Story = {
   args: {
     play: {
       id: 'play-3',
       name: 'Solo Run',
-      status: 'published' as const,
       visibility: 'private' as const,
       startedAt: '2024-06-10T10:00:00Z',
       finishedAt: '2024-06-10T11:15:00Z',

@@ -17,10 +17,11 @@ const totalPlays = ref(0)
 
 const { data: user, status, error } = await useFetch<User>(() => `/api/user/${param.value}`)
 
+const requestFetch = useRequestFetch()
 const { data: playsData, status: playsStatus } = useAsyncData(
   `user-plays-${param.value}`,
   async () => {
-    const data = await $fetch<PaginatedResponse<Play>>('/api/plays', {
+    const data = await requestFetch<PaginatedResponse<Play>>('/api/plays', {
       query: { page: currentPage.value, size: PAGE_SIZE, authorId: param.value },
     })
     totalPlays.value = data.total

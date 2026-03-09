@@ -28,7 +28,7 @@ When('I click on {string}', async ({ page }, text: string) => {
 })
 
 Then('the element {string} should be visible', async ({ page }, selector: string) => {
-  await expect(page.locator(selector)).toBeVisible()
+  await expect(page.locator(selector).first()).toBeVisible()
 })
 
 When('I fill in {string} with {string}', async ({ page }, label: string, value: string) => {

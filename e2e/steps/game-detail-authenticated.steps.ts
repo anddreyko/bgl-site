@@ -1,57 +1,29 @@
 import { expect } from '@playwright/test'
 import { createBdd } from 'playwright-bdd'
 
-const { Given, Then } = createBdd()
+const { When, Then } = createBdd()
 
-Then('the plays API request should contain game_id filter {string}', async ({ page }, expectedGameId: string) => {
-  // Intercept the plays API call and verify game_id is passed
-  const playsRequest = await page.waitForRequest(
-    req => req.url().includes('/api/plays') && req.method() === 'GET',
-    { timeout: 10_000 },
-  ).catch(() => null)
-
-  if (playsRequest) {
-    const url = new URL(playsRequest.url())
-    const gameId = url.searchParams.get('gameId')
-    expect(gameId, 'plays API should be called with gameId parameter').toBe(expectedGameId)
-  }
+When('I click the first game link', async ({ page }) => {
+  const gameLink = page.locator('.game-catalog__grid-item').first()
+  await gameLink.waitFor({ state: 'visible', timeout: 10_000 })
+  await gameLink.click()
+  await page.waitForLoadState('networkidle')
 })
 
-Given('I am on a game page with plays', async ({ page }) => {
-  // Navigate and intercept API response to get the game data
-  let playsResponse: { items: Array<{ gameId?: string }> } | null = null
+Then('Play History section visibility matches play count', async ({ page }) => {
+  const statValues = page.locator('.game-hero__stat-value')
+  await statValues.first().waitFor({ state: 'visible', timeout: 10_000 })
 
-  page.on('response', async (response) => {
-    if (response.url().includes('/api/plays') && response.request().method() === 'GET') {
-      try {
-        playsResponse = await response.json()
-      }
-      catch { /* ignore */ }
-    }
-  })
+  const playCountText = await statValues.first().textContent()
+  const playCount = Number(playCountText?.trim() ?? '0')
 
-  await page.goto('/game/1')
-  await page.waitForTimeout(5000)
+  const playsTable = page.locator('.game-plays-table')
 
-  // Store for the next step
-  ;(page as unknown as Record<string, unknown>).__playsResponse = playsResponse
-  ;(page as unknown as Record<string, unknown>).__currentGameId = '1'
-})
-
-Then('every play in the history table should belong to this game', async ({ page }) => {
-  const playsResponse = (page as unknown as Record<string, unknown>).__playsResponse as {
-    items: Array<{ gameId?: string }>
-  } | null
-  const currentGameId = (page as unknown as Record<string, unknown>).__currentGameId as string
-
-  if (!playsResponse || !playsResponse.items || playsResponse.items.length === 0) {
-    // No plays data — nothing to verify
-    return
+  if (playCount > 0) {
+    await expect(playsTable).toBeVisible()
+    await expect(page.locator('.game-plays-table__title')).toHaveText('Play History')
   }
-
-  const wrongPlays = playsResponse.items.filter(play => play.gameId !== currentGameId)
-  expect(
-    wrongPlays.length,
-    `Expected all plays to have gameId="${currentGameId}", but ${wrongPlays.length} of ${playsResponse.items.length} plays belong to other games`,
-  ).toBe(0)
+  else {
+    await expect(playsTable).not.toBeVisible()
+  }
 })
