@@ -85,13 +85,13 @@
                   :key="entry.name"
                   class="game-plays-table__outcome-entry"
                 >
-                  <span class="game-plays-table__outcome-name">{{ entry.name }}</span>
                   <span
                     class="game-plays-table__outcome"
                     :class="entry.won ? 'game-plays-table__outcome--win' : 'game-plays-table__outcome--loss'"
                   >
-                    {{ entry.won ? 'W' : 'L' }}
+                    {{ entry.won ? 'W' : 'L' }}:
                   </span>
+                  <span class="game-plays-table__outcome-name">{{ entry.name }}</span>
                 </span>
               </div>
             </td>
@@ -245,12 +245,12 @@ function outcomeEntries(play: Play): { name: string, won: boolean }[] {
 
 .game-plays-table__outcome {
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-normal);
   color: var(--color-text-secondary);
 }
 
 .game-plays-table__outcome--win {
-  color: var(--color-warning);
+  color: var(--color-crown);
 }
 
 .game-plays-table__outcome--loss {
