@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     if (method === 'DELETE') {
-      await api(`/v1/plays/sessions/${id}`, {
+      await api(`/v1/plays/${id}`, {
         method: 'DELETE',
       })
       return null
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
     if (method === 'PUT') {
       const body = await readBody<PlayUpdatePayload>(event)
-      const response = await api<ApiResponse<Play>>(`/v1/plays/sessions/${id}`, {
+      const response = await api<ApiResponse<Play>>(`/v1/plays/${id}`, {
         method: 'PUT',
         body,
       })
@@ -30,14 +30,14 @@ export default defineEventHandler(async (event) => {
 
     if (method === 'PATCH') {
       const body = await readBody(event)
-      const response = await api<ApiResponse<Play>>(`/v1/plays/sessions/${id}`, {
+      const response = await api<ApiResponse<Play>>(`/v1/plays/${id}`, {
         method: 'PATCH',
         body,
       })
       return unwrap(response)
     }
 
-    const response = await api<ApiResponse<Play>>(`/v1/plays/sessions/${id}`)
+    const response = await api<ApiResponse<Play>>(`/v1/plays/${id}`)
     return unwrap(response)
   }
   catch (err) {

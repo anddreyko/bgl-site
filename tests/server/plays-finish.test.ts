@@ -36,7 +36,7 @@ describe('server/api/plays/[id] PATCH', () => {
     mockGetMethod.mockReset()
   })
 
-  it('PATCH proxies to /v1/plays/sessions/{id}', async () => {
+  it('PATCH proxies to /v1/plays/{id}', async () => {
     const fakeResponse = { code: 0, data: { id: 'p1' } }
     mockFetch.mockResolvedValue(fakeResponse)
     mockReadBody.mockResolvedValue({ finishedAt: '2026-01-01T00:00:00Z' })
@@ -51,7 +51,7 @@ describe('server/api/plays/[id] PATCH', () => {
 
     await handler(event)
 
-    expect(mockFetch).toHaveBeenCalledWith('/v1/plays/sessions/p1', expect.objectContaining({
+    expect(mockFetch).toHaveBeenCalledWith('/v1/plays/p1', expect.objectContaining({
       method: 'PATCH',
       body: { finishedAt: '2026-01-01T00:00:00Z' },
     }))

@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   try {
     if (method === 'POST') {
       const body = await readBody<PlayCreatePayload>(event)
-      const response = await api<ApiResponse<Play>>('/v1/plays/sessions', {
+      const response = await api<ApiResponse<Play>>('/v1/plays', {
         method: 'POST',
         body,
       })
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
     if (raw.authorId) query.author_id = raw.authorId
     if (raw.from) query.from = raw.from
     if (raw.to) query.to = raw.to
-    const response = await api<ApiResponse<PaginatedResponse<Play>>>('/v1/plays/sessions', { query })
+    const response = await api<ApiResponse<PaginatedResponse<Play>>>('/v1/plays', { query })
     return unwrap(response)
   }
   catch (err) {

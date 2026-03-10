@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   const api = createApiClient(event)
 
   try {
-    const response = await api<ApiResponse<Play>>(`/v1/plays/sessions/${id}/restore`, {
+    const response = await api<ApiResponse<Play>>(`/v1/plays/${id}/restore`, {
       method: 'PATCH',
     })
     return unwrap(response)

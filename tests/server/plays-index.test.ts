@@ -33,7 +33,7 @@ describe('server/api/plays/index', () => {
     mockReadBody.mockReset()
   })
 
-  it('GET proxies to /v1/plays/sessions with query', async () => {
+  it('GET proxies to /v1/plays with query', async () => {
     const fakeResponse = { code: 0, data: { items: [], total: 0 } }
     mockFetch.mockResolvedValue(fakeResponse)
 
@@ -42,11 +42,11 @@ describe('server/api/plays/index', () => {
     const event = { method: 'GET', node: { req: { method: 'GET' } } } as never
     await handler(event)
 
-    expect(mockFetch).toHaveBeenCalledWith('/v1/plays/sessions', expect.objectContaining({ query: expect.anything() }))
+    expect(mockFetch).toHaveBeenCalledWith('/v1/plays', expect.objectContaining({ query: expect.anything() }))
     expect(mockUnwrap).toHaveBeenCalledWith(fakeResponse)
   })
 
-  it('POST proxies to /v1/plays/sessions with body', async () => {
+  it('POST proxies to /v1/plays with body', async () => {
     const fakeResponse = { code: 0, data: { id: 'play-1' } }
     mockFetch.mockResolvedValue(fakeResponse)
     mockReadBody.mockResolvedValue({ visibility: 'private', players: [] })
@@ -60,7 +60,7 @@ describe('server/api/plays/index', () => {
 
     await handler(event)
 
-    expect(mockFetch).toHaveBeenCalledWith('/v1/plays/sessions', expect.objectContaining({
+    expect(mockFetch).toHaveBeenCalledWith('/v1/plays', expect.objectContaining({
       method: 'POST',
       body: { visibility: 'private', players: [] },
     }))
