@@ -3,6 +3,7 @@ import UiButton from '~/components/UiButton/index.vue'
 import UiInput from '~/components/UiInput/index.vue'
 import UiFormField from '~/components/UiFormField/index.vue'
 import { validateEmail, validatePassword } from '~/utils/auth-validation'
+import { getErrorMessage } from '~/utils/error-message'
 
 definePageMeta({ layout: 'auth' })
 
@@ -48,8 +49,7 @@ async function handleSubmit() {
     await navigateTo('/auth/confirm')
   }
   catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Registration failed. Please try again.'
-    errors.form = message
+    errors.form = getErrorMessage(error, 'Registration failed. Please try again.')
   }
   finally {
     isLoading.value = false

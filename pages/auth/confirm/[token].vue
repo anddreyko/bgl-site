@@ -3,6 +3,7 @@ import UiSpinner from '~/components/UiSpinner/index.vue'
 import UiButton from '~/components/UiButton/index.vue'
 import UiInput from '~/components/UiInput/index.vue'
 import UiFormField from '~/components/UiFormField/index.vue'
+import { getErrorMessage } from '~/utils/error-message'
 
 definePageMeta({ layout: 'auth' })
 
@@ -33,12 +34,12 @@ const status = computed(() => {
 const errorMessage = computed(() => {
   if (manualError.value) return manualError.value
   if (!error.value) return ''
-  return error.value.message || 'Confirmation failed. The code may be expired or invalid.'
+  return getErrorMessage(error.value, 'Confirmation failed. The code may be expired or invalid.')
 })
 
 watch(status, async (val) => {
   if (val === 'success') {
-    await navigateTo('/auth/sign-in')
+    await navigateTo('/')
   }
 }, { immediate: true })
 
@@ -56,12 +57,11 @@ async function handleManualSubmit() {
     })
 
     manualStatus.value = 'success'
-    await navigateTo('/auth/sign-in')
+    await navigateTo('/')
   }
   catch (err: unknown) {
     manualStatus.value = 'error'
-    const message = err instanceof Error ? err.message : ''
-    manualError.value = message || 'Confirmation failed. The code may be expired or invalid.'
+    manualError.value = getErrorMessage(err, 'Confirmation failed. The code may be expired or invalid.')
   }
 }
 </script>
@@ -88,7 +88,7 @@ async function handleManualSubmit() {
       role="status"
     >
       <p class="confirm__text confirm__text--success">
-        Email confirmed! Redirecting to sign in...
+        Email confirmed! Redirecting...
       </p>
     </div>
 

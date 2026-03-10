@@ -2,6 +2,7 @@
 import UiButton from '~/components/UiButton/index.vue'
 import UiInput from '~/components/UiInput/index.vue'
 import UiFormField from '~/components/UiFormField/index.vue'
+import { getErrorMessage } from '~/utils/error-message'
 
 definePageMeta({ layout: 'auth' })
 
@@ -25,12 +26,11 @@ async function handleSubmit() {
     })
 
     status.value = 'success'
-    await navigateTo('/auth/sign-in')
+    await navigateTo('/')
   }
   catch (error: unknown) {
     status.value = 'error'
-    const message = error instanceof Error ? error.message : ''
-    errorMessage.value = message || 'Confirmation failed. The code may be expired or invalid.'
+    errorMessage.value = getErrorMessage(error, 'Confirmation failed. The code may be expired or invalid.')
   }
 }
 </script>
@@ -51,7 +51,7 @@ async function handleSubmit() {
       role="status"
     >
       <p class="confirm__text confirm__text--success">
-        Email confirmed! Redirecting to sign in...
+        Email confirmed! Redirecting...
       </p>
     </div>
 

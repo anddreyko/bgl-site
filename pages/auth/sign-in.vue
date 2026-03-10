@@ -3,6 +3,7 @@ import UiButton from '~/components/UiButton/index.vue'
 import UiInput from '~/components/UiInput/index.vue'
 import UiFormField from '~/components/UiFormField/index.vue'
 import { validateEmail, validatePassword } from '~/utils/auth-validation'
+import { getErrorMessage } from '~/utils/error-message'
 
 definePageMeta({ layout: 'auth' })
 
@@ -34,8 +35,7 @@ async function handleSubmit() {
     await navigateTo('/')
   }
   catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Invalid email or password'
-    errors.form = message
+    errors.form = getErrorMessage(error, 'Invalid email or password')
   }
   finally {
     isLoading.value = false
@@ -50,8 +50,15 @@ async function handlePasskeySignIn() {
     await navigateTo('/')
   }
   catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Passkey authentication failed'
-    errors.form = message
+    if (error instanceof DOMException && error.name === 'NotAllowedError') {
+      errors.form = 'Passkey authentication was cancelled'
+    }
+    else if (error instanceof TypeError || error instanceof ReferenceError) {
+      errors.form = 'Passkey authentication failed. Your browser may not support this feature.'
+    }
+    else {
+      errors.form = getErrorMessage(error, 'Passkey authentication failed')
+    }
   }
   finally {
     isPasskeyLoading.value = false
