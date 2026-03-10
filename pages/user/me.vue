@@ -73,7 +73,15 @@ async function handleRegisterPasskey() {
     await registerPasskey()
   }
   catch (error: unknown) {
-    passkeyError.value = error instanceof Error ? error.message : 'Failed to register passkey'
+    if (error instanceof DOMException && error.name === 'NotAllowedError') {
+      passkeyError.value = 'Passkey registration was cancelled'
+    }
+    else if (error instanceof TypeError || error instanceof ReferenceError) {
+      passkeyError.value = 'Failed to register passkey. Your browser may not support this feature.'
+    }
+    else {
+      passkeyError.value = error instanceof Error ? error.message : 'Failed to register passkey'
+    }
   }
   finally {
     isRegisteringPasskey.value = false
