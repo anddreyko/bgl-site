@@ -208,43 +208,53 @@
       </div>
 
       <div class="play-form__player-actions">
-        <UiButton
-          variant="secondary"
-          size="sm"
+        <div class="play-form__player-actions-row">
+          <UiButton
+            variant="secondary"
+            size="sm"
+            type="button"
+            @click="addPlayer"
+          >
+            Add player
+          </UiButton>
+          <UiButton
+            v-if="automaMate"
+            variant="ghost"
+            size="sm"
+            type="button"
+            class="play-form__system-btn"
+            aria-label="Add Automa"
+            @click="addSystemPlayer(automaMate!)"
+          >
+            <span class="play-form__system-label">Automa</span>
+            <span
+              class="play-form__system-icon"
+              v-html="robotSvg"
+            />
+          </UiButton>
+          <UiButton
+            v-if="anonymousMate"
+            variant="ghost"
+            size="sm"
+            type="button"
+            class="play-form__system-btn"
+            aria-label="Add Anonymous"
+            @click="addSystemPlayer(anonymousMate!)"
+          >
+            <span class="play-form__system-label">Anonymous</span>
+            <span
+              class="play-form__system-icon"
+              v-html="anonymousSvg"
+            />
+          </UiButton>
+        </div>
+        <button
           type="button"
-          @click="addPlayer"
-        >
-          Add player
-        </UiButton>
-        <UiButton
-          v-if="automaMate"
-          variant="ghost"
-          size="sm"
-          type="button"
-          @click="addSystemPlayer(automaMate!)"
-        >
-          + Automa
-        </UiButton>
-        <UiButton
-          v-if="anonymousMate"
-          variant="ghost"
-          size="sm"
-          type="button"
-          @click="addSystemPlayer(anonymousMate!)"
-        >
-          + Anonymous
-        </UiButton>
-
-        <span class="play-form__actions-divider" />
-
-        <UiButton
-          variant="secondary"
-          size="sm"
-          type="button"
+          class="play-form__create-mate-link"
           @click="openNewMateDialog"
         >
-          Create Mate
-        </UiButton>
+          Create new mate
+        </button>
       </div>
     </fieldset>
 
@@ -281,6 +291,8 @@ import UiButton from '~/components/UiButton/index.vue'
 import UiDialog from '~/components/UiDialog/index.vue'
 import ColorPicker from '~/components/ColorPicker/index.vue'
 import MateForm from '~/components/MateForm/index.vue'
+import robotSvg from '~/assets/icons/robot.svg?raw'
+import anonymousSvg from '~/assets/icons/anonymous.svg?raw'
 
 type PlayerDraft = Omit<Player, 'id'>
 
@@ -552,16 +564,53 @@ function handleSubmit() {
 
 .play-form__player-actions {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--space-2);
-  flex-wrap: wrap;
 }
 
-.play-form__actions-divider {
-  width: 1px;
-  height: 1.5rem;
-  background-color: var(--color-border);
-  margin: 0 var(--space-1);
+.play-form__player-actions-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.play-form__system-btn::before {
+  content: '+';
+}
+
+.play-form__system-icon {
+  display: none;
+  width: 20px;
+  height: 20px;
+}
+
+@media (width <= 768px) {
+  .play-form__system-label {
+    display: none;
+  }
+
+  .play-form__system-icon {
+    display: flex;
+  }
+}
+
+.play-form__system-icon :deep(svg) {
+  width: 100%;
+  height: 100%;
+}
+
+.play-form__create-mate-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.play-form__create-mate-link:hover {
+  color: var(--color-text-primary);
 }
 
 .play-form__winner-label {
