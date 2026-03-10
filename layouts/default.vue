@@ -125,8 +125,8 @@ onMounted(() => {
     padding: 0 var(--space-4);
   }
 
-  .app-layout__main {
-    padding-bottom: calc(var(--space-4) + 64px);
+  .app-layout__footer {
+    padding-bottom: calc(var(--space-4) + 60px);
   }
 }
 </style>

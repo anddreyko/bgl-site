@@ -169,7 +169,7 @@ const route = useRoute()
   display: none;
   background-color: var(--color-surface);
   border-top: 1px solid var(--color-border);
-  z-index: var(--z-fab);
+  z-index: 2147483646;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
