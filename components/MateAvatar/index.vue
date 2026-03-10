@@ -1,25 +1,37 @@
 <template>
   <span
-    v-if="systemIcon === 'robot'"
-    class="mate-avatar mate-avatar--icon"
-    :class="sizeClass"
-    :title="name"
-    v-html="robotSvg"
-  />
-  <span
-    v-else-if="systemIcon === 'anonymous'"
-    class="mate-avatar mate-avatar--icon"
-    :class="sizeClass"
-    :title="name"
-    v-html="anonymousSvg"
-  />
-  <span
-    v-else
-    class="mate-avatar"
-    :class="sizeClass"
-    :title="name"
+    class="mate-avatar-wrap"
+    :class="{ 'mate-avatar-wrap--winner': isWinner }"
   >
-    {{ getInitials(name) }}
+    <span
+      v-if="systemIcon === 'robot'"
+      class="mate-avatar mate-avatar--icon"
+      :class="sizeClass"
+      :title="name"
+      v-html="robotSvg"
+    />
+    <span
+      v-else-if="systemIcon === 'anonymous'"
+      class="mate-avatar mate-avatar--icon"
+      :class="sizeClass"
+      :title="name"
+      v-html="anonymousSvg"
+    />
+    <span
+      v-else
+      class="mate-avatar"
+      :class="sizeClass"
+      :title="name"
+    >
+      {{ getInitials(name) }}
+    </span>
+    <span
+      v-if="isWinner"
+      class="mate-avatar-wrap__crown"
+      role="img"
+      aria-label="Winner"
+      v-html="crownSvg"
+    />
   </span>
 </template>
 
@@ -28,13 +40,16 @@ import { computed } from 'vue'
 import { getInitials } from '~/utils/color-from-string'
 import robotSvg from '~/assets/icons/robot.svg?raw'
 import anonymousSvg from '~/assets/icons/anonymous.svg?raw'
+import crownSvg from '~/assets/icons/crown.svg?raw'
 
 const props = withDefaults(defineProps<{
   mateId: string
   mateName?: string
   size?: 'sm' | 'md'
+  isWinner?: boolean
 }>(), {
   size: 'sm',
+  isWinner: false,
 })
 
 const { resolveName, systemMateIds } = useMateNames()
@@ -53,6 +68,30 @@ const systemIcon = computed(() => {
 </script>
 
 <style scoped>
+.mate-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.mate-avatar-wrap--winner .mate-avatar {
+  box-shadow: 0 0 0 1px var(--color-crown);
+}
+
+.mate-avatar-wrap__crown {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--color-crown);
+  line-height: 0;
+}
+
+.mate-avatar-wrap__crown :deep(svg) {
+  width: 12px;
+  height: 12px;
+}
+
 .mate-avatar {
   display: inline-flex;
   align-items: center;

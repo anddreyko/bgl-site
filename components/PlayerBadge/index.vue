@@ -3,6 +3,7 @@
     <MateAvatar
       :mate-id="player.mateId"
       :mate-name="player.mateName"
+      :is-winner="player.isWinner"
     />
     <span
       v-if="player.color"
@@ -19,13 +20,6 @@
     >
       {{ player.score }}
     </span>
-    <span
-      v-if="player.isWinner"
-      class="player-badge__crown"
-      role="img"
-      aria-label="Winner"
-      v-html="crownSvg"
-    />
   </span>
 </template>
 
@@ -33,7 +27,6 @@
 import { computed } from 'vue'
 import type { Player } from '~/types'
 import MateAvatar from '~/components/MateAvatar/index.vue'
-import crownSvg from '~/assets/icons/crown.svg?raw'
 import { resolveColor } from '~/utils/player-colors'
 
 const props = defineProps<{
@@ -68,16 +61,5 @@ const displayName = computed(() =>
 .player-badge__score {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-}
-
-.player-badge__crown {
-  color: var(--color-crown);
-  flex-shrink: 0;
-  display: inline-flex;
-}
-
-.player-badge__crown :deep(svg) {
-  width: 16px;
-  height: 16px;
 }
 </style>

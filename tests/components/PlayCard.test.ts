@@ -70,7 +70,7 @@ describe('PlayCard', () => {
 
   it('renders winner crown', async () => {
     const wrapper = await mountSuspended(PlayCard, { props: { play: basPlay } })
-    const crown = wrapper.find('.player-badge__crown')
+    const crown = wrapper.find('.mate-avatar-wrap--winner')
     expect(crown.exists()).toBe(true)
   })
 
