@@ -29,10 +29,6 @@ const memberSince = computed(() => {
 
 const hasChanges = computed(() => name.value !== (user.value?.name ?? ''))
 
-watch(user, (u) => {
-  if (u) name.value = u.name ?? ''
-}, { immediate: true })
-
 async function handleSave() {
   if (!hasChanges.value) return
   isSaving.value = true
@@ -43,6 +39,7 @@ async function handleSave() {
       method: 'PATCH',
       body: { name: name.value },
     })
+    await $fetch('/api/auth/refresh', { method: 'POST' })
     if (user.value) {
       user.value = { ...user.value, name: name.value }
     }
