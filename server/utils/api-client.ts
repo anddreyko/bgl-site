@@ -42,17 +42,19 @@ export function handleBackendError(err: unknown): never {
   if (err instanceof FetchError) {
     const status = err.statusCode ?? 502
     const data = err.data as { message?: string } | undefined
-    const message = data?.message ?? err.message ?? 'Backend unavailable'
-    console.error(`[BFF] Backend error ${status}: ${message}`, {
+    const backendMessage = data?.message ?? err.message ?? 'Backend unavailable'
+    console.error(`[BFF] Backend error ${status}: ${backendMessage}`, {
       url: err.request?.toString(),
       method: err.options?.method,
       data: err.data,
     })
+    // Pass backend message for 4xx (client errors), generic message for 5xx/network errors
+    const clientMessage = status < 500 ? backendMessage : 'Service temporarily unavailable'
     throw createError({
       statusCode: status >= 500 ? 502 : status,
-      message,
+      message: clientMessage,
     })
   }
   console.error('[BFF] Unknown backend error:', err)
-  throw createError({ statusCode: 502, message: 'Backend unavailable' })
+  throw createError({ statusCode: 502, message: 'Service temporarily unavailable' })
 }
