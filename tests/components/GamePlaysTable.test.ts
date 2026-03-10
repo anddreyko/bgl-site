@@ -55,7 +55,7 @@ describe('GamePlaysTable', () => {
     })
     const outcomes = wrapper.findAll('.game-plays-table__outcome--win')
     expect(outcomes.length).toBeGreaterThan(0)
-    expect(outcomes[0].text()).toBe('W')
+    expect(outcomes[0].text()).toBe('W:')
   })
 
   it('shows ... for unfinished plays', async () => {
