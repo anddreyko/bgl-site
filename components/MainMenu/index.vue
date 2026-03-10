@@ -92,10 +92,21 @@ function onRecord() {
   color: var(--color-text-secondary);
   text-decoration: none;
   transition: color var(--transition-fast);
+  white-space: nowrap;
 }
 
 .main-menu__link:hover {
   color: var(--color-text-primary);
   text-decoration: none;
+}
+
+@media (width <= 768px) {
+  .main-menu {
+    gap: var(--space-2);
+  }
+
+  .main-menu__links {
+    display: none;
+  }
 }
 </style>

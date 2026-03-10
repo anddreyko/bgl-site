@@ -127,6 +127,10 @@ onMounted(() => {
 }
 
 @media (width <= 768px) {
+  .app-layout__container {
+    padding: 0 var(--space-4);
+  }
+
   .app-layout__fab {
     display: inline-flex;
   }
