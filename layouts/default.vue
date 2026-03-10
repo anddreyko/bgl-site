@@ -2,7 +2,7 @@
 import MainMenu from '~/components/MainMenu/index.vue'
 import AppBreadcrumbs from '~/components/AppBreadcrumbs/index.vue'
 import RecordDialog from '~/components/RecordDialog/index.vue'
-import UiFloatingAction from '~/components/UiFloatingAction/index.vue'
+import BottomNav from '~/components/BottomNav/index.vue'
 
 const { user } = useAuth()
 const { activePlay, checkActivePlay } = useActivePlay()
@@ -60,10 +60,9 @@ onMounted(() => {
       </div>
     </footer>
     <RecordDialog />
-    <UiFloatingAction
-      class="app-layout__fab"
-      :active="!!activePlay"
-      @click="handleRecord"
+    <BottomNav
+      :active-play="activePlay"
+      @record="handleRecord"
     />
   </div>
 </template>
@@ -121,18 +120,13 @@ onMounted(() => {
   background-color: #ef4444;
 }
 
-/* FAB visible only on mobile */
-.app-layout__fab {
-  display: none;
-}
-
 @media (width <= 768px) {
   .app-layout__container {
     padding: 0 var(--space-4);
   }
 
-  .app-layout__fab {
-    display: inline-flex;
+  .app-layout__main {
+    padding-bottom: calc(var(--space-4) + 64px);
   }
 }
 </style>

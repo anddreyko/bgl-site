@@ -103,6 +103,7 @@ function onRecord() {
 @media (width <= 768px) {
   .main-menu {
     gap: var(--space-2);
+    justify-content: space-between;
   }
 
   .main-menu__links {
