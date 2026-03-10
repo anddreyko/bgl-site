@@ -65,7 +65,7 @@
     <template v-else>
       <section class="home-page__hero">
         <h1 class="home-page__hero-title">
-          For the <span class="home-page__hero-accent">Record</span>
+          <AppLogo size="lg" />
         </h1>
         <p class="home-page__hero-text">
           Track your board game plays, stats, and victories.
@@ -91,6 +91,7 @@
 
 <script setup lang="ts">
 import type { Play, PaginatedResponse } from '~/types'
+import AppLogo from '~/components/AppLogo/index.vue'
 import PlayCard from '~/components/PlayCard/index.vue'
 import UiButton from '~/components/UiButton/index.vue'
 import UiPagination from '~/components/UiPagination/index.vue'
@@ -183,10 +184,6 @@ function goToPage(page: number) {
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   margin: 0 0 var(--space-3);
-}
-
-.home-page__hero-accent {
-  color: var(--color-record);
 }
 
 .home-page__hero-text {

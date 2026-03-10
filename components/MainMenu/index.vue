@@ -1,17 +1,11 @@
 <template>
   <nav class="main-menu">
-    <div class="main-menu__brand">
-      <NuxtLink
-        to="/"
-        class="main-menu__brand-text"
-      >
-        For the
-      </NuxtLink>
+    <AppLogo>
       <RecordButton
         :active-play="activePlay"
         @click="onRecord"
       />
-    </div>
+    </AppLogo>
     <ul class="main-menu__links">
       <li>
         <NuxtLink
@@ -54,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import AppLogo from '~/components/AppLogo/index.vue'
 import RecordButton from '~/components/RecordButton/index.vue'
 import UserAvatar from '~/components/UserAvatar/index.vue'
 
@@ -79,19 +74,6 @@ function onRecord() {
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-3) 0;
-}
-
-.main-menu__brand {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-}
-
-.main-menu__brand-text {
-  color: var(--color-text-primary);
-  text-decoration: none;
 }
 
 .main-menu__links {
