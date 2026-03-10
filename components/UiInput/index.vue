@@ -45,6 +45,9 @@ function onInput(event: Event) {
 <style scoped>
 .ui-input__field {
   width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  appearance: none;
   padding: var(--space-2) var(--space-3);
   font-size: var(--font-size-md);
   line-height: var(--line-height-normal);

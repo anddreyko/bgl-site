@@ -70,6 +70,6 @@ describe('POST /api/auth/sign-in', () => {
 
     const { default: handler } = await import('~/server/api/auth/sign-in.post')
 
-    await expect(handler(fakeEvent)).rejects.toThrow('Backend unavailable')
+    await expect(handler(fakeEvent)).rejects.toThrow('Service temporarily unavailable')
   })
 })
