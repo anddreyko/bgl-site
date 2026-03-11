@@ -4,8 +4,10 @@ import AppBreadcrumbs from '~/components/AppBreadcrumbs/index.vue'
 import RecordDialog from '~/components/RecordDialog/index.vue'
 import BottomNav from '~/components/BottomNav/index.vue'
 
+const route = useRoute()
+
 const { user } = useAuth()
-const { activePlay, checkActivePlay } = useActivePlay()
+const { activePlay, checkActivePlay, finishPlay } = useActivePlay()
 const { open: openRecord } = useRecordDialog()
 const { backendOnline, backendVersion, gitHash, stageEnvLabel, checkBackend } = useAppStatus()
 
@@ -18,10 +20,24 @@ function handleRecord() {
   }
 }
 
-onMounted(() => {
+async function handleRecordHash() {
+  if (activePlay.value) {
+    const playId = activePlay.value.id
+    await finishPlay()
+    navigateTo(`/plays/${playId}`)
+  }
+  else {
+    openRecord()
+  }
+}
+
+onMounted(async () => {
   checkBackend()
   if (user.value) {
-    checkActivePlay()
+    await checkActivePlay()
+  }
+  if (route.hash === '#record') {
+    handleRecordHash()
   }
 })
 </script>
