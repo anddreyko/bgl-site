@@ -48,17 +48,17 @@
         </div>
         <div class="play-detail__actions">
           <UiButton
-            variant="secondary"
-            @click="overlayOpen = true"
-          >
-            Edit
-          </UiButton>
-          <UiButton
             v-if="!play.finishedAt"
             variant="record"
             @click="onFinishPlay"
           >
             Finish Play
+          </UiButton>
+          <UiButton
+            variant="ghost"
+            @click="overlayOpen = true"
+          >
+            Edit
           </UiButton>
           <UiButton
             variant="ghost"

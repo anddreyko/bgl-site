@@ -25,7 +25,7 @@
         Edit
       </UiButton>
       <UiButton
-        variant="danger"
+        variant="ghost"
         size="sm"
         aria-label="Delete mate"
         @click="$emit('delete', mate)"

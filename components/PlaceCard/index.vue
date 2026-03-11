@@ -40,7 +40,7 @@
         Edit
       </UiButton>
       <UiButton
-        variant="danger"
+        variant="ghost"
         size="sm"
         aria-label="Delete place"
         @click="$emit('delete', place)"
