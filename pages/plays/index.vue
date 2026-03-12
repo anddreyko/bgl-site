@@ -1,5 +1,5 @@
 <template>
-  <div class="plays-page">
+  <div class="page-layout">
     <div class="plays-page__header">
       <h2 class="plays-page__title">Plays</h2>
       <UiButton
@@ -76,12 +76,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.plays-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
 .plays-page__header {
   display: flex;
   align-items: center;
@@ -96,9 +90,15 @@ onMounted(async () => {
 }
 
 .plays-page__list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--space-3);
+}
+
+@media (width >= 768px) {
+  .plays-page__list {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .plays-page__error {
