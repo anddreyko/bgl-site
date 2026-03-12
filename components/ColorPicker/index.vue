@@ -117,6 +117,7 @@ const colors: PlayerColor[] = [
   { value: 'green', label: 'Green' },
   { value: 'cyan', label: 'Cyan' },
   { value: 'blue', label: 'Blue' },
+  { value: 'purple', label: 'Purple' },
   { value: 'pink', label: 'Pink' },
   { value: 'brown', label: 'Brown' },
   { value: 'black', label: 'Black' },
@@ -160,15 +161,17 @@ function onFocusOut(e: FocusEvent) {
 }
 
 .color-picker__trigger {
+  width: 100%;
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-surface);
   cursor: pointer;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
   color: var(--color-text-primary);
   transition: border-color var(--transition-fast);
 }
@@ -194,10 +197,13 @@ function onFocusOut(e: FocusEvent) {
 }
 
 .color-picker__label {
+  flex: 1;
   min-width: 3rem;
+  text-align: left;
 }
 
 .color-picker__chevron {
+  margin-left: auto;
   color: var(--color-text-secondary);
 }
 
