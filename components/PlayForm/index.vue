@@ -126,6 +126,15 @@
         @update:model-value="selectedPlaceId = $event || undefined"
       />
     </UiFormField>
+    <div class="play-form__place-actions">
+      <button
+        type="button"
+        class="play-form__create-mate-link"
+        @click="openNewPlaceDialog"
+      >
+        Create new place
+      </button>
+    </div>
 
     <!-- Visibility -->
     <UiFormField
@@ -185,6 +194,18 @@
             :model-value="player.color"
             :label="`Color for player ${index + 1}`"
             @update:model-value="player.color = $event"
+          />
+        </UiFormField>
+
+        <UiFormField
+          label="Team"
+          :field-id="`player-team-${index}`"
+        >
+          <UiInput
+            :id="`player-team-${index}`"
+            :model-value="player.teamTag ?? ''"
+            placeholder="Team tag"
+            @update:model-value="player.teamTag = $event || undefined"
           />
         </UiFormField>
 
@@ -278,12 +299,25 @@
         @cancel="closeNewMateDialog"
       />
     </UiDialog>
+
+    <!-- New place dialog -->
+    <UiDialog
+      :open="newPlaceDialogOpen"
+      title="Create Place"
+      @update:open="!$event && closeNewPlaceDialog()"
+    >
+      <PlaceForm
+        :loading="creatingPlace"
+        @submit="handleNewPlace"
+        @cancel="closeNewPlaceDialog"
+      />
+    </UiDialog>
   </form>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Mate, MatePayload, Place, Play, PlayCreatePayload, Visibility, Player } from '~/types'
+import type { Mate, MatePayload, Place, PlacePayload, Play, PlayCreatePayload, Visibility, Player } from '~/types'
 import UiFormField from '~/components/UiFormField/index.vue'
 import UiInput from '~/components/UiInput/index.vue'
 import UiSelect from '~/components/UiSelect/index.vue'
@@ -291,6 +325,7 @@ import UiButton from '~/components/UiButton/index.vue'
 import UiDialog from '~/components/UiDialog/index.vue'
 import ColorPicker from '~/components/ColorPicker/index.vue'
 import MateForm from '~/components/MateForm/index.vue'
+import PlaceForm from '~/components/PlaceForm/index.vue'
 import robotSvg from '~/assets/icons/robot.svg?raw'
 import anonymousSvg from '~/assets/icons/anonymous.svg?raw'
 
@@ -324,6 +359,7 @@ const players = ref<PlayerDraft[]>(
     mateId: p.mateId,
     score: p.score,
     color: p.color,
+    teamTag: p.teamTag,
     isWinner: p.isWinner,
   })) ?? [],
 )
@@ -346,9 +382,14 @@ const visibilityOptions = [
   { value: 'public', label: 'Public' },
 ]
 
-const placeOptions = computed(() =>
-  (props.places ?? []).map(p => ({ value: p.id, label: p.name })),
-)
+const placeOptions = computed(() => {
+  const existing = (props.places ?? []).map(p => ({ value: p.id, label: p.name }))
+  const existingIds = new Set(existing.map(o => o.value))
+  const created = createdPlaces.value
+    .filter(p => !existingIds.has(p.id))
+    .map(p => ({ value: p.id, label: p.name }))
+  return [...existing, ...created]
+})
 
 const mateOptions = computed(() => {
   const system = (props.systemMates ?? []).map(m => ({ value: m.id, label: m.name, group: 'system' }))
@@ -425,6 +466,34 @@ async function handleNewMate(payload: MatePayload) {
   }
 }
 
+const newPlaceDialogOpen = ref(false)
+const creatingPlace = ref(false)
+const createdPlaces = ref<Array<{ id: string, name: string }>>([])
+
+function openNewPlaceDialog() {
+  newPlaceDialogOpen.value = true
+}
+
+function closeNewPlaceDialog() {
+  newPlaceDialogOpen.value = false
+}
+
+async function handleNewPlace(payload: PlacePayload) {
+  creatingPlace.value = true
+  try {
+    const place = await $fetch<Place>('/api/places', {
+      method: 'POST',
+      body: payload,
+    })
+    createdPlaces.value.push({ id: place.id, name: place.name })
+    selectedPlaceId.value = place.id
+    closeNewPlaceDialog()
+  }
+  finally {
+    creatingPlace.value = false
+  }
+}
+
 const automaMate = computed(() =>
   (props.systemMates ?? []).find(m => m.name.toLowerCase() === 'automa'),
 )
@@ -438,6 +507,7 @@ function addSystemPlayer(mate: Mate) {
     mateId: mate.id,
     score: undefined,
     color: undefined,
+    teamTag: undefined,
     isWinner: false,
   })
 }
@@ -447,6 +517,7 @@ function addPlayer() {
     mateId: '',
     score: undefined,
     color: undefined,
+    teamTag: undefined,
     isWinner: false,
   })
 }
@@ -468,7 +539,7 @@ function handleSubmit() {
       : undefined,
     visibility: visibility.value,
     players: filteredPlayers.length > 0
-      ? filteredPlayers.map(p => ({ mateId: p.mateId, score: p.score, isWinner: p.isWinner, color: p.color }))
+      ? filteredPlayers.map(p => ({ mateId: p.mateId, score: p.score, isWinner: p.isWinner, color: p.color, teamTag: p.teamTag || undefined }))
       : undefined,
   }
 
@@ -554,12 +625,17 @@ function handleSubmit() {
 }
 
 .play-form__player-row {
-  display: flex;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
   gap: var(--space-2);
-  flex-wrap: wrap;
   padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--color-border);
+}
+
+.play-form__place-actions {
+  display: flex;
+  justify-content: center;
 }
 
 .play-form__player-actions {
@@ -580,8 +656,8 @@ function handleSubmit() {
 
 .play-form__system-icon {
   display: none;
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
 }
 
 @media (width <= 768px) {
@@ -600,9 +676,10 @@ function handleSubmit() {
 }
 
 .play-form__create-mate-link {
+  align-self: center;
   background: none;
   border: none;
-  padding: 0;
+  padding: var(--space-1) 0;
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   text-decoration: underline;
@@ -619,6 +696,6 @@ function handleSubmit() {
   gap: var(--space-1);
   font-size: var(--font-size-sm);
   cursor: pointer;
-  padding-bottom: var(--space-2);
+  padding: var(--space-1) var(--space-3);
 }
 </style>

@@ -1,4 +1,5 @@
 export type Visibility = 'private' | 'participants' | 'link' | 'authenticated' | 'public'
+export type PlayStatus = 'current' | 'finished'
 
 export interface Player {
   id: string
@@ -16,6 +17,7 @@ export interface PlayerPayload {
   score?: number
   isWinner?: boolean
   color?: string
+  teamTag?: string
 }
 
 export interface Play {
@@ -23,6 +25,7 @@ export interface Play {
   author?: { id: string, name: string }
   name?: string
   notes?: string
+  status: PlayStatus
   visibility: Visibility
   startedAt: string
   finishedAt?: string
@@ -55,6 +58,7 @@ export interface PlaysListParams {
   size?: number
   authorId?: string
   gameId?: string
+  status?: PlayStatus
   from?: string
   to?: string
 }
