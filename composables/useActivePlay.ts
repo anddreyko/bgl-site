@@ -28,10 +28,9 @@ export function useActivePlay() {
   async function checkActivePlay(): Promise<void> {
     try {
       const data = await $fetch<PaginatedResponse<Play>>('/api/plays', {
-        query: { page: 1, size: 1 },
+        query: { page: 1, size: 1, status: 'current' },
       })
-      const first = data.items[0]
-      activePlay.value = first && !first.finishedAt ? first : null
+      activePlay.value = data.items[0] ?? null
     }
     catch {
       activePlay.value = null

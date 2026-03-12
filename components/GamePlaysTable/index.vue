@@ -57,7 +57,7 @@
             </td>
             <td>
               <span
-                v-if="!play.finishedAt"
+                v-if="play.status === 'current'"
                 class="game-plays-table__outcome game-plays-table__outcome--progress"
               >
                 ...

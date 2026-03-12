@@ -87,7 +87,7 @@ async function handleRegisterPasskey() {
 </script>
 
 <template>
-  <div class="edit-profile">
+  <div class="page-layout edit-profile">
     <h1 class="edit-profile__title">
       Edit Profile
     </h1>
@@ -203,9 +203,6 @@ async function handleRegisterPasskey() {
 
 <style scoped>
 .edit-profile {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
   max-width: 600px;
 }
 

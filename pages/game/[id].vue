@@ -1,5 +1,5 @@
 <template>
-  <div class="game-detail">
+  <div class="page-layout">
     <NuxtLink
       to="/game"
       class="game-detail__back"
@@ -95,12 +95,6 @@ useHead({
 </script>
 
 <style scoped>
-.game-detail {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-}
-
 .game-detail__back {
   display: inline-block;
   color: var(--color-primary);

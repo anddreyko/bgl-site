@@ -5,6 +5,7 @@ import type { Play } from '~/types'
 
 const basPlay: Play = {
   id: 'play-1',
+  status: 'finished',
   visibility: 'private',
   startedAt: '2024-01-15T10:00:00Z',
   finishedAt: '2024-01-15T11:30:00Z',
@@ -34,15 +35,15 @@ describe('PlayCard', () => {
     expect(wrapper.find('.play-card__name').text()).toBe(`Play #${basPlay.id.slice(0, 8)}`)
   })
 
-  it('renders status badge for finished play', async () => {
+  it('does not render status badge for finished play', async () => {
     const wrapper = await mountSuspended(PlayCard, { props: { play: basPlay } })
     const badges = wrapper.findAll('.ui-badge')
     const statusBadge = badges.find(b => b.text() === 'Finished')
-    expect(statusBadge).toBeDefined()
+    expect(statusBadge).toBeUndefined()
   })
 
-  it('renders status badge for in-progress play', async () => {
-    const activePlay = { ...basPlay, finishedAt: undefined }
+  it('renders in-progress badge for unfinished play', async () => {
+    const activePlay = { ...basPlay, status: 'current' as const, finishedAt: undefined }
     const wrapper = await mountSuspended(PlayCard, { props: { play: activePlay } })
     const badges = wrapper.findAll('.ui-badge')
     const statusBadge = badges.find(b => b.text() === 'In progress')
@@ -80,7 +81,7 @@ describe('PlayCard', () => {
   })
 
   it('renders timer for active play', async () => {
-    const activePlay = { ...basPlay, finishedAt: undefined }
+    const activePlay = { ...basPlay, status: 'current' as const, finishedAt: undefined }
     const wrapper = await mountSuspended(PlayCard, { props: { play: activePlay } })
     expect(wrapper.find('.ui-timer').exists()).toBe(true)
     expect(wrapper.find('.play-card__duration').exists()).toBe(false)

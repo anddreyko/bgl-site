@@ -16,6 +16,7 @@ describe('GamePlaysTable', () => {
   const basePlays: Play[] = [
     {
       id: 'play-1',
+      status: 'finished',
       visibility: 'public',
       startedAt: '2024-01-15T10:00:00Z',
       finishedAt: '2024-01-15T11:30:00Z',
@@ -26,6 +27,7 @@ describe('GamePlaysTable', () => {
     },
     {
       id: 'play-2',
+      status: 'current',
       visibility: 'private',
       startedAt: '2024-01-10T14:00:00Z',
       players: [

@@ -17,6 +17,7 @@ export const Active: Story = {
   args: {
     activePlay: {
       id: 'play-1',
+      status: 'current',
       visibility: 'private' as const,
       startedAt: new Date(Date.now() - 1800000).toISOString(),
       players: [],

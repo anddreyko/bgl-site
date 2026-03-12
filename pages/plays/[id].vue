@@ -1,5 +1,5 @@
 <template>
-  <div class="play-detail">
+  <div class="page-layout">
     <UiSpinner
       v-if="pending"
       size="lg"
@@ -48,7 +48,7 @@
         </div>
         <div class="play-detail__actions">
           <UiButton
-            v-if="!play.finishedAt"
+            v-if="play.status === 'current'"
             variant="record"
             @click="onFinishPlay"
           >
@@ -71,7 +71,12 @@
 
       <div class="play-detail__meta">
         <div class="play-detail__badges">
-          <UiBadge :variant="play.finishedAt ? 'success' : 'warning'">{{ play.finishedAt ? 'Finished' : 'In progress' }}</UiBadge>
+          <UiBadge
+            v-if="play.status === 'current'"
+            variant="warning"
+          >
+            In progress
+          </UiBadge>
           <UiBadge variant="info">{{ play.visibility }}</UiBadge>
         </div>
 
@@ -281,12 +286,6 @@ onUnmounted(() => clearBreadcrumb())
 </script>
 
 <style scoped>
-.play-detail {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-}
-
 .play-detail__header {
   display: flex;
   align-items: center;

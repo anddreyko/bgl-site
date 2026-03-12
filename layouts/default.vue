@@ -94,7 +94,7 @@ onMounted(async () => {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 var(--space-8);
+  padding-inline: var(--space-8);
 }
 
 .app-layout__header {
@@ -103,8 +103,7 @@ onMounted(async () => {
 
 .app-layout__main {
   flex: 1;
-  padding-top: var(--space-4);
-  padding-bottom: var(--space-4);
+  padding-block: var(--space-8);
 }
 
 .app-layout__footer {
@@ -138,11 +137,7 @@ onMounted(async () => {
 
 @media (width <= 768px) {
   .app-layout__container {
-    padding: 0 var(--space-4);
-  }
-
-  .app-layout__footer {
-    padding-bottom: calc(var(--space-4) + 60px);
+    padding-inline: var(--space-4);
   }
 }
 </style>

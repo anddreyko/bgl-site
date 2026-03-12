@@ -36,7 +36,7 @@ describe('server/api/user/[id]', () => {
 
     await handler(event)
 
-    expect(mockFetch).toHaveBeenCalledWith('/v1/user/u1')
+    expect(mockFetch).toHaveBeenCalledWith('/v1/user/u1', expect.objectContaining({ method: 'GET' }))
     expect(mockUnwrap).toHaveBeenCalledWith(fakeResponse)
   })
 

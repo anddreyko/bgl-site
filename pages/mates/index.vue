@@ -1,5 +1,5 @@
 <template>
-  <div class="mates-page">
+  <div class="page-layout">
     <div class="mates-page__header">
       <h1 class="mates-page__title">My Mates</h1>
       <UiButton @click="openAddDialog">
@@ -235,12 +235,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.mates-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-}
-
 .mates-page__header {
   display: flex;
   align-items: center;

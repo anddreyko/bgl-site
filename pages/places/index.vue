@@ -1,5 +1,5 @@
 <template>
-  <div class="places-page">
+  <div class="page-layout">
     <div class="places-page__header">
       <h1 class="places-page__title">My Places</h1>
       <UiButton @click="openAddDialog">
@@ -233,12 +233,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.places-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-}
-
 .places-page__header {
   display: flex;
   align-items: center;

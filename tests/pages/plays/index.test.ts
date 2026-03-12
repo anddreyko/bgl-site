@@ -24,6 +24,6 @@ describe('PlaysPage', () => {
 
   it('renders plays page container', async () => {
     const wrapper = await mountSuspended(PlaysPage)
-    expect(wrapper.find('.plays-page').exists()).toBe(true)
+    expect(wrapper.find('.page-layout').exists()).toBe(true)
   })
 })

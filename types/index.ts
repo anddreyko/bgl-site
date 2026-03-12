@@ -3,5 +3,5 @@ export type { SignUpPayload, SignInPayload, ConfirmPayload, PasskeyRegisterOptio
 export type { GameType, Game, GamesSearchParams } from './game'
 export type { Mate, MatePayload, MatesListParams } from './mate'
 export type { Place, PlacePayload, PlacesListParams } from './place'
-export type { Visibility, Player, PlayerPayload, Play, PlayCreatePayload, PlayUpdatePayload, PlaysListParams } from './play'
+export type { Visibility, PlayStatus, Player, PlayerPayload, Play, PlayCreatePayload, PlayUpdatePayload, PlaysListParams } from './play'
 export type { User } from './user'

@@ -15,6 +15,7 @@ export const Default: Story = {
       {
         id: 'play-1',
         name: 'Friday Night',
+        status: 'finished',
         visibility: 'public' as const,
         startedAt: '2024-06-15T19:00:00Z',
         finishedAt: '2024-06-15T21:30:00Z',
@@ -26,6 +27,7 @@ export const Default: Story = {
       },
       {
         id: 'play-2',
+        status: 'finished',
         visibility: 'private' as const,
         startedAt: '2024-06-10T14:00:00Z',
         finishedAt: '2024-06-10T16:00:00Z',
@@ -36,6 +38,7 @@ export const Default: Story = {
       },
       {
         id: 'play-3',
+        status: 'current',
         visibility: 'private' as const,
         startedAt: new Date(Date.now() - 3600000).toISOString(),
         players: [
@@ -53,6 +56,7 @@ export const WithSystemMates: Story = {
       {
         id: 'play-5',
         name: 'Solo with Automa',
+        status: 'finished',
         visibility: 'private' as const,
         startedAt: '2024-06-18T20:00:00Z',
         finishedAt: '2024-06-18T21:30:00Z',
@@ -64,6 +68,7 @@ export const WithSystemMates: Story = {
       {
         id: 'play-6',
         name: 'Anonymous Game',
+        status: 'finished',
         visibility: 'public' as const,
         startedAt: '2024-06-19T15:00:00Z',
         finishedAt: '2024-06-19T16:30:00Z',
@@ -82,6 +87,7 @@ export const WithTeams: Story = {
       {
         id: 'play-7',
         name: 'Team Battle',
+        status: 'finished',
         visibility: 'public' as const,
         startedAt: '2024-06-20T18:00:00Z',
         finishedAt: '2024-06-20T20:00:00Z',
@@ -102,6 +108,7 @@ export const ManyPlayers: Story = {
       {
         id: 'play-4',
         name: 'Big Party',
+        status: 'finished',
         visibility: 'public' as const,
         startedAt: '2024-06-20T18:00:00Z',
         finishedAt: '2024-06-20T22:00:00Z',

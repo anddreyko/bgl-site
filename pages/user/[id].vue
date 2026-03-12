@@ -27,7 +27,7 @@ const { data: playsData, status: playsStatus } = useAsyncData(
     totalPlays.value = data.total
     return data.items
   },
-  { watch: [currentPage] },
+  { lazy: true, watch: [currentPage] },
 )
 
 watch(user, (u) => {
@@ -51,7 +51,7 @@ const playsLoading = computed(() => playsStatus.value === 'pending')
 
 <template>
   <section
-    class="public-profile"
+    class="page-layout"
     aria-labelledby="public-profile-heading"
   >
     <div
@@ -145,12 +145,6 @@ const playsLoading = computed(() => playsStatus.value === 'pending')
 </template>
 
 <style scoped>
-.public-profile {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
 .public-profile__header {
   display: flex;
   align-items: center;

@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
     if (raw.size) query.size = Number(raw.size)
     if (raw.gameId) query.game_id = raw.gameId
     if (raw.authorId) query.author_id = raw.authorId
+    if (raw.status) query.status = raw.status
     if (raw.from) query.from = raw.from
     if (raw.to) query.to = raw.to
     const response = await api<ApiResponse<PaginatedResponse<Play>>>('/v1/plays', { query })

@@ -162,14 +162,12 @@ const route = useRoute()
 
 <style scoped>
 .bottom-nav {
-  position: fixed;
+  position: sticky;
   bottom: 0;
-  left: 0;
-  right: 0;
   display: none;
   background-color: var(--color-surface);
   border-top: 1px solid var(--color-border);
-  z-index: 2147483646;
+  z-index: 100;
   padding-bottom: env(safe-area-inset-bottom);
 }
 

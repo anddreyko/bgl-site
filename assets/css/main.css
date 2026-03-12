@@ -1,6 +1,13 @@
 @import url('./tokens.css');
 @import url('./reset.css');
 
+/* Page root container — unified layout for all pages */
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
 /* Radix popper (Select, Combobox) renders via portal to body.
    Scoped styles don't apply to portaled content. */
 [data-radix-popper-content-wrapper] {

@@ -18,7 +18,12 @@
           </p>
         </div>
         <div class="play-card__badges">
-          <UiBadge :variant="play.finishedAt ? 'success' : 'warning'">{{ play.finishedAt ? 'Finished' : 'In progress' }}</UiBadge>
+          <UiBadge
+            v-if="play.status === 'current'"
+            variant="warning"
+          >
+            In progress
+          </UiBadge>
           <UiBadge variant="info">{{ play.visibility }}</UiBadge>
         </div>
       </div>

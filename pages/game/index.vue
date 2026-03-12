@@ -170,6 +170,7 @@ const { data: recentGamesData } = await useAsyncData(
     }
     return result
   },
+  { lazy: true },
 )
 
 const recentGames = computed(() => recentGamesData.value ?? [])

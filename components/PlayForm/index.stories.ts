@@ -37,6 +37,7 @@ export const WithInitialData: Story = {
     initialData: {
       id: 'play-1',
       name: 'Friday Session',
+      status: 'finished',
       visibility: 'private' as const,
       startedAt: '2024-06-15T19:00:00Z',
       finishedAt: '2024-06-15T21:30:00Z',
