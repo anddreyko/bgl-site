@@ -45,17 +45,17 @@
         >
           {{ formattedDate }}
         </time>
+        <UiTimer
+          v-if="play.status === 'current'"
+          :started-at="play.startedAt"
+          :running="true"
+        />
         <span
-          v-if="play.finishedAt"
+          v-else-if="formattedDuration"
           class="play-card__duration"
         >
           {{ formattedDuration }}
         </span>
-        <UiTimer
-          v-else
-          :started-at="play.startedAt"
-          :running="true"
-        />
       </div>
 
       <ul

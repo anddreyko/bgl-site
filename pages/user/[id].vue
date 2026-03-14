@@ -12,10 +12,10 @@ const param = computed(() => String(route.params.id))
 const { set: setBreadcrumb, clear: clearBreadcrumb } = useBreadcrumbLabel()
 
 const PAGE_SIZE = 20
-const currentPage = ref(1)
+const { currentPage } = usePageQuery()
 const totalPlays = ref(0)
 
-const { data: user, status, error } = await useFetch<User>(() => `/api/user/${param.value}`)
+const { data: user, status } = useFetch<User>(() => `/api/user/${param.value}`, { lazy: true })
 
 const requestFetch = useRequestFetch()
 const { data: playsData, status: playsStatus } = useAsyncData(
@@ -30,9 +30,10 @@ const { data: playsData, status: playsStatus } = useAsyncData(
   { lazy: true, watch: [currentPage] },
 )
 
+setBreadcrumb(param.value)
 watch(user, (u) => {
-  if (u) setBreadcrumb(u.name ?? 'User')
-}, { immediate: true })
+  if (u) setBreadcrumb(u.name ?? param.value)
+})
 
 onUnmounted(() => clearBreadcrumb())
 
@@ -54,6 +55,7 @@ const playsLoading = computed(() => playsStatus.value === 'pending')
     class="page-layout"
     aria-labelledby="public-profile-heading"
   >
+    <!-- Profile header -->
     <div
       v-if="status === 'pending'"
       class="public-profile__loading"
@@ -63,84 +65,82 @@ const playsLoading = computed(() => playsStatus.value === 'pending')
     </div>
 
     <div
-      v-else-if="error"
-      class="public-profile__error"
-      role="alert"
+      v-else-if="user"
+      class="public-profile__header"
     >
-      <h1 id="public-profile-heading">
-        User not found
-      </h1>
-      <p class="public-profile__error-text">
-        The user profile you are looking for does not exist or is not available.
-      </p>
-      <NuxtLink
-        to="/"
-        class="public-profile__back-link"
-      >
-        Back to Home
-      </NuxtLink>
+      <UserAvatar
+        :name="user.name || user.email"
+        size="lg"
+        :to="`/user/${user.nickname ?? user.id}`"
+      />
+      <div class="public-profile__info">
+        <h1
+          id="public-profile-heading"
+          class="public-profile__name"
+        >
+          {{ user.name }}
+        </h1>
+        <p
+          v-if="memberSince"
+          class="public-profile__since"
+        >
+          Member since {{ memberSince }}
+        </p>
+      </div>
     </div>
 
-    <template v-else-if="user">
-      <div class="public-profile__header">
-        <UserAvatar
-          :name="user.name || user.email"
-          size="lg"
-          :to="`/user/${user.nickname ?? user.id}`"
+    <div
+      v-else
+      class="public-profile__header"
+    >
+      <UserAvatar
+        :name="param"
+        size="lg"
+      />
+      <h1
+        id="public-profile-heading"
+        class="public-profile__name"
+      >
+        {{ param }}
+      </h1>
+    </div>
+
+    <!-- Plays (always rendered, independent of profile) -->
+    <section class="public-profile__plays">
+      <h2 class="public-profile__section-title">
+        Plays
+      </h2>
+
+      <UiSpinner
+        v-if="playsLoading"
+        size="md"
+      />
+
+      <p
+        v-else-if="plays.length === 0"
+        class="public-profile__empty"
+      >
+        No plays yet.
+      </p>
+
+      <div
+        v-else
+        class="public-profile__plays-list"
+      >
+        <PlayCard
+          v-for="play in plays"
+          :key="play.id"
+          :play="play"
+          @click="navigateTo(`/plays/${play.id}`)"
         />
-        <div class="public-profile__info">
-          <h1
-            id="public-profile-heading"
-            class="public-profile__name"
-          >
-            {{ user.name }}
-          </h1>
-          <p
-            v-if="memberSince"
-            class="public-profile__since"
-          >
-            Member since {{ memberSince }}
-          </p>
-        </div>
       </div>
-
-      <!-- Plays -->
-      <section class="public-profile__plays">
-        <h2 class="public-profile__section-title">
-          Plays
-        </h2>
-
-        <UiSpinner
-          v-if="playsLoading"
-          size="md"
-        />
-
-        <p
-          v-else-if="plays.length === 0"
-          class="public-profile__empty"
-        >
-          No plays yet.
-        </p>
-
-        <div
-          v-else
-          class="public-profile__plays-list"
-        >
-          <PlayCard
-            v-for="play in plays"
-            :key="play.id"
-            :play="play"
-            @click="navigateTo(`/plays/${play.id}`)"
-          />
-        </div>
-        <UiPagination
-          :page="currentPage"
-          :total="totalPlays"
-          :size="PAGE_SIZE"
-          @update:page="currentPage = $event"
-        />
-      </section>
-    </template>
+      <UiPagination
+        :page="currentPage"
+        :total="totalPlays"
+        :size="PAGE_SIZE"
+        @update:page="currentPage = $event"
+      />
+    </section>
   </section>
 </template>
 
@@ -178,10 +178,16 @@ const playsLoading = computed(() => playsStatus.value === 'pending')
 }
 
 .public-profile__plays-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
+}
+
+@media (width >= 768px) {
+  .public-profile__plays-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .public-profile__empty {
@@ -197,20 +203,5 @@ const playsLoading = computed(() => playsStatus.value === 'pending')
   gap: var(--space-4);
   padding: var(--space-12) 0;
   color: var(--color-text-secondary);
-}
-
-.public-profile__error {
-  text-align: center;
-  padding: var(--space-12) 0;
-}
-
-.public-profile__error-text {
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-4);
-}
-
-.public-profile__back-link {
-  color: var(--color-primary);
-  text-decoration: underline;
 }
 </style>

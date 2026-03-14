@@ -1,5 +1,6 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { flushPromises } from '@vue/test-utils'
 import UserIdPage from '~/pages/user/[id].vue'
 
 // Mock useRoute to provide the id param
@@ -36,21 +37,17 @@ describe('UserIdPage', () => {
     expect(wrapper.text()).toContain('March 10, 2023')
   })
 
-  it('shows error state when fetch fails', async () => {
-    mockFetch.mockRejectedValue(new Error('Not Found'))
+  it('shows fallback heading and plays section when profile fetch fails', async () => {
+    mockFetch.mockImplementation((url: string) => {
+      if (typeof url === 'string' && url.includes('/api/user/'))
+        return Promise.reject(new Error('Unauthorized'))
+      return Promise.resolve({ items: [], total: 0, page: 1, size: 20 })
+    })
 
     const wrapper = await mountSuspended(UserIdPage)
-    expect(wrapper.text()).toContain('User not found')
-    expect(wrapper.text()).toContain('does not exist or is not available')
-  })
-
-  it('has a back to home link on error', async () => {
-    mockFetch.mockRejectedValue(new Error('Not Found'))
-
-    const wrapper = await mountSuspended(UserIdPage)
-    const link = wrapper.find('.public-profile__back-link')
-    expect(link.exists()).toBe(true)
-    expect(link.text()).toBe('Back to Home')
+    await flushPromises()
+    expect(wrapper.find('.public-profile__name').exists()).toBe(true)
+    expect(wrapper.find('.public-profile__plays').exists()).toBe(true)
   })
 
   it('renders heading with user name on success', async () => {

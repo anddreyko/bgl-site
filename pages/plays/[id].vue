@@ -99,7 +99,7 @@
             ({{ formattedDuration }})
           </p>
           <div
-            v-else
+            v-else-if="play.status === 'current'"
             class="play-detail__timer"
           >
             <span>In progress: </span>
@@ -110,6 +110,13 @@
           </div>
         </div>
       </div>
+
+      <p
+        v-if="play.notes"
+        class="play-detail__notes"
+      >
+        {{ play.notes }}
+      </p>
 
       <section class="play-detail__section">
         <h3>Players ({{ play.players.length }})</h3>
@@ -373,6 +380,13 @@ onUnmounted(() => clearBreadcrumb())
 .play-detail__error {
   color: var(--color-danger);
   font-size: var(--font-size-md);
+}
+
+.play-detail__notes {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  white-space: pre-line;
 }
 
 .play-detail__section h3 {
