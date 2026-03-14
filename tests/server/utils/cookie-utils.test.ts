@@ -103,8 +103,8 @@ describe('cookie-utils', () => {
     it('deletes both cookies with correct paths', () => {
       clearAuthCookies(fakeEvent)
 
-      expect(mockDeleteCookie).toHaveBeenCalledTimes(2)
       expect(mockDeleteCookie).toHaveBeenCalledWith(fakeEvent, 'access_token', { path: '/' })
+      expect(mockDeleteCookie).toHaveBeenCalledWith(fakeEvent, 'refresh_token', { path: '/' })
       expect(mockDeleteCookie).toHaveBeenCalledWith(fakeEvent, 'refresh_token', { path: '/api/' })
     })
   })

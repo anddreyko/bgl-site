@@ -27,19 +27,24 @@ export function setAuthCookies(event: H3Event, tokens: TokenData): void {
     maxAge: maxAgeFromJwt(tokens.accessToken, 15 * 60),
   })
 
+  // Clean up legacy cookie with old path
+  deleteCookie(event, REFRESH_TOKEN, { path: '/api/' })
+
   const refreshMaxAge = maxAgeFromJwt(tokens.refreshToken, 30 * 24 * 3600)
 
   setCookie(event, REFRESH_TOKEN, tokens.refreshToken, {
     httpOnly: true,
     secure: isProduction,
     sameSite: 'lax',
-    path: '/api/',
+    path: '/',
     maxAge: refreshMaxAge,
   })
 }
 
 export function clearAuthCookies(event: H3Event): void {
   deleteCookie(event, ACCESS_TOKEN, { path: '/' })
+  deleteCookie(event, REFRESH_TOKEN, { path: '/' })
+  // Clean up legacy cookies with old path
   deleteCookie(event, REFRESH_TOKEN, { path: '/api/' })
 }
 
