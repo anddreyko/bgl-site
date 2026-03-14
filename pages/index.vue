@@ -113,23 +113,23 @@ const PAGE_SIZE = 20
 
 const { user } = useAuth()
 const { activePlay } = useActivePlay()
+
+const { currentPage } = usePageQuery()
 const requestFetch = useRequestFetch()
 
-const currentPage = ref(1)
-
-// Public feed
-const { data: feedData, pending: feedPending, refresh: refreshFeed } = useAsyncData(
+// Public feed (no auth — always returns only public plays)
+const { data: feedData, pending: feedPending } = useAsyncData(
   'home:feed',
-  () => requestFetch<PaginatedResponse<Play>>('/api/plays', {
+  () => $fetch<PaginatedResponse<Play>>('/api/plays/feed', {
     query: { page: currentPage.value, size: PAGE_SIZE },
   }),
-  { default: () => null },
+  { lazy: true, watch: [currentPage] },
 )
 
 // Personal total (authenticated only)
 const { data: myData } = useAsyncData(
   'home:my-plays',
-  () => $fetch<PaginatedResponse<Play>>('/api/plays', {
+  () => requestFetch<PaginatedResponse<Play>>('/api/plays', {
     query: { authorId: user.value!.id, size: 1 },
   }),
   { default: () => null, server: false, immediate: !!user.value },
@@ -161,7 +161,6 @@ const stats = computed(() => {
 
 function goToPage(page: number) {
   currentPage.value = page
-  refreshFeed()
 }
 </script>
 
