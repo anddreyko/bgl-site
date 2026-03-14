@@ -43,8 +43,7 @@ import anonymousSvg from '~/assets/icons/anonymous.svg?raw'
 import crownSvg from '~/assets/icons/crown.svg?raw'
 
 const props = withDefaults(defineProps<{
-  mateId: string
-  mateName?: string
+  mate?: { id: string, name: string }
   size?: 'sm' | 'md'
   isWinner?: boolean
 }>(), {
@@ -52,18 +51,20 @@ const props = withDefaults(defineProps<{
   isWinner: false,
 })
 
-const { resolveName, systemMateIds } = useMateNames()
+const { resolveName } = useMateNames()
 
-const name = computed(() => resolveName(props.mateId, props.mateName))
+const name = computed(() => resolveName(props.mate?.id, props.mate?.name))
 
 const sizeClass = computed(() => `mate-avatar--${props.size}`)
 
+const SYSTEM_ICON_MAP: Record<string, 'robot' | 'anonymous'> = {
+  '00000000-0000-4000-a000-000000000001': 'anonymous',
+  '00000000-0000-4000-a000-000000000002': 'robot',
+}
+
 const systemIcon = computed(() => {
-  if (!systemMateIds.value.has(props.mateId)) return null
-  const n = name.value.toLowerCase()
-  if (n === 'automa') return 'robot'
-  if (n === 'anonymous') return 'anonymous'
-  return null
+  if (!props.mate?.id) return null
+  return SYSTEM_ICON_MAP[props.mate.id] ?? null
 })
 </script>
 

@@ -21,8 +21,8 @@ describe('GamePlaysTable', () => {
       startedAt: '2024-01-15T10:00:00Z',
       finishedAt: '2024-01-15T11:30:00Z',
       players: [
-        { id: 'p1', mateId: 'm1', mateName: 'Alice', isWinner: true },
-        { id: 'p2', mateId: 'm2', mateName: 'Bob' },
+        { id: 'p1', mate: { id: 'm1', name: 'Alice' }, isWinner: true },
+        { id: 'p2', mate: { id: 'm2', name: 'Bob' } },
       ],
     },
     {
@@ -31,7 +31,7 @@ describe('GamePlaysTable', () => {
       visibility: 'private',
       startedAt: '2024-01-10T14:00:00Z',
       players: [
-        { id: 'p3', mateId: 'm1', mateName: 'Alice' },
+        { id: 'p3', mate: { id: 'm1', name: 'Alice' } },
       ],
     },
   ]

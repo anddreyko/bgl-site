@@ -3,8 +3,7 @@ export type PlayStatus = 'current' | 'finished'
 
 export interface Player {
   id: string
-  mateId: string
-  mateName?: string
+  mate?: { id: string, name: string }
   score?: number
   color?: string
   isWinner?: boolean
@@ -31,7 +30,7 @@ export interface Play {
   finishedAt?: string
   game?: { id: string, name: string }
   gameName?: string
-  locationId?: string
+  location?: { id: string, name: string }
   players: Player[]
 }
 

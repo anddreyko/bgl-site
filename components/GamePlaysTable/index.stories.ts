@@ -20,9 +20,9 @@ export const Default: Story = {
         startedAt: '2024-06-15T19:00:00Z',
         finishedAt: '2024-06-15T21:30:00Z',
         players: [
-          { id: 'p1', mateId: 'mate-1', mateName: 'Alice', score: 42, isWinner: true },
-          { id: 'p2', mateId: 'mate-2', mateName: 'Bob', score: 35, isWinner: false },
-          { id: 'p3', mateId: 'mate-3', mateName: 'Charlie', score: 28, isWinner: false },
+          { id: 'p1', mate: { id: 'mate-1', name: 'Alice' }, score: 42, isWinner: true },
+          { id: 'p2', mate: { id: 'mate-2', name: 'Bob' }, score: 35, isWinner: false },
+          { id: 'p3', mate: { id: 'mate-3', name: 'Charlie' }, score: 28, isWinner: false },
         ],
       },
       {
@@ -32,8 +32,8 @@ export const Default: Story = {
         startedAt: '2024-06-10T14:00:00Z',
         finishedAt: '2024-06-10T16:00:00Z',
         players: [
-          { id: 'p4', mateId: 'mate-1', mateName: 'Alice', score: 55, isWinner: false },
-          { id: 'p5', mateId: 'mate-2', mateName: 'Bob', score: 60, isWinner: true },
+          { id: 'p4', mate: { id: 'mate-1', name: 'Alice' }, score: 55, isWinner: false },
+          { id: 'p5', mate: { id: 'mate-2', name: 'Bob' }, score: 60, isWinner: true },
         ],
       },
       {
@@ -42,8 +42,8 @@ export const Default: Story = {
         visibility: 'private' as const,
         startedAt: new Date(Date.now() - 3600000).toISOString(),
         players: [
-          { id: 'p6', mateId: 'mate-1', mateName: 'Alice' },
-          { id: 'p7', mateId: 'mate-3', mateName: 'Charlie' },
+          { id: 'p6', mate: { id: 'mate-1', name: 'Alice' } },
+          { id: 'p7', mate: { id: 'mate-3', name: 'Charlie' } },
         ],
       },
     ],
@@ -61,8 +61,8 @@ export const WithSystemMates: Story = {
         startedAt: '2024-06-18T20:00:00Z',
         finishedAt: '2024-06-18T21:30:00Z',
         players: [
-          { id: 'p1', mateId: 'mate-1', mateName: 'Alice', score: 50, isWinner: true },
-          { id: 'p2', mateId: 'mate-sys-automa', mateName: 'Automa', score: 45, isWinner: false },
+          { id: 'p1', mate: { id: 'mate-1', name: 'Alice' }, score: 50, isWinner: true },
+          { id: 'p2', mate: { id: '00000000-0000-4000-a000-000000000002', name: 'Automa' }, score: 45, isWinner: false },
         ],
       },
       {
@@ -73,8 +73,8 @@ export const WithSystemMates: Story = {
         startedAt: '2024-06-19T15:00:00Z',
         finishedAt: '2024-06-19T16:30:00Z',
         players: [
-          { id: 'p3', mateId: 'mate-2', mateName: 'Bob', isWinner: false },
-          { id: 'p4', mateId: 'mate-sys-anonymous', mateName: 'Anonymous', isWinner: true },
+          { id: 'p3', mate: { id: 'mate-2', name: 'Bob' }, isWinner: false },
+          { id: 'p4', mate: { id: '00000000-0000-4000-a000-000000000001', name: 'Anonymous' }, isWinner: true },
         ],
       },
     ],
@@ -92,10 +92,10 @@ export const WithTeams: Story = {
         startedAt: '2024-06-20T18:00:00Z',
         finishedAt: '2024-06-20T20:00:00Z',
         players: [
-          { id: 'p1', mateId: 'mate-1', mateName: 'Alice', isWinner: true, teamTag: 'Red' },
-          { id: 'p2', mateId: 'mate-2', mateName: 'Bob', isWinner: true, teamTag: 'Red' },
-          { id: 'p3', mateId: 'mate-3', mateName: 'Charlie', isWinner: false, teamTag: 'Blue' },
-          { id: 'p4', mateId: 'mate-4', mateName: 'Diana', isWinner: false, teamTag: 'Blue' },
+          { id: 'p1', mate: { id: 'mate-1', name: 'Alice' }, isWinner: true, teamTag: 'Red' },
+          { id: 'p2', mate: { id: 'mate-2', name: 'Bob' }, isWinner: true, teamTag: 'Red' },
+          { id: 'p3', mate: { id: 'mate-3', name: 'Charlie' }, isWinner: false, teamTag: 'Blue' },
+          { id: 'p4', mate: { id: 'mate-4', name: 'Diana' }, isWinner: false, teamTag: 'Blue' },
         ],
       },
     ],
@@ -113,11 +113,11 @@ export const ManyPlayers: Story = {
         startedAt: '2024-06-20T18:00:00Z',
         finishedAt: '2024-06-20T22:00:00Z',
         players: [
-          { id: 'p1', mateId: 'mate-1', mateName: 'Alice', score: 50, isWinner: true },
-          { id: 'p2', mateId: 'mate-2', mateName: 'Bob', score: 45 },
-          { id: 'p3', mateId: 'mate-3', mateName: 'Charlie', score: 40 },
-          { id: 'p4', mateId: 'mate-4', mateName: 'Diana', score: 38 },
-          { id: 'p5', mateId: 'mate-5', mateName: 'Eve', score: 30 },
+          { id: 'p1', mate: { id: 'mate-1', name: 'Alice' }, score: 50, isWinner: true },
+          { id: 'p2', mate: { id: 'mate-2', name: 'Bob' }, score: 45 },
+          { id: 'p3', mate: { id: 'mate-3', name: 'Charlie' }, score: 40 },
+          { id: 'p4', mate: { id: 'mate-4', name: 'Diana' }, score: 38 },
+          { id: 'p5', mate: { id: 'mate-5', name: 'Eve' }, score: 30 },
         ],
       },
     ],

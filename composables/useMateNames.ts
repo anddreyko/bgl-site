@@ -27,7 +27,8 @@ export function useMateNames() {
   const mates = computed(() => allMates.value.filter(m => !m.isSystem))
   const systemMates = computed(() => allMates.value.filter(m => m.isSystem))
 
-  function resolveName(mateId: string, mateName?: string): string {
+  function resolveName(mateId?: string, mateName?: string): string {
+    if (!mateId) return mateName || 'Unknown'
     return mateName || mateNames.value[mateId] || mateId.slice(0, 8)
   }
 

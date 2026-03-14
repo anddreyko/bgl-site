@@ -317,7 +317,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Mate, MatePayload, Place, PlacePayload, Play, PlayCreatePayload, Visibility, Player } from '~/types'
+import type { Mate, MatePayload, Place, PlacePayload, Play, PlayCreatePayload, Visibility } from '~/types'
 import UiFormField from '~/components/UiFormField/index.vue'
 import UiInput from '~/components/UiInput/index.vue'
 import UiSelect from '~/components/UiSelect/index.vue'
@@ -329,7 +329,13 @@ import PlaceForm from '~/components/PlaceForm/index.vue'
 import robotSvg from '~/assets/icons/robot.svg?raw'
 import anonymousSvg from '~/assets/icons/anonymous.svg?raw'
 
-type PlayerDraft = Omit<Player, 'id'>
+interface PlayerDraft {
+  mateId: string
+  score?: number
+  color?: string
+  teamTag?: string
+  isWinner?: boolean
+}
 
 const props = defineProps<{
   mates?: Mate[]
@@ -352,11 +358,11 @@ const sessionName = ref(init?.name ?? '')
 const startedAtLocal = ref(toLocalDatetime(init?.startedAt ? new Date(init.startedAt) : new Date()))
 const finishedAtLocal = ref(init?.finishedAt ? toLocalDatetime(new Date(init.finishedAt)) : '')
 const durationMode = ref<'stopwatch' | 'manual'>(init?.finishedAt ? 'manual' : 'stopwatch')
-const selectedPlaceId = ref<string | undefined>(init?.locationId)
+const selectedPlaceId = ref<string | undefined>(init?.location?.id)
 const visibility = ref<Visibility>(init?.visibility ?? 'private')
 const players = ref<PlayerDraft[]>(
   init?.players?.map(p => ({
-    mateId: p.mateId,
+    mateId: p.mate?.id ?? '',
     score: p.score,
     color: p.color,
     teamTag: p.teamTag,
@@ -495,11 +501,11 @@ async function handleNewPlace(payload: PlacePayload) {
 }
 
 const automaMate = computed(() =>
-  (props.systemMates ?? []).find(m => m.name.toLowerCase() === 'automa'),
+  (props.systemMates ?? []).find(m => m.id === '00000000-0000-4000-a000-000000000002'),
 )
 
 const anonymousMate = computed(() =>
-  (props.systemMates ?? []).find(m => m.name.toLowerCase() === 'anonymous'),
+  (props.systemMates ?? []).find(m => m.id === '00000000-0000-4000-a000-000000000001'),
 )
 
 function addSystemPlayer(mate: Mate) {

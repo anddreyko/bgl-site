@@ -32,8 +32,7 @@
                 <MateAvatar
                   v-for="player in play.players.slice(0, 4)"
                   :key="player.id"
-                  :mate-id="player.mateId"
-                  :mate-name="player.mateName"
+                  :mate="player.mate"
                 />
                 <span
                   v-if="play.players.length > 4"
@@ -158,7 +157,7 @@ function outcomeEntries(play: Play): { name: string, won: boolean }[] {
   }
 
   return play.players.map(p => ({
-    name: resolveName(p.mateId, p.mateName),
+    name: resolveName(p.mate?.id, p.mate?.name),
     won: !!p.isWinner,
   }))
 }

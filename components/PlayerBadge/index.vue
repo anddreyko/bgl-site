@@ -1,8 +1,7 @@
 <template>
   <span class="player-badge">
     <MateAvatar
-      :mate-id="player.mateId"
-      :mate-name="player.mateName"
+      :mate="player.mate"
       :is-winner="player.isWinner"
     />
     <span
@@ -36,7 +35,7 @@ const props = defineProps<{
 const { resolveName } = useMateNames()
 
 const displayName = computed(() =>
-  resolveName(props.player.mateId, props.player.mateName),
+  resolveName(props.player.mate?.id, props.player.mate?.name),
 )
 </script>
 

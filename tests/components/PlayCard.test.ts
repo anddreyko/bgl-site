@@ -10,8 +10,8 @@ const basPlay: Play = {
   startedAt: '2024-01-15T10:00:00Z',
   finishedAt: '2024-01-15T11:30:00Z',
   players: [
-    { id: 'p1', mateId: 'mate-1', score: 42, isWinner: true },
-    { id: 'p2', mateId: 'mate-2', score: 30, isWinner: false },
+    { id: 'p1', mate: { id: 'mate-1', name: 'Player 1' }, score: 42, isWinner: true },
+    { id: 'p2', mate: { id: 'mate-2', name: 'Player 2' }, score: 30, isWinner: false },
   ],
 }
 
@@ -102,7 +102,7 @@ describe('PlayCard', () => {
   it('renders player color dot', async () => {
     const play = {
       ...basPlay,
-      players: [{ id: 'p1', mateId: 'mate-1', color: '#ff0000' }],
+      players: [{ id: 'p1', mate: { id: 'mate-1', name: 'Player 1' }, color: '#ff0000' }],
     }
     const wrapper = await mountSuspended(PlayCard, { props: { play } })
     const colorDot = wrapper.find('.player-badge__color')

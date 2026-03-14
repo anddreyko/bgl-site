@@ -16,8 +16,8 @@ const mates = [
 ]
 
 const systemMates = [
-  { id: 'mate-sys-automa', name: 'Automa', isSystem: true, createdAt: '2024-01-01T00:00:00Z' },
-  { id: 'mate-sys-anonymous', name: 'Anonymous', isSystem: true, createdAt: '2024-01-01T00:00:00Z' },
+  { id: '00000000-0000-4000-a000-000000000002', name: 'Automa', isSystem: true, createdAt: '2024-01-01T00:00:00Z' },
+  { id: '00000000-0000-4000-a000-000000000001', name: 'Anonymous', isSystem: true, createdAt: '2024-01-01T00:00:00Z' },
 ]
 
 const places = [
@@ -43,8 +43,8 @@ export const WithInitialData: Story = {
       finishedAt: '2024-06-15T21:30:00Z',
       game: { id: 'g1', name: 'Gloomhaven' },
       players: [
-        { id: 'p1', mateId: 'mate-1', score: 42, isWinner: true },
-        { id: 'p2', mateId: 'mate-2', score: 35, isWinner: false },
+        { id: 'p1', mate: { id: 'mate-1', name: 'Alice' }, score: 42, isWinner: true },
+        { id: 'p2', mate: { id: 'mate-2', name: 'Bob' }, score: 35, isWinner: false },
       ],
     },
     submitLabel: 'Update Play',
