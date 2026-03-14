@@ -10,6 +10,5 @@ Feature: User profile
 
   Scenario: Register Passkey shows user-friendly error
     Given I am on "/profile"
-    When I wait for hydration
     And I click on "Register Passkey"
     Then the error message should not contain raw JS errors

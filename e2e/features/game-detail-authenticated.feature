@@ -3,7 +3,6 @@ Feature: Game detail for authenticated user
 
   Scenario: Game detail page shows game info from catalog
     Given I am on "/game"
-    When I wait for hydration
     And I type "catan" into "#game-search"
     And I click the first game link
     Then the element ".game-hero__title" should be visible
@@ -11,7 +10,6 @@ Feature: Game detail for authenticated user
 
   Scenario: Play History section visibility matches play count
     Given I am on "/game"
-    When I wait for hydration
     And I type "catan" into "#game-search"
     And I click the first game link
     Then Play History section visibility matches play count
