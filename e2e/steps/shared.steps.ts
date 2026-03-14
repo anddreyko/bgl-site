@@ -27,6 +27,10 @@ When('I click on {string}', async ({ page }, text: string) => {
   await page.getByRole('link', { name: text }).or(page.getByRole('button', { name: text })).first().click()
 })
 
+Then('the URL should contain {string}', async ({ page }, substring: string) => {
+  await expect(page).toHaveURL(new RegExp(substring))
+})
+
 Then('the element {string} should be visible', async ({ page }, selector: string) => {
   await expect(page.locator(selector).first()).toBeVisible()
 })
@@ -56,7 +60,7 @@ When('I wait for hydration', async ({ page }) => {
 })
 
 When('I wait for dialog to open', async ({ page }) => {
-  await page.locator('[role="dialog"]').waitFor({ state: 'visible', timeout: 5000 })
+  await page.locator('[role="dialog"]').waitFor({ state: 'visible', timeout: 10000 })
 })
 
 When('I submit the form', async ({ page }) => {

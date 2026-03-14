@@ -10,5 +10,5 @@ Feature: Auth redirect
     Then I should be redirected to "/auth/sign-in"
 
   Scenario: Guest is redirected from profile page
-    Given I am on "/user/me"
+    Given I am on "/profile"
     Then I should be redirected to "/auth/sign-in"

@@ -8,7 +8,7 @@ Feature: Navigation for authenticated user
     And I should see a link "Plays"
     And the element ".user-avatar" should be visible
 
-  Scenario: User avatar links to profile
+  Scenario: User avatar links to public profile
     Given I am on "/"
     When I click on the user avatar
-    Then I should be redirected to "/user/me"
+    Then the URL should contain "/user/"

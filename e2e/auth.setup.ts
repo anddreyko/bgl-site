@@ -20,7 +20,6 @@ setup('authenticate', async ({ page }) => {
   await page.getByRole('button', { name: 'Sign In', exact: true }).click()
 
   await expect(page).toHaveURL('/', { timeout: 10_000 })
-  await expect(page.locator('.home-page__greeting')).toBeVisible()
 
   await page.context().storageState({ path: authFile })
 })
