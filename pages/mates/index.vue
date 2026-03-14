@@ -133,6 +133,9 @@ import UiSpinner from '~/components/UiSpinner/index.vue'
 definePageMeta({ middleware: 'auth' })
 useHead({ title: '4Record > My Mates' })
 
+const route = useRoute()
+const router = useRouter()
+
 const {
   mates,
   total,
@@ -177,6 +180,7 @@ function onSortChange(value: string): void {
 function onPageChange(page: number): void {
   currentPage.value = page
   fetchMates()
+  router.push({ query: { ...route.query, page: page > 1 ? String(page) : undefined } })
 }
 
 function openAddDialog(): void {
@@ -230,6 +234,8 @@ async function handleDelete(): Promise<void> {
 }
 
 onMounted(() => {
+  const initialPage = Number(route.query.page) || 1
+  if (initialPage > 1) currentPage.value = initialPage
   fetchMates()
 })
 </script>

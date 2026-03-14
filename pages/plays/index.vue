@@ -63,15 +63,19 @@ definePageMeta({ middleware: 'auth' })
 
 useHead({ title: '4Record > Plays' })
 
+const route = useRoute()
+const router = useRouter()
 const { plays, total, currentPage, pageSize, loading, error, fetchPlays } = usePlays()
 const { open: openRecord } = useRecordDialog()
 
 async function onPageChange(page: number) {
   await fetchPlays({ page })
+  router.push({ query: { ...route.query, page: page > 1 ? String(page) : undefined } })
 }
 
 onMounted(async () => {
-  await fetchPlays()
+  const initialPage = Number(route.query.page) || 1
+  await fetchPlays({ page: initialPage })
 })
 </script>
 

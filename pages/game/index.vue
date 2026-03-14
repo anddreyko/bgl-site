@@ -141,6 +141,9 @@ useHead({
   title: '4Record > Game Catalog',
 })
 
+const route = useRoute()
+const router = useRouter()
+
 const {
   searchQuery,
   hasSearched,
@@ -149,9 +152,17 @@ const {
   currentPage,
   pending,
   error,
-  goToPage,
+  goToPage: _goToPage,
   refresh,
 } = useGames()
+
+function goToPage(page: number) {
+  _goToPage(page)
+  router.push({ query: { ...route.query, page: page > 1 ? String(page) : undefined } })
+}
+
+const initialPage = Number(route.query.page) || 1
+if (initialPage > 1) _goToPage(initialPage)
 
 const requestFetch = useRequestFetch()
 const { data: recentGamesData } = await useAsyncData(
