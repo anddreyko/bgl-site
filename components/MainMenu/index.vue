@@ -36,6 +36,7 @@
       v-if="user"
       :name="user.name || user.email || '?'"
       size="md"
+      :to="`/user/${user.nickname ?? user.id}`"
     />
     <NuxtLink
       v-else

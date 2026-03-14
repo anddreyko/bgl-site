@@ -1,5 +1,6 @@
 <template>
   <NuxtLink
+    v-if="to"
     :to="to"
     class="user-avatar"
     :class="`user-avatar--${size}`"
@@ -8,6 +9,15 @@
   >
     {{ initials }}
   </NuxtLink>
+  <span
+    v-else
+    class="user-avatar"
+    :class="`user-avatar--${size}`"
+    :style="{ backgroundColor: colors.bg, color: colors.text }"
+    :aria-label="`${name}`"
+  >
+    {{ initials }}
+  </span>
 </template>
 
 <script setup lang="ts">
@@ -20,7 +30,6 @@ const props = withDefaults(defineProps<{
   to?: string
 }>(), {
   size: 'md',
-  to: '/user/me',
 })
 
 const initials = computed(() => getInitials(props.name))

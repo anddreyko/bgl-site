@@ -1,7 +1,7 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref, computed } from 'vue'
-import EditProfilePage from '~/pages/user/me.vue'
+import EditProfilePage from '~/pages/profile.vue'
 
 const mockSignOut = vi.fn()
 const mockRegisterPasskey = vi.fn()

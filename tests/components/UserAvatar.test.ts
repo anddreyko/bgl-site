@@ -31,18 +31,19 @@ describe('UserAvatar', () => {
     expect(wrapper.find('.user-avatar--md').exists()).toBe(true)
   })
 
-  it('links to /user/me by default', async () => {
+  it('renders as span without link when no to prop', async () => {
     const wrapper = await mountSuspended(UserAvatar, {
       props: { name: 'John Doe' },
     })
-    expect(wrapper.attributes('href')).toBe('/user/me')
+    expect(wrapper.element.tagName).toBe('SPAN')
+    expect(wrapper.attributes('href')).toBeUndefined()
   })
 
-  it('has aria-label with name', async () => {
+  it('renders as link when to prop provided', async () => {
     const wrapper = await mountSuspended(UserAvatar, {
-      props: { name: 'John Doe' },
+      props: { name: 'John Doe', to: '/user/johndoe' },
     })
-    expect(wrapper.attributes('aria-label')).toBe('Profile: John Doe')
+    expect(wrapper.attributes('href')).toBe('/user/johndoe')
   })
 
   it('has background color from name hash', async () => {

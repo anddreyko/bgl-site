@@ -101,7 +101,6 @@ async function handleRegisterPasskey() {
         <UserAvatar
           :name="user.name || user.email"
           size="lg"
-          to="/user/me"
         />
         <div class="edit-profile__avatar-info">
           <p class="edit-profile__email">

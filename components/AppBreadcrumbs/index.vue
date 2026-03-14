@@ -45,11 +45,11 @@ const segmentLabels: Record<string, string> = {
 }
 
 const segmentPaths: Record<string, string> = {
-  user: '/user/me',
+  user: '/profile',
 }
 
 const collapsedPaths: Record<string, string> = {
-  '/user/me': 'Profile',
+  '/profile': 'Profile',
 }
 
 function isUuidLike(s: string): boolean {
