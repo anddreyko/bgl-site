@@ -5,6 +5,7 @@ const { Given, When, Then } = createBdd()
 
 Given('I am on {string}', async ({ page }, url: string) => {
   await page.goto(url)
+  await page.waitForLoadState('networkidle')
 })
 
 Then('I should be redirected to {string}', async ({ page }, url: string) => {
@@ -24,7 +25,9 @@ Then('I should see button {string}', async ({ page }, text: string) => {
 })
 
 When('I click on {string}', async ({ page }, text: string) => {
-  await page.getByRole('link', { name: text }).or(page.getByRole('button', { name: text })).first().click()
+  const el = page.getByRole('link', { name: text }).or(page.getByRole('button', { name: text })).first()
+  await el.waitFor({ state: 'visible', timeout: 10_000 })
+  await el.click()
 })
 
 Then('the URL should contain {string}', async ({ page }, substring: string) => {
@@ -49,9 +52,7 @@ When('I fill in field {string} with {string}', async ({ page }, selector: string
 
 When('I type {string} into {string}', async ({ page }, value: string, selector: string) => {
   const input = page.locator(selector)
-  await input.waitFor({ state: 'visible' })
-  // Wait for hydration
-  await page.waitForTimeout(1000)
+  await input.waitFor({ state: 'visible', timeout: 10_000 })
   await input.fill(value)
 })
 
