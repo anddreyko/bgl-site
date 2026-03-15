@@ -1,12 +1,14 @@
 import { defineConfig } from '@playwright/test'
 import { defineBddProject, cucumberReporter } from 'playwright-bdd'
 
+const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000'
+
 export default defineConfig({
   reporter: [
     cucumberReporter('html', { outputFile: 'e2e/reports/report.html' }),
   ],
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL,
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
   },
@@ -42,7 +44,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'pnpm dev',
-    url: 'http://localhost:3000',
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
