@@ -3,7 +3,7 @@ import { setAuthCookies } from '~/server/utils/cookie-utils'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { apiHost } = useRuntimeConfig()
+  const { apiHost } = useRuntimeConfig(event)
 
   try {
     // Send raw WebAuthn response — do NOT run camelToSnake

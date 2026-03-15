@@ -1,7 +1,7 @@
 import { handleBackendError } from '~/server/utils/api-client'
 
 export default defineEventHandler(async () => {
-  const { apiHost } = useRuntimeConfig()
+  const { apiHost } = useRuntimeConfig(event)
 
   try {
     // Fetch raw JSON — do NOT run snakeToCamel on WebAuthn options

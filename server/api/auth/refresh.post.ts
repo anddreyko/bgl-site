@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const { apiHost } = useRuntimeConfig()
+    const { apiHost } = useRuntimeConfig(event)
     const response = await $fetch<ApiResponse<Record<string, unknown>>>('/v1/auth/refresh', {
       baseURL: apiHost,
       method: 'POST',

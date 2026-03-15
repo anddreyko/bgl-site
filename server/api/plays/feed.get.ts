@@ -4,7 +4,7 @@ import { unwrap, handleBackendError } from '~/server/utils/api-client'
 import { snakeToCamel } from '~/server/utils/case-convert'
 
 export default defineEventHandler(async (event) => {
-  const { apiHost } = useRuntimeConfig()
+  const { apiHost } = useRuntimeConfig(event)
   const raw = getQuery(event)
 
   const query: Record<string, unknown> = {}

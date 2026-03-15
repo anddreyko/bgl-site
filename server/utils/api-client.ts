@@ -5,7 +5,7 @@ import { getAccessToken } from '~/server/utils/cookie-utils'
 import { snakeToCamel, camelToSnake } from '~/server/utils/case-convert'
 
 export function createApiClient(event: H3Event) {
-  const { apiHost } = useRuntimeConfig()
+  const { apiHost } = useRuntimeConfig(event)
   const accessToken = getAccessToken(event)
 
   return $fetch.create({

@@ -3,7 +3,7 @@ import { getAccessToken } from '~/server/utils/cookie-utils'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { apiHost } = useRuntimeConfig()
+  const { apiHost } = useRuntimeConfig(event)
   const accessToken = getAccessToken(event)
 
   try {

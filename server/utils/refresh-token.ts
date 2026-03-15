@@ -7,7 +7,7 @@ export async function tryRefreshToken(event: H3Event): Promise<boolean> {
   if (!refreshToken) return false
 
   try {
-    const { apiHost } = useRuntimeConfig()
+    const { apiHost } = useRuntimeConfig(event)
     const response = await $fetch<{ data: Record<string, unknown> }>('/v1/auth/refresh', {
       baseURL: apiHost,
       method: 'POST',
