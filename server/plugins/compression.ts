@@ -1,5 +1,4 @@
-import { createGzip } from 'node:zlib'
-import { Readable } from 'node:stream'
+import { gzipSync } from 'node:zlib'
 
 export default defineNitroPlugin((nitro) => {
   nitro.hooks.hook('beforeResponse', (event, response) => {
@@ -12,13 +11,12 @@ export default defineNitroPlugin((nitro) => {
     if (!/text|javascript|json|css|svg|xml/.test(contentType)) return
     if (getResponseHeader(event, 'content-encoding')) return
 
-    const gzipStream = createGzip()
-    const input = Readable.from(Buffer.from(response.body))
+    const compressed = gzipSync(Buffer.from(response.body))
 
     setResponseHeader(event, 'content-encoding', 'gzip')
     setResponseHeader(event, 'vary', 'Accept-Encoding')
-    removeResponseHeader(event, 'content-length')
+    setResponseHeader(event, 'content-length', compressed.length.toString())
 
-    response.body = input.pipe(gzipStream)
+    response.body = compressed
   })
 })
