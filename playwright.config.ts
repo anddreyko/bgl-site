@@ -1,6 +1,7 @@
 import { defineConfig } from '@playwright/test'
 import { defineBddProject, cucumberReporter } from 'playwright-bdd'
 
+const isPreview = !!process.env.E2E_PREVIEW
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000'
 
 export default defineConfig({
@@ -43,7 +44,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm dev',
+    command: isPreview ? 'NITRO_HOST=0.0.0.0 pnpm preview' : 'pnpm dev',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

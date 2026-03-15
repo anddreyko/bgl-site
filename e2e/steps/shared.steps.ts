@@ -71,3 +71,12 @@ Then('I should see text {string}', async ({ page }, text: string) => {
 Then('the page title should contain {string}', async ({ page }, title: string) => {
   await expect(page).toHaveTitle(new RegExp(title))
 })
+
+Then('the element {string} should not exist', async ({ page }, selector: string) => {
+  await expect(page.locator(selector)).toHaveCount(0)
+})
+
+When('I reload the page', async ({ page }) => {
+  await page.reload()
+  await page.waitForLoadState('networkidle')
+})
