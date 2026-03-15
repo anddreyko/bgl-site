@@ -28,6 +28,7 @@ export default defineNuxtConfig({
       noscript: [],
     },
   },
+  modules: ['@nuxt/eslint'],
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     apiHost: '',
