@@ -17,11 +17,11 @@ function maxAgeFromJwt(token: string, fallback: number): number {
 }
 
 export function setAuthCookies(event: H3Event, tokens: TokenData): void {
-  const isProduction = process.env.NODE_ENV === 'production'
+  const secure = getRequestURL(event).protocol === 'https:'
 
   setCookie(event, ACCESS_TOKEN, tokens.accessToken, {
     httpOnly: true,
-    secure: isProduction,
+    secure,
     sameSite: 'lax',
     path: '/',
     maxAge: maxAgeFromJwt(tokens.accessToken, 15 * 60),
@@ -34,7 +34,7 @@ export function setAuthCookies(event: H3Event, tokens: TokenData): void {
 
   setCookie(event, REFRESH_TOKEN, tokens.refreshToken, {
     httpOnly: true,
-    secure: isProduction,
+    secure,
     sameSite: 'lax',
     path: '/',
     maxAge: refreshMaxAge,
