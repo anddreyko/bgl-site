@@ -7,9 +7,12 @@ const mockSetCookie = vi.fn()
 const mockDeleteCookie = vi.fn()
 const mockGetCookie = vi.fn()
 
+const mockGetRequestURL = vi.fn().mockReturnValue(new URL('http://localhost'))
+
 vi.stubGlobal('setCookie', mockSetCookie)
 vi.stubGlobal('deleteCookie', mockDeleteCookie)
 vi.stubGlobal('getCookie', mockGetCookie)
+vi.stubGlobal('getRequestURL', mockGetRequestURL)
 
 const fakeEvent = {} as H3Event
 
@@ -75,9 +78,8 @@ describe('cookie-utils', () => {
       expect(refreshCall![3].maxAge).toBe(30 * 24 * 3600)
     })
 
-    it('sets secure flag based on NODE_ENV', () => {
-      const originalEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'production'
+    it('sets secure flag based on request protocol', () => {
+      mockGetRequestURL.mockReturnValue(new URL('https://example.com'))
 
       const accessToken = makeJwt({ sub: 'user-1' })
       const refreshToken = makeJwt({ sub: 'user-1' })
@@ -95,7 +97,7 @@ describe('cookie-utils', () => {
         expect.objectContaining({ secure: true }),
       )
 
-      process.env.NODE_ENV = originalEnv
+      mockGetRequestURL.mockReturnValue(new URL('http://localhost'))
     })
   })
 
