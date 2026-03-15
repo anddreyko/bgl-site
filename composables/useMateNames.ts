@@ -1,20 +1,15 @@
 import type { Mate } from '~/types'
 
-let fetchPromise: Promise<void> | null = null
-
 export function useMateNames() {
-  const items = useState<Mate[]>('mate-names-global', () => [])
-
-  if (import.meta.client && items.value.length === 0 && !fetchPromise) {
-    fetchPromise = $fetch<{ items: Mate[] }>('/api/mates', { query: { size: 100 } })
-      .then((res) => { items.value = res.items })
-      .catch(() => {})
-      .finally(() => { fetchPromise = null })
-  }
+  const { data } = useAsyncData<{ items: Mate[] }>(
+    'mate-names-global',
+    () => $fetch<{ items: Mate[] }>('/api/mates', { query: { size: 100 } }),
+    { server: false },
+  )
 
   const mateNames = computed(() => {
     const map: Record<string, string> = {}
-    for (const m of items.value) {
+    for (const m of data.value?.items ?? []) {
       map[m.id] = m.name
     }
     return map
@@ -22,13 +17,13 @@ export function useMateNames() {
 
   const systemMateIds = computed(() => {
     const set = new Set<string>()
-    for (const m of items.value) {
+    for (const m of data.value?.items ?? []) {
       if (m.isSystem) set.add(m.id)
     }
     return set
   })
 
-  const allMates = computed(() => items.value)
+  const allMates = computed(() => data.value?.items ?? [])
   const mates = computed(() => allMates.value.filter(m => !m.isSystem))
   const systemMates = computed(() => allMates.value.filter(m => m.isSystem))
 
