@@ -11,19 +11,23 @@ function getGitCommitHash(): string {
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  modules: [
+    '@vite-pwa/nuxt',
+  ],
   app: {
     head: {
       title: '4Record -- record your records!',
       htmlAttrs: { lang: 'en' },
       meta: [
-        // <meta name="viewport" content="width=device-width, initial-scale=1">
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#1a1a2e' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
       ],
       script: [],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'apple-touch-icon', href: '/icons/icon-180x180.png' },
       ],
-      // please note that this is an area that is likely to change
       style: [],
       noscript: [],
     },
@@ -34,6 +38,42 @@ export default defineNuxtConfig({
     public: {
       gitCommitHash: process.env.NUXT_PUBLIC_GIT_COMMIT_HASH || getGitCommitHash(),
       releaseStage: process.env.NUXT_PUBLIC_RELEASE_STAGE || 'alpha',
+    },
+  },
+  pwa: {
+    registerType: 'autoUpdate',
+    manifest: {
+      name: '4Record',
+      short_name: '4Record',
+      description: 'Track your board game plays, stats, and victories',
+      theme_color: '#1a1a2e',
+      background_color: '#1a1a2e',
+      display: 'standalone',
+      icons: [
+        { src: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+        { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      ],
+    },
+    workbox: {
+      navigateFallback: undefined,
+      runtimeCaching: [
+        {
+          urlPattern: /^\/api\/mates\?/,
+          handler: 'StaleWhileRevalidate',
+          options: { cacheName: 'mates-cache', expiration: { maxAgeSeconds: 86400 } },
+        },
+        {
+          urlPattern: /^\/api\/places\?/,
+          handler: 'StaleWhileRevalidate',
+          options: { cacheName: 'places-cache', expiration: { maxAgeSeconds: 86400 } },
+        },
+        {
+          urlPattern: /^\/api\/games\?/,
+          handler: 'StaleWhileRevalidate',
+          options: { cacheName: 'games-cache', expiration: { maxEntries: 200, maxAgeSeconds: 86400 } },
+        },
+      ],
     },
   },
   compatibilityDate: '2026-03-05',
