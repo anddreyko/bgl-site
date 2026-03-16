@@ -27,11 +27,11 @@ const modeConfig: Record<Mode, { url: string, command: string }> = {
   },
   'preview-local': {
     url: 'http://localhost:3000',
-    command: 'NITRO_HOST=0.0.0.0 pnpm preview',
+    command: 'NITRO_HOST=0.0.0.0 NITRO_PORT=3000 node --env-file=.env .output/server/index.mjs',
   },
   'preview-network': {
     url: `http://${networkHost}:3000`,
-    command: 'NITRO_HOST=0.0.0.0 pnpm preview',
+    command: 'NITRO_HOST=0.0.0.0 NITRO_PORT=3000 node --env-file=.env .output/server/index.mjs',
   },
 }
 
