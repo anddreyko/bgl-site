@@ -1,0 +1,23 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .bg { fill: #ffffff; }
+    .t4 { fill: #111827; }
+    .tR { fill: #dc2626; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #1a1a1a; }
+      .t4 { fill: #f3f4f6; }
+      .tR { fill: #ef4444; }
+    }
+  </style>
+  <rect class="bg" width="512" height="512"/>
+  <text
+    x="50%" y="50%"
+    text-anchor="middle"
+    dominant-baseline="central"
+    font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+    font-size="215"
+    font-weight="700"
+  >
+    <tspan class="t4">4</tspan><tspan class="tR">R</tspan>
+  </text>
+</svg>

@@ -25,9 +25,8 @@ export default defineNuxtConfig({
       ],
       script: [],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/icons/icon-adaptive.svg' },
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'apple-touch-icon', href: '/icons/icon-180x180.png' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicons/icon-adaptive.svg' },
+        { rel: 'apple-touch-icon', href: '/favicons/icon-180x180.png' },
       ],
       style: [],
       noscript: [],
@@ -51,10 +50,10 @@ export default defineNuxtConfig({
       background_color: '#1a1a2e',
       display: 'standalone',
       icons: [
-        { src: '/icons/icon-adaptive.svg', sizes: 'any', type: 'image/svg+xml' },
-        { src: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-        { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-        { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        { src: '/favicons/icon-adaptive.svg', sizes: 'any', type: 'image/svg+xml' },
+        { src: '/favicons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/favicons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+        { src: '/favicons/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
       ],
     },
     workbox: {
