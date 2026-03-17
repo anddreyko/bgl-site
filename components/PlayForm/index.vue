@@ -15,6 +15,21 @@
       />
     </UiFormField>
 
+    <!-- Notes -->
+    <UiFormField
+      label="Notes"
+      field-id="play-notes"
+    >
+      <textarea
+        id="play-notes"
+        v-model="notes"
+        class="play-form__textarea"
+        placeholder="Optional notes"
+        rows="3"
+        maxlength="500"
+      />
+    </UiFormField>
+
     <!-- Game search -->
     <UiFormField
       label="Game"
@@ -355,6 +370,7 @@ const selectedGameId = ref<string | undefined>(init?.game?.id)
 const gameResults = ref<Array<{ id: string, name: string, image?: string }>>([])
 const gameDropdownOpen = ref(false)
 const sessionName = ref(init?.name ?? '')
+const notes = ref(init?.notes ?? '')
 const startedAtLocal = ref(toLocalDatetime(init?.startedAt ? new Date(init.startedAt) : new Date()))
 const finishedAtLocal = ref(init?.finishedAt ? toLocalDatetime(new Date(init.finishedAt)) : '')
 const durationMode = ref<'stopwatch' | 'manual'>(init?.finishedAt ? 'manual' : 'stopwatch')
@@ -539,6 +555,7 @@ function handleSubmit() {
     gameId: selectedGameId.value || undefined,
     locationId: selectedPlaceId.value || undefined,
     name: sessionName.value || undefined,
+    notes: notes.value || undefined,
     startedAt: toW3CDatetime(startedAtLocal.value ? new Date(startedAtLocal.value) : new Date()),
     finishedAt: durationMode.value === 'manual' && finishedAtLocal.value
       ? toW3CDatetime(new Date(finishedAtLocal.value))
@@ -558,6 +575,30 @@ function handleSubmit() {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+}
+
+.play-form__textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-md);
+  font-family: inherit;
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  resize: vertical;
+  transition: border-color var(--transition-fast);
+}
+
+.play-form__textarea::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.play-form__textarea:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 1px var(--color-border-focus);
 }
 
 .play-form__game-search {
