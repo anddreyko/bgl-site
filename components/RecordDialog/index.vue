@@ -54,8 +54,21 @@ import PlayForm from '~/components/PlayForm/index.vue'
 
 const { isOpen, open, close } = useRecordDialog()
 const { startPlay } = useActivePlay()
-const { mates, systemMates } = useMateNames()
-const { places } = usePlaceNames()
+
+const mates = ref<import('~/types').Mate[]>([])
+const systemMates = ref<import('~/types').Mate[]>([])
+const places = ref<import('~/types').Place[]>([])
+
+watch(isOpen, async (val) => {
+  if (!val) return
+  const [matesRes, placesRes] = await Promise.all([
+    $fetch<{ items: import('~/types').Mate[] }>('/api/mates', { query: { size: 100 } }),
+    $fetch<{ items: import('~/types').Place[] }>('/api/places', { query: { size: 100 } }),
+  ])
+  mates.value = matesRes.items.filter(m => !m.isSystem)
+  systemMates.value = matesRes.items.filter(m => m.isSystem)
+  places.value = placesRes.items
+})
 
 async function onSubmit(payload: PlayCreatePayload) {
   try {
