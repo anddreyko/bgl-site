@@ -56,7 +56,7 @@
           </UiButton>
           <UiButton
             variant="ghost"
-            @click="overlayOpen = true"
+            @click="openEditOverlay"
           >
             Edit
           </UiButton>
@@ -172,9 +172,9 @@
     >
       <PlayForm
         :initial-data="play"
-        :mates="mates"
-        :system-mates="systemMates"
-        :places="places"
+        :mates="editMates"
+        :system-mates="editSystemMates"
+        :places="editPlaces"
         submit-label="Save"
         @submit="onUpdatePlay"
       />
@@ -207,8 +207,24 @@ const overlayOpen = ref(false)
 const confirmDelete = ref(false)
 const deleting = ref(false)
 
-const { mates, systemMates } = useMateNames()
-const { places } = usePlaceNames()
+const editMates = ref<import('~/types').Mate[]>([])
+const editSystemMates = ref<import('~/types').Mate[]>([])
+const editPlaces = ref<import('~/types').Place[]>([])
+
+async function loadEditData() {
+  const [matesRes, placesRes] = await Promise.all([
+    $fetch<{ items: import('~/types').Mate[] }>('/api/mates', { query: { size: 100 } }),
+    $fetch<{ items: import('~/types').Place[] }>('/api/places', { query: { size: 100 } }),
+  ])
+  editMates.value = matesRes.items.filter(m => !m.isSystem)
+  editSystemMates.value = matesRes.items.filter(m => m.isSystem)
+  editPlaces.value = placesRes.items
+}
+
+function openEditOverlay() {
+  overlayOpen.value = true
+  loadEditData()
+}
 
 const requestFetch = useRequestFetch()
 const { data: play, pending, refresh } = await useAsyncData<Play>(
