@@ -38,6 +38,7 @@ export interface PlayCreatePayload {
   gameId?: string
   locationId?: string
   name?: string
+  notes?: string
   startedAt?: string
   finishedAt?: string
   visibility?: Visibility
@@ -46,6 +47,7 @@ export interface PlayCreatePayload {
 
 export interface PlayUpdatePayload {
   name?: string
+  notes?: string
   gameId?: string
   locationId?: string
   visibility?: Visibility
