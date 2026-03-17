@@ -32,10 +32,8 @@ const props = defineProps<{
   player: Player
 }>()
 
-const { resolveName } = useMateNames()
-
 const displayName = computed(() =>
-  resolveName(props.player.mate?.id, props.player.mate?.name),
+  props.player.mate?.name || 'Unknown',
 )
 </script>
 

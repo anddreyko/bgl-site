@@ -109,7 +109,6 @@ defineProps<{
   plays: Play[]
 }>()
 
-const { resolveName } = useMateNames()
 
 function formatDate(iso: string): string {
   const d = new Date(iso)
@@ -157,7 +156,7 @@ function outcomeEntries(play: Play): { name: string, won: boolean }[] {
   }
 
   return play.players.map(p => ({
-    name: resolveName(p.mate?.id, p.mate?.name),
+    name: p.mate?.name || 'Unknown',
     won: !!p.isWinner,
   }))
 }

@@ -51,9 +51,7 @@ const props = withDefaults(defineProps<{
   isWinner: false,
 })
 
-const { resolveName } = useMateNames()
-
-const name = computed(() => resolveName(props.mate?.id, props.mate?.name))
+const name = computed(() => props.mate?.name || 'Unknown')
 
 const sizeClass = computed(() => `mate-avatar--${props.size}`)
 
