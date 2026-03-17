@@ -41,7 +41,6 @@ export default defineNuxtConfig({
     },
   },
   pwa: {
-    disable: process.env.NODE_ENV === 'development',
     registerType: 'autoUpdate',
     manifest: {
       name: '4Record',
