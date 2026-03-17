@@ -56,6 +56,9 @@ export default defineNuxtConfig({
         { src: '/favicons/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
       ],
     },
+    devOptions: {
+      enabled: true,
+    },
     workbox: {
       navigateFallback: undefined,
       runtimeCaching: [
