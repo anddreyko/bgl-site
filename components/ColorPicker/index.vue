@@ -13,7 +13,7 @@
       <span
         v-if="modelValue"
         class="color-picker__preview"
-        :style="{ backgroundColor: `var(--player-${modelValue})` }"
+        :style="{ backgroundColor: `var(--player-${normalizedValue})` }"
       />
       <span
         v-else
@@ -49,18 +49,18 @@
         type="button"
         class="color-picker__swatch"
         :class="{
-          'color-picker__swatch--selected': modelValue === color.value,
+          'color-picker__swatch--selected': normalizedValue === color.value,
           'color-picker__swatch--light': color.light,
         }"
         :style="{ '--swatch-color': `var(--player-${color.value})` }"
         :aria-label="color.label"
-        :aria-checked="modelValue === color.value"
+        :aria-checked="normalizedValue === color.value"
         :title="color.label"
         role="radio"
         @click="onSelect(color.value)"
       >
         <svg
-          v-if="modelValue === color.value"
+          v-if="normalizedValue === color.value"
           class="color-picker__check"
           width="14"
           height="14"
@@ -137,9 +137,11 @@ const emit = defineEmits<{
 
 const open = ref(false)
 
+const normalizedValue = computed(() => props.modelValue?.toLowerCase())
+
 const selectedLabel = computed(() => {
-  if (!props.modelValue) return 'None'
-  return colors.find(c => c.value === props.modelValue)?.label ?? props.modelValue
+  if (!normalizedValue.value) return 'None'
+  return colors.find(c => c.value === normalizedValue.value)?.label ?? props.modelValue
 })
 
 function onSelect(value: string | undefined) {
