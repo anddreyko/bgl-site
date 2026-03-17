@@ -272,6 +272,7 @@ async function onUpdatePlay(payload: PlayCreatePayload) {
 
   const body: PlayUpdatePayload = {
     name: payload.name,
+    notes: payload.notes,
     gameId: payload.gameId,
     locationId: payload.locationId,
     visibility: payload.visibility,
