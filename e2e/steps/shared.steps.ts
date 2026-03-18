@@ -4,8 +4,13 @@ import { createBdd } from 'playwright-bdd'
 const { Given, When, Then } = createBdd()
 
 Given('I am on {string}', async ({ page }, url: string) => {
-  await page.goto(url)
-  await page.waitForLoadState('networkidle')
+  await page.goto(url, { waitUntil: 'load' })
+  await page.waitForFunction(
+    () => !!(document.querySelector('#__nuxt') as HTMLElement & { __vue_app__?: unknown })?.__vue_app__,
+    { timeout: 10_000 },
+  )
+  // Buffer for Vue to finish binding event handlers after mount
+  await page.waitForTimeout(1000)
 })
 
 Then('I should be redirected to {string}', async ({ page }, url: string) => {
@@ -53,7 +58,16 @@ When('I fill in field {string} with {string}', async ({ page }, selector: string
 When('I type {string} into {string}', async ({ page }, value: string, selector: string) => {
   const input = page.locator(selector)
   await input.waitFor({ state: 'visible', timeout: 10_000 })
-  await input.fill(value)
+
+  // Retry fill — hydration may override the value before Vue binds event handlers
+  for (let attempt = 0; attempt < 5; attempt++) {
+    await input.focus()
+    await input.fill(value)
+    const actual = await input.inputValue()
+    if (actual === value) return
+    await page.waitForTimeout(500)
+  }
+  throw new Error(`Failed to type "${value}" into "${selector}" after 5 retries`)
 })
 
 When('I wait for dialog to open', async ({ page }) => {
@@ -77,6 +91,10 @@ Then('the element {string} should not exist', async ({ page }, selector: string)
 })
 
 When('I reload the page', async ({ page }) => {
-  await page.reload()
-  await page.waitForLoadState('networkidle')
+  await page.reload({ waitUntil: 'load' })
+  await page.waitForFunction(
+    () => !!(document.querySelector('#__nuxt') as HTMLElement & { __vue_app__?: unknown })?.__vue_app__,
+    { timeout: 10_000 },
+  )
+  await page.waitForTimeout(300)
 })

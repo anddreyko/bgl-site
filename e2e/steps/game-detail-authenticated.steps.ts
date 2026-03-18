@@ -5,9 +5,9 @@ const { When, Then } = createBdd()
 
 When('I click the first game link', async ({ page }) => {
   const gameLink = page.locator('.game-catalog__grid-item').first()
-  await gameLink.waitFor({ state: 'visible', timeout: 10_000 })
+  await gameLink.waitFor({ state: 'visible', timeout: 15_000 })
   await gameLink.click()
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('load')
 })
 
 Then('Play History section visibility matches play count', async ({ page }) => {

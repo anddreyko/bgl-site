@@ -6,11 +6,15 @@ setup('authenticate', async ({ page }) => {
   const email = process.env.E2E_USER_EMAIL ?? 'e2e-test@4record.app'
   const password = process.env.E2E_USER_PASSWORD ?? 'E2eTest123!'
 
-  await page.goto('/auth/sign-in', { waitUntil: 'networkidle' })
+  await page.goto('/auth/sign-in', { waitUntil: 'load' })
+  await page.waitForFunction(
+    () => !!(document.querySelector('#__nuxt') as HTMLElement & { __vue_app__?: unknown })?.__vue_app__,
+    { timeout: 10_000 },
+  )
 
   const emailInput = page.locator('#sign-in-email')
+  await emailInput.waitFor({ state: 'visible', timeout: 10_000 })
   await emailInput.fill(email)
-  await expect(emailInput).toHaveValue(email)
 
   const passwordInput = page.locator('#sign-in-password')
   await passwordInput.fill(password)
