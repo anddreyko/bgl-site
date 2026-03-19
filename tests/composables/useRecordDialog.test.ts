@@ -1,16 +1,35 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useRecordDialog } from '~/composables/useRecordDialog'
 
+const mockIsAuthenticated = ref(true)
+vi.mock('~/composables/useAuth', () => ({
+  useAuth: () => ({ isAuthenticated: mockIsAuthenticated }),
+}))
+
 describe('useRecordDialog', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockIsAuthenticated.value = true
+    const { close } = useRecordDialog()
+    close()
+  })
+
   it('starts closed', () => {
     const { isOpen } = useRecordDialog()
     expect(isOpen.value).toBe(false)
   })
 
-  it('opens dialog', () => {
+  it('opens dialog when authenticated', () => {
     const { isOpen, open } = useRecordDialog()
     open()
     expect(isOpen.value).toBe(true)
+  })
+
+  it('does not open dialog when not authenticated', () => {
+    mockIsAuthenticated.value = false
+    const { isOpen, open } = useRecordDialog()
+    open()
+    expect(isOpen.value).toBe(false)
   })
 
   it('closes dialog', () => {
