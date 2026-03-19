@@ -22,7 +22,7 @@ async function handleSubmit() {
   try {
     await $fetch<{ ok: boolean }>('/api/auth/confirm', {
       method: 'POST',
-      body: { token },
+      body: { credential: token, type: 'code' },
     })
 
     status.value = 'success'

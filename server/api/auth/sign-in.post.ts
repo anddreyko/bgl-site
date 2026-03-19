@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
     const response = await api<ApiResponse<{
       accessToken: string
       refreshToken: string
-    }>>('/v1/auth/sign-in', {
+    }>>('/v1/auth/password/sign-in', {
       method: 'POST',
       body,
     })

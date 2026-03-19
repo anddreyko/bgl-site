@@ -15,8 +15,12 @@ export default defineEventHandler(async (event) => {
     const response = await api<ApiResponse<{
       accessToken: string
       refreshToken: string
-    }>>(`/v1/auth/confirm/${encodeURIComponent(token)}`, {
-      method: 'GET',
+    }>>('/v1/auth/email/verify', {
+      method: 'POST',
+      body: {
+        credential: token,
+        type: 'token',
+      },
     })
     const data = unwrap(response)
     setAuthCookies(event, data)

@@ -1,6 +1,6 @@
 import { handleBackendError } from '~/server/utils/api-client'
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   const { apiHost } = useRuntimeConfig(event)
 
   try {

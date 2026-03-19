@@ -53,7 +53,7 @@ async function handleManualSubmit() {
   try {
     await $fetch<ConfirmResult>('/api/auth/confirm', {
       method: 'POST',
-      body: { token: code },
+      body: { credential: code, type: 'code' },
     })
 
     manualStatus.value = 'success'

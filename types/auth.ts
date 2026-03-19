@@ -10,7 +10,12 @@ export interface SignInPayload {
 }
 
 export interface ConfirmPayload {
-  token: string
+  credential: string
+  type: 'code' | 'token'
+}
+
+export interface EmailSendPayload {
+  email: string
 }
 
 export interface PasskeyRegisterOptions {

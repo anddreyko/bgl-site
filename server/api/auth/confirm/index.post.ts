@@ -5,8 +5,8 @@ import { setAuthCookies } from '~/server/utils/cookie-utils'
 export default defineEventHandler(async (event) => {
   const body = await readBody<ConfirmPayload>(event)
 
-  if (!body.token || !/^[\w-]+$/.test(body.token)) {
-    throw createError({ statusCode: 400, message: 'Invalid token format' })
+  if (!body.credential) {
+    throw createError({ statusCode: 400, message: 'Missing credential' })
   }
 
   const api = createApiClient(event)
@@ -15,8 +15,12 @@ export default defineEventHandler(async (event) => {
     const response = await api<ApiResponse<{
       accessToken: string
       refreshToken: string
-    }>>(`/v1/auth/confirm/${encodeURIComponent(body.token)}`, {
-      method: 'GET',
+    }>>('/v1/auth/email/verify', {
+      method: 'POST',
+      body: {
+        credential: body.credential,
+        type: body.type || 'token',
+      },
     })
     const data = unwrap(response)
     setAuthCookies(event, data)

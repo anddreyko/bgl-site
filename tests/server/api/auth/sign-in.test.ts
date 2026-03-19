@@ -53,7 +53,7 @@ describe('POST /api/auth/sign-in', () => {
     const { default: handler } = await import('~/server/api/auth/sign-in.post')
     const result = await handler(fakeEvent)
 
-    expect(mockApi).toHaveBeenCalledWith('/v1/auth/sign-in', {
+    expect(mockApi).toHaveBeenCalledWith('/v1/auth/password/sign-in', {
       method: 'POST',
       body: { email: 'test@example.com', password: 'pass123' },
     })
