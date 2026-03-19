@@ -3,6 +3,8 @@ import MainMenu from '~/components/MainMenu/index.vue'
 import AppBreadcrumbs from '~/components/AppBreadcrumbs/index.vue'
 import RecordDialog from '~/components/RecordDialog/index.vue'
 import BottomNav from '~/components/BottomNav/index.vue'
+import OfflineBanner from '~/components/OfflineBanner/index.vue'
+import SyncConflictDialog from '~/components/SyncConflictDialog/index.vue'
 
 const route = useRoute()
 
@@ -53,6 +55,7 @@ onMounted(async () => {
         />
       </div>
     </header>
+    <OfflineBanner />
     <div class="app-layout__breadcrumbs app-layout__container">
       <AppBreadcrumbs />
     </div>
@@ -76,6 +79,7 @@ onMounted(async () => {
       </div>
     </footer>
     <RecordDialog />
+    <SyncConflictDialog />
     <BottomNav
       :active-play="activePlay"
       @record="handleRecord"

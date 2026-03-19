@@ -4,9 +4,30 @@ import { useMates } from '~/composables/useMates'
 const mockFetch = vi.fn()
 vi.stubGlobal('$fetch', mockFetch)
 
+const mockIsOnline = ref(true)
+vi.mock('~/composables/useNetworkStatus', () => ({
+  useNetworkStatus: () => ({
+    isOnline: mockIsOnline,
+    isOffline: computed(() => !mockIsOnline.value),
+  }),
+}))
+
+const mockCachedMates = ref<unknown[]>([])
+const mockPersistCachedMates = vi.fn()
+vi.mock('~/composables/useOfflineStore', () => ({
+  useOfflineStore: () => ({
+    cachedMates: mockCachedMates,
+    generateOfflineId: () => '_offline_test-id',
+    addOperation: vi.fn(),
+    persistCachedMates: mockPersistCachedMates,
+  }),
+}))
+
 describe('useMates', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockIsOnline.value = true
+    mockCachedMates.value = []
   })
 
   describe('fetchMates', () => {
@@ -41,6 +62,31 @@ describe('useMates', () => {
       expect(error.value).toBe('Failed to load mates')
       expect(loading.value).toBe(false)
     })
+
+    it('uses cached mates when offline', async () => {
+      mockIsOnline.value = false
+      mockCachedMates.value = [{ id: '1', name: 'Cached Alice', createdAt: '2024-01-01' }]
+
+      const { fetchMates, mates, total } = useMates()
+      await fetchMates()
+
+      expect(mockFetch).not.toHaveBeenCalled()
+      expect(mates.value).toHaveLength(1)
+      expect(mates.value[0].name).toBe('Cached Alice')
+      expect(total.value).toBe(1)
+    })
+
+    it('falls back to cache on network error', async () => {
+      mockCachedMates.value = [{ id: '1', name: 'Cached Bob', createdAt: '2024-01-01' }]
+      mockFetch.mockRejectedValueOnce(new Error('Network error'))
+
+      const { fetchMates, mates, error } = useMates()
+      await fetchMates()
+
+      expect(mates.value).toHaveLength(1)
+      expect(mates.value[0].name).toBe('Cached Bob')
+      expect(error.value).toBeNull()
+    })
   })
 
   describe('createMate', () => {
@@ -63,6 +109,18 @@ describe('useMates', () => {
         body: { name: 'Bob' },
       })
       expect(result).toEqual(newMate)
+      expect(mates.value).toHaveLength(1)
+    })
+
+    it('creates mate offline with temp id', async () => {
+      mockIsOnline.value = false
+
+      const { createMate, mates } = useMates()
+      const result = await createMate({ name: 'Offline Mate' })
+
+      expect(mockFetch).not.toHaveBeenCalled()
+      expect(result.id).toBe('_offline_test-id')
+      expect(result.name).toBe('Offline Mate')
       expect(mates.value).toHaveLength(1)
     })
   })
