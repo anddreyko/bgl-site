@@ -1,20 +1,20 @@
 <template>
-  <component
-    :is="isHome ? 'span' : NuxtLink"
-    v-bind="isHome ? {} : { 'to': '/', 'aria-label': 'Go to home page' }"
-    class="app-logo"
-    :class="sizeClass"
-  >
+  <span v-if="isHome" class="app-logo" :class="sizeClass">
     <span class="app-logo__text">For the</span>
     <slot>
       <span class="app-logo__record">Record</span>
     </slot>
-  </component>
+  </span>
+  <NuxtLink v-else to="/" aria-label="Go to home page" class="app-logo" :class="sizeClass">
+    <span class="app-logo__text">For the</span>
+    <slot>
+      <span class="app-logo__record">Record</span>
+    </slot>
+  </NuxtLink>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { NuxtLink } from '#components'
 
 const props = withDefaults(defineProps<{
   size?: 'md' | 'lg'
