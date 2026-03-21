@@ -55,6 +55,20 @@ describe('useAuth', () => {
     })
   })
 
+  describe('resendCode', () => {
+    it('calls email endpoint with email', async () => {
+      mockFetch.mockResolvedValueOnce({ ok: true })
+
+      const { resendCode } = useAuth()
+      await resendCode('test@test.com')
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/auth/email', {
+        method: 'POST',
+        body: { email: 'test@test.com' },
+      })
+    })
+  })
+
   describe('signOut', () => {
     it('calls sign-out endpoint and clears user', async () => {
       mockFetch.mockResolvedValueOnce({ ok: true })

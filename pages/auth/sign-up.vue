@@ -46,7 +46,7 @@ async function handleSubmit() {
       password: password.value,
       name: name.value || undefined,
     })
-    await navigateTo('/auth/confirm')
+    await navigateTo({ path: '/auth/confirm', query: { email: email.value } })
   }
   catch (error: unknown) {
     errors.form = getErrorMessage(error, 'Registration failed. Please try again.')

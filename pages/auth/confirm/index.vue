@@ -8,9 +8,52 @@ definePageMeta({ layout: 'auth' })
 
 useHead({ title: 'Confirm Email' })
 
+const route = useRoute()
+const { resendCode } = useAuth()
+
+const email = ref((route.query.email as string) || '')
 const code = ref('')
 const status = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
 const errorMessage = ref('')
+
+const RESEND_COOLDOWN = 60
+const resendCooldown = ref(0)
+const resendStatus = ref<'idle' | 'loading' | 'sent' | 'error'>('idle')
+const resendError = ref('')
+let cooldownTimer: ReturnType<typeof setInterval> | undefined
+
+function startCooldown() {
+  resendCooldown.value = RESEND_COOLDOWN
+  cooldownTimer = setInterval(() => {
+    resendCooldown.value--
+    if (resendCooldown.value <= 0) {
+      clearInterval(cooldownTimer)
+      cooldownTimer = undefined
+    }
+  }, 1000)
+}
+
+onUnmounted(() => {
+  if (cooldownTimer) clearInterval(cooldownTimer)
+})
+
+async function handleResend() {
+  const target = email.value.trim()
+  if (!target || resendCooldown.value > 0) return
+
+  resendStatus.value = 'loading'
+  resendError.value = ''
+
+  try {
+    await resendCode(target)
+    resendStatus.value = 'sent'
+    startCooldown()
+  }
+  catch (error: unknown) {
+    resendStatus.value = 'error'
+    resendError.value = getErrorMessage(error, 'Failed to resend code. Please try again.')
+  }
+}
 
 async function handleSubmit() {
   const token = code.value.trim()
@@ -92,6 +135,57 @@ async function handleSubmit() {
         </UiButton>
       </form>
 
+      <div class="confirm__resend">
+        <p class="confirm__resend-text">
+          Didn't receive the code?
+        </p>
+
+        <div
+          v-if="!email"
+          class="confirm__resend-email"
+        >
+          <UiFormField
+            label="Email"
+            field-id="resend-email"
+            required
+          >
+            <UiInput
+              id="resend-email"
+              v-model="email"
+              type="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+            />
+          </UiFormField>
+        </div>
+
+        <div
+          v-if="resendStatus === 'sent'"
+          class="confirm__resend-success"
+          role="status"
+        >
+          Code sent! Check your email.
+        </div>
+
+        <div
+          v-if="resendStatus === 'error'"
+          class="confirm__resend-error"
+          role="alert"
+        >
+          {{ resendError }}
+        </div>
+
+        <UiButton
+          variant="ghost"
+          size="sm"
+          :loading="resendStatus === 'loading'"
+          :disabled="resendCooldown > 0 || !email.trim()"
+          @click="handleResend"
+        >
+          {{ resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : 'Resend code' }}
+        </UiButton>
+      </div>
+
       <p class="confirm__footer">
         <NuxtLink to="/auth/sign-in">
           Back to Sign In
@@ -155,6 +249,34 @@ async function handleSubmit() {
 
 .confirm__submit {
   width: 100%;
+}
+
+.confirm__resend {
+  margin-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.confirm__resend-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.confirm__resend-email {
+  width: 100%;
+}
+
+.confirm__resend-success {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.confirm__resend-error {
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
 }
 
 .confirm__footer {

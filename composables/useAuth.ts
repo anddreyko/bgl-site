@@ -23,11 +23,15 @@ export function useAuth() {
     return result
   }
 
+  async function resendCode(email: string): Promise<void> {
+    await $fetch('/api/auth/email', { method: 'POST', body: { email } })
+  }
+
   async function signOut(): Promise<void> {
     await $fetch('/api/auth/sign-out', { method: 'POST' })
     user.value = null
     await navigateTo('/auth/sign-in')
   }
 
-  return { user, isAuthenticated, fetchCurrentUser, signIn, signUp, signOut }
+  return { user, isAuthenticated, fetchCurrentUser, signIn, signUp, resendCode, signOut }
 }
