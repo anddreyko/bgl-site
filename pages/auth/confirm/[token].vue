@@ -10,7 +10,7 @@ definePageMeta({ layout: 'auth' })
 useHead({ title: 'Confirm Email' })
 
 const route = useRoute()
-const { resendCode } = useAuth()
+const { resendCode, fetchCurrentUser } = useAuth()
 const urlToken = route.params.token as string
 
 const manualCode = ref('')
@@ -80,6 +80,7 @@ const errorMessage = computed(() => {
 
 watch(status, async (val) => {
   if (val === 'success') {
+    await fetchCurrentUser()
     await navigateTo('/')
   }
 }, { immediate: true })
@@ -98,6 +99,7 @@ async function handleManualSubmit() {
     })
 
     manualStatus.value = 'success'
+    await fetchCurrentUser()
     await navigateTo('/')
   }
   catch (err: unknown) {

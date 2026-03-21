@@ -24,7 +24,10 @@ vi.stubGlobal('useRoute', () => ({
   params: { token: 'test-token-123' },
 }))
 vi.stubGlobal('navigateTo', vi.fn())
-vi.stubGlobal('useAuth', () => ({}))
+vi.stubGlobal('useAuth', () => ({
+  resendCode: vi.fn(),
+  fetchCurrentUser: vi.fn(),
+}))
 
 describe('confirm token page', () => {
   beforeEach(() => {

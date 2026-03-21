@@ -9,7 +9,7 @@ definePageMeta({ layout: 'auth' })
 useHead({ title: 'Confirm Email' })
 
 const route = useRoute()
-const { resendCode } = useAuth()
+const { resendCode, fetchCurrentUser } = useAuth()
 
 const email = ref((route.query.email as string) || '')
 const code = ref('')
@@ -69,6 +69,7 @@ async function handleSubmit() {
     })
 
     status.value = 'success'
+    await fetchCurrentUser()
     await navigateTo('/')
   }
   catch (error: unknown) {
